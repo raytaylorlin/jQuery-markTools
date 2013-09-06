@@ -5,21 +5,32 @@
 
 (function($) {
     var ToolButton = (function() {
-        var ToolButton = function(attr) {
-            var $btn,
-                _this = this;
+        var ToolButton = function(attr, $callObject) {
+            var _this = this;
             attr = attr || {};
 
+            //相关属性
             this.attr = attr;
+            //按钮类型
             this.type = attr.type;
+            //是否被按下
             this.isPressed = false;
+            //容纳按钮的容器
             this.container = null;
+            //激活时的鼠标指针
+            this.activeCursor = null;
 
+            //调用插件的jquery对象
+            this.$callObject = $callObject;
+            //按钮对应的jquery对象
             this.$dom = divWithClass(attr.classRest);
             this.$dom.addClass('btn-marktools');
             this.$dom.click(function() {
                 _this.toggle();
             });
+
+            //按下按钮触发的方法
+            this.onPress = function() {};
         }
 
         /**
@@ -37,8 +48,13 @@
             this.isPressed = true;
             this.$dom.removeClass(this.attr.classRest);
             this.$dom.addClass(this.attr.classActive);
+
             //设置按钮组的状态
             this.container.changeType(this.type);
+            this.$callObject.addClass(this.attr.classCursor);
+
+            //触发按钮按下的事件
+            this.onPress();
         };
 
         /**
@@ -48,7 +64,9 @@
             this.isPressed = false;
             this.$dom.removeClass(this.attr.classActive);
             this.$dom.addClass(this.attr.classRest);
+
             this.container.activeType = 'none';
+            this.container.$dom.removeClass(this.attr.classCursor);
         }
 
         return ToolButton;
@@ -114,12 +132,14 @@
                 pin: {
                     type: 'pin',
                     classRest: 'btn-marktools-pin',
-                    classActive: 'btn-marktools-pin-active'
+                    classActive: 'btn-marktools-pin-active',
+                    classCursor: 'cursor-pin'
                 },
                 region: {
                     type: 'region',
                     classRest: 'btn-marktools-region',
-                    classActive: 'btn-marktools-region-active'
+                    classActive: 'btn-marktools-region-active',
+                    classCursor: 'cursor-region'
                 }
             };
 
@@ -130,13 +150,19 @@
             var container = new ToolButtonContainer();
             //初始化Pin按钮
             if (options.showPin) {
-                var btnPin = new ToolButton(toolsMap['pin']);
+                var btnPin = new ToolButton(toolsMap['pin'], $this);
+                btnPin.onPress = function (){
+                    // container.$dom.addClass('pin-cursor');
+                };
                 container.add(btnPin);
             }
 
             //初始化Region按钮
             if (options.showRegion) {
-                var btnRegion = new ToolButton(toolsMap['region']);
+                var btnRegion = new ToolButton(toolsMap['region'], $this);
+                btnRegion.onPress = function(){
+                    console.log('region');
+                };
                 container.add(btnRegion);
             }
 
