@@ -24,7 +24,12 @@
 }
 
 .cursor-pin {
-    cursor: url('../images/icon_pin.png') -7 -12, default;
+    position: absolute;
+    width: 14px;
+    height: 24px;
+    background-image: url('../images/icon_pin.png');
+    background-repeat: no-repeat;
+    /*cursor: url('../images/icon_pin.png') -7 -12, default;*/
 }
 
 .btn-marktools-region {
@@ -90,11 +95,16 @@
     display: block;
 }
 
+.mark-dialog-control input[type='text'],
+.mark-dialog-control textarea {
+    width: 96%;
+}
+
 .mark-dialog-button {
     display: inline-block;
-    padding: 4px 12px;
+    padding: 4px 8px;
     line-height: 20px;
-    font-size: 16px;
+    font-size: 14px;
     color: #FFF;
     background-color: rgb(192, 192, 192);
     cursor: pointer;

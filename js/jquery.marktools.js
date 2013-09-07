@@ -29,9 +29,14 @@
                 _this.toggle();
             });
 
+            //创建光标cursor的div并隐藏
+            this.$cursor = $('<div class="' + attr.classCursor + '"></div>')
+            this.$cursor.hide();
+            this.$callObject.append(this.$cursor);
+
             //按下按钮触发的方法
             this.onPress = attr.onPress;
-        }
+        };
 
         /**
          * 切换按钮状态
@@ -51,7 +56,19 @@
 
             //设置按钮组的状态
             this.container.changeType(this.type);
-            this.$callObject.addClass(this.attr.classCursor);
+            // this.$callObject.addClass(this.attr.classCursor);
+            var $cursor = this.$cursor;
+            $cursor.show();
+            this.$callObject.mousemove(function(e) {
+                var offset = getMouseOffset($(this), e);
+                var pos = {
+                    left: offset.left - parseInt($cursor.width() / 2),
+                    top: offset.top - $cursor.height()
+                };
+                $cursor.css(pos);
+                console.log(pos);
+                // $(this).css('cursor', 'default');
+            });
 
             console.log('click button');
             //触发按钮按下的事件
@@ -70,6 +87,11 @@
             this.$callObject.removeClass(this.attr.classCursor);
         }
 
+        function createCursor($callObject, cursorId) {
+
+        }
+
+
         return ToolButton;
     })();
 
@@ -79,6 +101,9 @@
             this.buttonList = {};
             //初始化标记工具栏容器
             this.$dom = divWithClass('marktools-container');
+            this.$callObject = $callObject;
+
+
             //调整位置
             var _this = this;
             var adjust = function() {
@@ -126,9 +151,22 @@
             }
         }
 
+        ToolButtonContainer.prototype.popupAll = function() {
+            this.buttonList[this.activeType].popup();
+            this.activeType = 'none';
+            this.$callObject.unbind();
+        };
+
         return ToolButtonContainer;
     })();
 
+    /**
+     * 给所有jquery对象新增一个查询是否存在的方法
+     * @return {Boolean} 查找的jquery对象是否存在
+     */
+    $.fn.exists = function() {
+        return this.length > 0;
+    };
 
     $.fn.markTools = function(options) {
         var defaultOptions = {
@@ -146,10 +184,13 @@
                     classActive: 'btn-marktools-pin-active',
                     classCursor: 'cursor-pin',
                     onPress: function() {
+                        var tbc = this.container;
                         this.$callObject.bind('click', function(e) {
                             console.log('click container');
-                            var markDialog = createMarkDialog(getMouseOffset($(this), e));
+                            var markDialog = showMarkDialog(getMouseOffset($(this), e));
                             $(this).append(markDialog);
+                            $(this).unbind('click');
+                            tbc.popupAll();
                         });
                     }
                 },
@@ -205,39 +246,47 @@
         return newDiv;
     }
 
-    function createMarkDialog(mousePos) {
-        var $newMarkDialog = $(
-            '<div class="mark-dialog">' +
-            '<div class="mark-dialog-control">' +
-            '<label for="title">Title</label>' +
-            '<input type="text" name="title"/>' +
-            '</div>' +
-            '<div class="mark-dialog-control">' +
-            '<label for="description">Description</label>' +
-            '<textarea name="description"></textarea>' +
-            '</div>' +
-            '<a class="mark-dialog-button" href="javascript:void(0)">Cancel</a>' +
-            '<a class="mark-dialog-button" href="javascript:void(0)">Save</a>' +
-            '</div>');
-            // containerOffset = $container.offset();
-        // $newMarkDialog.offset({
-        //     left: containerOffset.left + mousePos.left,
-        //     top: containerOffset.top + mousePos.top
-        // });
-        $newMarkDialog.offset(mousePos);
-        return $newMarkDialog;
+    function setOffset(obj, offset) {
+        obj.css({
+            left: offset.left,
+            top: offset.top
+        });
     }
 
+    function showMarkDialog(mousePos) {
+        var $markDialog = $('.mark-dialog');
+        if ($markDialog.exists()) {
+            setOffset($markDialog, mousePos);
+            $markDialog.show();
+        } else {
+            $markDialog = $(
+                '<div class="mark-dialog">' +
+                '<div class="mark-dialog-control">' +
+                '<label for="title">Title</label>' +
+                '<input type="text" name="title"/>' +
+                '</div>' +
+                '<div class="mark-dialog-control">' +
+                '<label for="description">Description</label>' +
+                '<textarea name="description"></textarea>' +
+                '</div>' +
+                '<a class="mark-dialog-button" href="javascript:void(0)">Cancel</a>' +
+                '<a class="mark-dialog-button" href="javascript:void(0)">Save</a>' +
+                '</div>');
+        }
+        setOffset($markDialog, mousePos);
+        return $markDialog;
+    }
+
+    /**
+     * 获取鼠标相对于某个容器的偏移量
+     * @param  {jQuery Object}} obj 计算偏移量的容器
+     * @param  {Event} e 鼠标事件
+     * @return {Object} 鼠标位置偏移量
+     */
     function getMouseOffset(obj, e) {
         var x, y;
-        if (e.offsetX === undefined) // this works for Firefox
-        {
-            x = e.pageX - obj.offset().left;
-            y = e.pageY - obj.offset().top;
-        } else { // works in Google Chrome
-            x = e.offsetX;
-            y = e.offsetY;
-        }
+        x = e.pageX - obj.offset().left;
+        y = e.pageY - obj.offset().top;
         return {
             left: x,
             top: y

@@ -1,4 +1,4 @@
-jQuery MarkTools
+jQuery-markTools
 ===
 
-jQuery MarkTools is a jQuery plugin to help you mark on a DOM.
+jQuery-markTools is a jQuery plugin to help you mark on a DOM.
