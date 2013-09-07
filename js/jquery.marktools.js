@@ -30,7 +30,7 @@
             });
 
             //按下按钮触发的方法
-            this.onPress = function() {};
+            this.onPress = attr.onPress;
         }
 
         /**
@@ -53,6 +53,7 @@
             this.container.changeType(this.type);
             this.$callObject.addClass(this.attr.classCursor);
 
+            console.log('click button');
             //触发按钮按下的事件
             this.onPress();
         };
@@ -66,18 +67,26 @@
             this.$dom.addClass(this.attr.classRest);
 
             this.container.activeType = 'none';
-            this.container.$dom.removeClass(this.attr.classCursor);
+            this.$callObject.removeClass(this.attr.classCursor);
         }
 
         return ToolButton;
     })();
 
     var ToolButtonContainer = (function() {
-        var ToolButtonContainer = function() {
+        var ToolButtonContainer = function($callObject) {
             this.activeType = 'none';
             this.buttonList = {};
             //初始化标记工具栏容器
             this.$dom = divWithClass('marktools-container');
+            //调整位置
+            var offset = $callObject.offset();
+            this.$dom.css({
+                left: offset.left + 20,
+                top: offset.top + 20
+            });
+            //在调用插件的容器后面添加
+            $callObject.after(this.$dom);
         }
 
         /**
@@ -104,6 +113,11 @@
                 this.buttonList[this.activeType].popup();
             }
             this.activeType = type;
+            switch (this.activeType) {
+                case 'none':
+
+                    break;
+            }
         }
 
         return ToolButtonContainer;
@@ -117,6 +131,18 @@
             newDiv = newDiv.html(content);
         }
         return newDiv;
+    }
+
+    function addMarkDialog($container) {
+        var $newMarkDialog = $('<div class="mark-dialog">' +
+            '<div class="input-box">' +
+            '<label for="title">Title</label><input type="text" id="mark_title" name="title"/>' +
+            '<label for="description">Description</label><textarea id="mark_description" name="description"></textarea>' +
+            '<a id="cancelMarkBtn" class="btn pull-right btn-m" href="javascript:void(0)">Cancel</a>' +
+            '<a id="saveMarkBtn" class="btn pull-right btn-m offset5" href="javascript:void(0)">Save</a>' +
+            '</div>' +
+            '</div>');
+        $container.append($newMarkDialog);
     }
 
     $.fn.markTools = function(options) {
@@ -133,7 +159,13 @@
                     type: 'pin',
                     classRest: 'btn-marktools-pin',
                     classActive: 'btn-marktools-pin-active',
-                    classCursor: 'cursor-pin'
+                    classCursor: 'cursor-pin',
+                    onPress: function() {
+                        this.$callObject.bind('click', function(e) {
+                            console.log('click container');
+                            addMarkDialog($(this));
+                        });
+                    }
                 },
                 region: {
                     type: 'region',
@@ -147,26 +179,28 @@
         function init() {
             var $this = $(this);
 
-            var container = new ToolButtonContainer();
+            var container = new ToolButtonContainer($this);
             //初始化Pin按钮
             if (options.showPin) {
                 var btnPin = new ToolButton(toolsMap['pin'], $this);
-                btnPin.onPress = function (){
-                    // container.$dom.addClass('pin-cursor');
-                };
+                // btnPin.onPress = function(e) {
+                //     console.log(e.offsetX);
+                //     console.log(e.offsetY);
+                //     // container.$dom.addClass('pin-cursor');
+                // };
                 container.add(btnPin);
             }
 
             //初始化Region按钮
             if (options.showRegion) {
                 var btnRegion = new ToolButton(toolsMap['region'], $this);
-                btnRegion.onPress = function(){
+                btnRegion.onPress = function() {
                     console.log('region');
                 };
                 container.add(btnRegion);
             }
 
-            $this.append(container.$dom);
+            // $this.after(container.$dom);
         }
 
         options = options || {};

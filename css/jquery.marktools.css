@@ -24,7 +24,7 @@
 }
 
 .cursor-pin {
-    cursor: help;
+    cursor: url('../images/icon_pin.png'), default;
 }
 
 .btn-marktools-region {
