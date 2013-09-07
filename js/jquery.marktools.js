@@ -80,11 +80,17 @@
             //初始化标记工具栏容器
             this.$dom = divWithClass('marktools-container');
             //调整位置
-            var offset = $callObject.offset();
-            this.$dom.css({
-                left: offset.left + 20,
-                top: offset.top + 20
-            });
+            var _this = this;
+            var adjust = function() {
+                var offset = $callObject.offset();
+                _this.$dom.css({
+                    left: offset.left + 20,
+                    top: offset.top + 20
+                });
+            };
+            adjust();
+            $(window).resize(adjust);
+
             //在调用插件的容器后面添加
             $callObject.after(this.$dom);
         }
@@ -123,27 +129,6 @@
         return ToolButtonContainer;
     })();
 
-    function divWithClass(className, content) {
-        var key,
-            newDiv = $('<div></div>');
-        newDiv.addClass(className);
-        if (typeof content !== undefined) {
-            newDiv = newDiv.html(content);
-        }
-        return newDiv;
-    }
-
-    function addMarkDialog($container) {
-        var $newMarkDialog = $('<div class="mark-dialog">' +
-            '<div class="input-box">' +
-            '<label for="title">Title</label><input type="text" id="mark_title" name="title"/>' +
-            '<label for="description">Description</label><textarea id="mark_description" name="description"></textarea>' +
-            '<a id="cancelMarkBtn" class="btn pull-right btn-m" href="javascript:void(0)">Cancel</a>' +
-            '<a id="saveMarkBtn" class="btn pull-right btn-m offset5" href="javascript:void(0)">Save</a>' +
-            '</div>' +
-            '</div>');
-        $container.append($newMarkDialog);
-    }
 
     $.fn.markTools = function(options) {
         var defaultOptions = {
@@ -163,7 +148,8 @@
                     onPress: function() {
                         this.$callObject.bind('click', function(e) {
                             console.log('click container');
-                            addMarkDialog($(this));
+                            var markDialog = createMarkDialog(getMouseOffset($(this), e));
+                            $(this).append(markDialog);
                         });
                     }
                 },
@@ -173,22 +159,18 @@
                     classActive: 'btn-marktools-region-active',
                     classCursor: 'cursor-region'
                 }
-            };
+            },
+            toolButtonContainer;
 
 
         function init() {
             var $this = $(this);
 
-            var container = new ToolButtonContainer($this);
+            toolButtonContainer = new ToolButtonContainer($this);
             //初始化Pin按钮
             if (options.showPin) {
                 var btnPin = new ToolButton(toolsMap['pin'], $this);
-                // btnPin.onPress = function(e) {
-                //     console.log(e.offsetX);
-                //     console.log(e.offsetY);
-                //     // container.$dom.addClass('pin-cursor');
-                // };
-                container.add(btnPin);
+                toolButtonContainer.add(btnPin);
             }
 
             //初始化Region按钮
@@ -197,15 +179,69 @@
                 btnRegion.onPress = function() {
                     console.log('region');
                 };
-                container.add(btnRegion);
+                toolButtonContainer.add(btnRegion);
             }
-
-            // $this.after(container.$dom);
         }
 
         options = options || {};
         $.extend(options, defaultOptions);
 
+        //窗口缩放时，应调整工具栏的位置
+        // $(window).resize(function() {
+
+        // });
+
         return this.each(init);
     };
+
+
+    function divWithClass(className, content) {
+        var key,
+            newDiv = $('<div></div>');
+        newDiv.addClass(className);
+        if (typeof content !== undefined) {
+            newDiv = newDiv.html(content);
+        }
+        return newDiv;
+    }
+
+    function createMarkDialog(mousePos) {
+        var $newMarkDialog = $(
+            '<div class="mark-dialog">' +
+            '<div class="mark-dialog-control">' +
+            '<label for="title">Title</label>' +
+            '<input type="text" name="title"/>' +
+            '</div>' +
+            '<div class="mark-dialog-control">' +
+            '<label for="description">Description</label>' +
+            '<textarea name="description"></textarea>' +
+            '</div>' +
+            '<a class="mark-dialog-button" href="javascript:void(0)">Cancel</a>' +
+            '<a class="mark-dialog-button" href="javascript:void(0)">Save</a>' +
+            '</div>');
+            // containerOffset = $container.offset();
+        // $newMarkDialog.offset({
+        //     left: containerOffset.left + mousePos.left,
+        //     top: containerOffset.top + mousePos.top
+        // });
+        $newMarkDialog.offset(mousePos);
+        return $newMarkDialog;
+    }
+
+    function getMouseOffset(obj, e) {
+        var x, y;
+        if (e.offsetX === undefined) // this works for Firefox
+        {
+            x = e.pageX - obj.offset().left;
+            y = e.pageY - obj.offset().top;
+        } else { // works in Google Chrome
+            x = e.offsetX;
+            y = e.offsetY;
+        }
+        return {
+            left: x,
+            top: y
+        };
+    }
+
 })(jQuery);
