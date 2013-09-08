@@ -56,21 +56,15 @@
 
             //设置按钮组的状态
             this.container.changeType(this.type);
-            // this.$callObject.addClass(this.attr.classCursor);
+            
+            //显示光标并绑定到鼠标移动事件
             var $cursor = this.$cursor;
             $cursor.show();
-            this.$callObject.mousemove(function(e) {
+            this.$callObject.bind('mousemove', function(e) {
                 var offset = getMouseOffset($(this), e);
-                var pos = {
-                    left: offset.left - parseInt($cursor.width() / 2),
-                    top: offset.top - $cursor.height()
-                };
-                $cursor.css(pos);
-                console.log(pos);
-                // $(this).css('cursor', 'default');
+                $cursor.css(offset);
             });
 
-            console.log('click button');
             //触发按钮按下的事件
             this.onPress();
         };
@@ -83,8 +77,11 @@
             this.$dom.removeClass(this.attr.classActive);
             this.$dom.addClass(this.attr.classRest);
 
+            //隐藏光标
+            this.$cursor.hide();
+            this.$callObject.unbind();
+
             this.container.activeType = 'none';
-            this.$callObject.removeClass(this.attr.classCursor);
         }
 
         function createCursor($callObject, cursorId) {
@@ -154,7 +151,6 @@
         ToolButtonContainer.prototype.popupAll = function() {
             this.buttonList[this.activeType].popup();
             this.activeType = 'none';
-            this.$callObject.unbind();
         };
 
         return ToolButtonContainer;
@@ -186,11 +182,16 @@
                     onPress: function() {
                         var tbc = this.container;
                         this.$callObject.bind('click', function(e) {
-                            console.log('click container');
-                            var markDialog = showMarkDialog(getMouseOffset($(this), e));
+                            //获取鼠标偏移量，显示并定位对话框
+                            var offset = getMouseOffset($(this), e);
+                            var markDialog = showMarkDialog(offset);
                             $(this).append(markDialog);
-                            $(this).unbind('click');
+                            //弹起所有按钮
                             tbc.popupAll();
+                            //添加一个静态图钉
+                            var staticPin = $('<div class="static-pin"></div>'); 
+                            staticPin.css(offset);
+                            $(this).append(staticPin);
                         });
                     }
                 },
@@ -269,13 +270,21 @@
                 '<label for="description">Description</label>' +
                 '<textarea name="description"></textarea>' +
                 '</div>' +
-                '<a class="mark-dialog-button" href="javascript:void(0)">Cancel</a>' +
-                '<a class="mark-dialog-button" href="javascript:void(0)">Save</a>' +
+                '<a class="mark-dialog-button mark-dialog-button-cancel" href="javascript:void(0)">Cancel</a>' +
+                '<a class="mark-dialog-button mark-dialog-button-save" href="javascript:void(0)">Save</a>' +
                 '</div>');
         }
+        $markDialog.on('click', '.mark-dialog-button-cancel', function() {
+            $(this).parent().hide();
+        });
         setOffset($markDialog, mousePos);
         return $markDialog;
     }
+
+    function bindMarkDialogEvent() {
+        
+    }
+
 
     /**
      * 获取鼠标相对于某个容器的偏移量
@@ -283,6 +292,7 @@
      * @param  {Event} e 鼠标事件
      * @return {Object} 鼠标位置偏移量
      */
+
     function getMouseOffset(obj, e) {
         var x, y;
         x = e.pageX - obj.offset().left;
