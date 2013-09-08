@@ -23,8 +23,18 @@
     background-position:-80px 0px;
 }
 
-.cursor-pin, .static-pin {
+.cursor-pin {
     position: absolute;
+    width: 14px;
+    height: 24px;
+    margin-left: -7px;
+    margin-top: -24px;
+    background-image: url('../images/icon_pin.png');
+    background-repeat: no-repeat;
+}
+
+.static-pin {
+    position: relative;
     width: 14px;
     height: 24px;
     margin-left: -7px;
@@ -48,10 +58,13 @@
     cursor: wait;
 }
 
+.mark-container {
+    position: absolute;
+}
 
 /* 标记对话框 */
-.mark-dialog {
-    position: absolute;
+#mark-dialog {
+    position: relative;
     z-index: 10;
     padding: 10px;
     background-color: #EBEBEB;
@@ -68,7 +81,7 @@
     background-clip: padding-box;
 }
 
-.mark-dialog:before {
+#mark-dialog:before {
     position: absolute;
     top: -10px;
     left: 60px;
@@ -79,7 +92,7 @@
     content: '';
 }
 
-.mark-dialog:after {
+#mark-dialog:after {
     position: absolute;
     top: -9px;
     left: 61px;
@@ -124,6 +137,10 @@
 .mark-dialog-button:hover {
     background-color: rgb(146, 146, 146);
     text-decoration: none;
+}
+
+.clearfix {
+    clear: both;
 }
 
 #FindBtn {

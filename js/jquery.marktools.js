@@ -35,7 +35,7 @@
             this.$callObject.append(this.$cursor);
 
             //按下按钮触发的方法
-            this.onPress = attr.onPress;
+            // this.onPress = attr.onPress;
         };
 
         /**
@@ -56,7 +56,7 @@
 
             //设置按钮组的状态
             this.container.changeType(this.type);
-            
+
             //显示光标并绑定到鼠标移动事件
             var $cursor = this.$cursor;
             $cursor.show();
@@ -170,7 +170,8 @@
             showPin: true,
             showRegion: true,
             showRecluster: true,
-            showFilter: true
+            showFilter: true,
+            markDialogId: 'mark-dialog'
         },
             currentFunc = 'none',
             toolsMap = {
@@ -179,21 +180,6 @@
                     classRest: 'btn-marktools-pin',
                     classActive: 'btn-marktools-pin-active',
                     classCursor: 'cursor-pin',
-                    onPress: function() {
-                        var tbc = this.container;
-                        this.$callObject.bind('click', function(e) {
-                            //获取鼠标偏移量，显示并定位对话框
-                            var offset = getMouseOffset($(this), e);
-                            var markDialog = showMarkDialog(offset);
-                            $(this).append(markDialog);
-                            //弹起所有按钮
-                            tbc.popupAll();
-                            //添加一个静态图钉
-                            var staticPin = $('<div class="static-pin"></div>'); 
-                            staticPin.css(offset);
-                            $(this).append(staticPin);
-                        });
-                    }
                 },
                 region: {
                     type: 'region',
@@ -202,16 +188,31 @@
                     classCursor: 'cursor-region'
                 }
             },
-            toolButtonContainer;
+            toolButtonContainer,
+            $markDialog;
 
 
         function init() {
+            //$this为调用插件的jQuery对象，对应组件中的$callObject
             var $this = $(this);
 
             toolButtonContainer = new ToolButtonContainer($this);
             //初始化Pin按钮
             if (options.showPin) {
                 var btnPin = new ToolButton(toolsMap['pin'], $this);
+                btnPin.onPress = function() {
+                    var tbc = this.container;
+                    this.$callObject.bind('click', function(e) {
+                        //创建静态图钉
+                        var $staticPin = divWithClass('static-pin');
+                        //获取鼠标偏移量，显示并定位对话框
+                        var offset = getMouseOffset($(this), e);
+                        var markDialog = showMarkDialog(offset, $staticPin);
+                        $(this).append(markDialog);
+                        //弹起所有按钮
+                        tbc.popupAll();
+                    });
+                };
                 toolButtonContainer.add(btnPin);
             }
 
@@ -223,18 +224,68 @@
                 };
                 toolButtonContainer.add(btnRegion);
             }
+
+            if ($('#' + options.markDialogId).exists()) {
+                $markDialog = $('#' + options.markDialogId);
+            } else {
+                $markDialog = $(
+                    '<div id="mark-dialog">' +
+                    '<div class="mark-dialog-control">' +
+                    '<label for="title">Title</label>' +
+                    '<input type="text" name="title"/>' +
+                    '</div>' +
+                    '<div class="mark-dialog-control">' +
+                    '<label for="description">Description</label>' +
+                    '<textarea name="description"></textarea>' +
+                    '</div>' +
+                    '<a class="mark-dialog-button mark-dialog-button-cancel" href="javascript:void(0)">Cancel</a>' +
+                    '<a class="mark-dialog-button mark-dialog-button-save" href="javascript:void(0)">Save</a>' +
+                    '<div class="clearfix"></div>' + 
+                    '</div>');
+            }
+            $markDialog.hide();
         }
+
+        /**
+         * 显示标记对话框和预览的标记
+         * 对话框如果不存在会先创建，否则显示已有的对话框
+         * @param  {Object} mousePos 鼠标相对父容器的偏移量
+         * @param {Number} mousePos.left
+         * @param {Number} mousePos.top
+         * @param  {jQuery Object} [$markObj] 预览的标记DOM对应的jQuery对象
+         * @return {jQuery Object} 包括预览的标记对话框jQuery对象
+         */
+
+        function showMarkDialog(mousePos, $markObj) {
+            var markDialogId = options.markDialogId,
+                $markContainer = $('.mark-container');
+            if ($markContainer.exists()) {
+                $markContainer.show();
+            } else {
+                $markContainer = $(
+                    '<div class="mark-container">' + 
+                    '</div>');
+            }
+            if ($markObj !== undefined) {
+                $markContainer.append($markObj);
+            }
+            $markContainer.append($markDialog.show());
+
+            $markDialog.on('click', '.mark-dialog-button-cancel', function() {
+                $(this).parent().hide();
+                $markObj.remove();
+            });
+            setOffset($markContainer, mousePos);
+            return $markContainer;
+        }
+
 
         options = options || {};
         $.extend(options, defaultOptions);
 
-        //窗口缩放时，应调整工具栏的位置
-        // $(window).resize(function() {
-
-        // });
-
         return this.each(init);
     };
+
 
 
     function divWithClass(className, content) {
@@ -253,38 +304,6 @@
             top: offset.top
         });
     }
-
-    function showMarkDialog(mousePos) {
-        var $markDialog = $('.mark-dialog');
-        if ($markDialog.exists()) {
-            setOffset($markDialog, mousePos);
-            $markDialog.show();
-        } else {
-            $markDialog = $(
-                '<div class="mark-dialog">' +
-                '<div class="mark-dialog-control">' +
-                '<label for="title">Title</label>' +
-                '<input type="text" name="title"/>' +
-                '</div>' +
-                '<div class="mark-dialog-control">' +
-                '<label for="description">Description</label>' +
-                '<textarea name="description"></textarea>' +
-                '</div>' +
-                '<a class="mark-dialog-button mark-dialog-button-cancel" href="javascript:void(0)">Cancel</a>' +
-                '<a class="mark-dialog-button mark-dialog-button-save" href="javascript:void(0)">Save</a>' +
-                '</div>');
-        }
-        $markDialog.on('click', '.mark-dialog-button-cancel', function() {
-            $(this).parent().hide();
-        });
-        setOffset($markDialog, mousePos);
-        return $markDialog;
-    }
-
-    function bindMarkDialogEvent() {
-        
-    }
-
 
     /**
      * 获取鼠标相对于某个容器的偏移量
