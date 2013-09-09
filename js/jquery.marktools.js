@@ -171,7 +171,9 @@
             showRegion: true,
             showRecluster: true,
             showFilter: true,
-            markDialogId: 'mark-dialog'
+            markDialogId: 'mark-dialog',
+            markBoxClass: 'mark-box',
+            onSaveMark: null
         },
             currentFunc = 'none',
             toolsMap = {
@@ -225,11 +227,13 @@
                 toolButtonContainer.add(btnRegion);
             }
 
+            //初始化mark对话框
+            //options.markDialogId为用户自定义的对话框DOM的Id
             if ($('#' + options.markDialogId).exists()) {
                 $markDialog = $('#' + options.markDialogId);
             } else {
                 $markDialog = $(
-                    '<div id="mark-dialog">' +
+                    '<div id="' + options.markDialogId + '">' +
                     '<div class="mark-dialog-control">' +
                     '<label for="title">Title</label>' +
                     '<input type="text" name="title"/>' +
@@ -240,8 +244,47 @@
                     '</div>' +
                     '<a class="mark-dialog-button mark-dialog-button-cancel" href="javascript:void(0)">Cancel</a>' +
                     '<a class="mark-dialog-button mark-dialog-button-save" href="javascript:void(0)">Save</a>' +
-                    '<div class="clearfix"></div>' + 
+                    '<div class="clearfix"></div>' +
                     '</div>');
+                //Cancel按钮事件
+                $markDialog.find('.mark-dialog-button-cancel').bind('click', function() {
+                    $(this).parent().hide();
+                    $markDialog.prev().remove();
+                });
+                //Save按钮事件
+                $markDialog.find('.mark-dialog-button-save').bind('click', function() {
+                    var $title = $markDialog.find('input[name=title]'),
+                        $description = $markDialog.find('textarea'),
+                        title = $title.val(),
+                        description = $description.val(),
+                        $markContainer = $markDialog.parent(),
+                        $markBox;
+                    if (title.trim() === '' || description.trim === '') {
+                        console.log('Title or description cannot be empty.');
+                        return;
+                    }
+                    $markDialog.hide();
+                    $title.val('');
+                    $description.val('');
+                    //TODO: 由用户指定的单击Save按钮事件
+                    if (options.onSaveMark) {
+                        options.onSaveMark($markContainer);
+                    } else {
+                        if ($('.' + options.markBoxClass).exists()) {
+                            $markBox = $('.' + options.markBoxClass);
+                        } else {
+                            $markBox = $(
+                                '<div class="mark-box">' +
+                                '<p class="mark-box-title"></p>' + 
+                                '<p class="mark-box-description"></p>' + 
+                                '</div>'
+                            );
+                        }
+                        $markBox.find('.mark-box-title').html(title);
+                        $markBox.find('.mark-box-description').html(description);
+                        $markContainer.append($markBox);
+                    }
+                });
             }
             $markDialog.hide();
         }
@@ -257,24 +300,24 @@
          */
 
         function showMarkDialog(mousePos, $markObj) {
-            var markDialogId = options.markDialogId,
-                $markContainer = $('.mark-container');
-            if ($markContainer.exists()) {
-                $markContainer.show();
-            } else {
-                $markContainer = $(
-                    '<div class="mark-container">' + 
+            var markDialogId = options.markDialogId;
+            var $markContainer = $(
+                    '<div class="mark-container">' +
                     '</div>');
-            }
+            //     $markContainer = $('.mark-container');
+            // if ($markContainer.exists()) {
+            //     $markContainer.show();
+            // } else {
+            //     $markContainer = $(
+            //         '<div class="mark-container">' +
+            //         '</div>');
+            // }
             if ($markObj !== undefined) {
                 $markContainer.append($markObj);
             }
             $markContainer.append($markDialog.show());
 
-            $markDialog.on('click', '.mark-dialog-button-cancel', function() {
-                $(this).parent().hide();
-                $markObj.remove();
-            });
+
             setOffset($markContainer, mousePos);
             return $markContainer;
         }

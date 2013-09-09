@@ -63,7 +63,8 @@
 }
 
 /* 标记对话框 */
-#mark-dialog {
+#mark-dialog, .mark-box {
+    width: 200px;
     position: relative;
     z-index: 10;
     padding: 10px;
@@ -81,7 +82,7 @@
     background-clip: padding-box;
 }
 
-#mark-dialog:before {
+#mark-dialog:before, .mark-box:before {
     position: absolute;
     top: -10px;
     left: 60px;
@@ -92,7 +93,7 @@
     content: '';
 }
 
-#mark-dialog:after {
+#mark-dialog:after, .mark-box:after {
     position: absolute;
     top: -9px;
     left: 61px;
