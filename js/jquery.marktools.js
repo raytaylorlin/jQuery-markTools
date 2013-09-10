@@ -171,6 +171,8 @@
             showRegion: true,
             showRecluster: true,
             showFilter: true,
+
+            //TODO: 考虑引入一个marktools-template的div专门存放模板
             markDialogId: 'mark-dialog',
             markBoxClass: 'mark-box',
             onSaveMark: null
@@ -206,7 +208,7 @@
                     var tbc = this.container;
                     this.$callObject.bind('click', function(e) {
                         //创建静态图钉
-                        var $staticPin = divWithClass('static-pin');
+                        var $staticPin = divWithClass('static-mark static-pin');
                         //获取鼠标偏移量，显示并定位对话框
                         var offset = getMouseOffset($(this), e);
                         var markDialog = showMarkDialog(offset, $staticPin);
@@ -258,7 +260,8 @@
                         title = $title.val(),
                         description = $description.val(),
                         $markContainer = $markDialog.parent(),
-                        $markBox;
+                        $markBox,
+                        $markObject;
                     if (title.trim() === '' || description.trim === '') {
                         console.log('Title or description cannot be empty.');
                         return;
@@ -270,20 +273,22 @@
                     if (options.onSaveMark) {
                         options.onSaveMark($markContainer);
                     } else {
-                        if ($('.' + options.markBoxClass).exists()) {
-                            $markBox = $('.' + options.markBoxClass);
-                        } else {
-                            $markBox = $(
-                                '<div class="mark-box">' +
-                                '<p class="mark-box-title"></p>' + 
-                                '<p class="mark-box-description"></p>' + 
-                                '</div>'
-                            );
-                        }
+                        //创建新的markBox
+                        $markBox = $(
+                            '<div class="mark-box">' +
+                            '<p class="mark-box-title"></p>' +
+                            '<p class="mark-box-description"></p>' +
+                            '</div>'
+                        );
+                        //填充内容
                         $markBox.find('.mark-box-title').html(title);
                         $markBox.find('.mark-box-description').html(description);
                         $markContainer.append($markBox);
                     }
+                    $markObject = $markContainer.find('.static-mark');
+                    $markObject.bind('click', function() {
+                        $markBox.toggle();
+                    });
                 });
             }
             $markDialog.hide();
@@ -302,8 +307,9 @@
         function showMarkDialog(mousePos, $markObj) {
             var markDialogId = options.markDialogId;
             var $markContainer = $(
-                    '<div class="mark-container">' +
-                    '</div>');
+                '<div class="mark-container">' +
+                '</div>');
+            $markContainer.attr('id', "mark-container-" + Math.floor(Math.random() * 10000000));
             //     $markContainer = $('.mark-container');
             // if ($markContainer.exists()) {
             //     $markContainer.show();

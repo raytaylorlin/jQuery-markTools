@@ -43,6 +43,14 @@
     background-repeat: no-repeat;
 }
 
+.static-pin:hover {
+    background-image: url('../images/icon_pin_hover.png');
+    width: 18px;
+    height: 28px;
+    margin-left: -9px;
+    margin-top: -28px;
+}
+
 .btn-marktools-region {
   background-image: url('../images/icon_action.png');
   background-position:0px -240px;
