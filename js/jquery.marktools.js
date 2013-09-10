@@ -30,9 +30,9 @@
             });
 
             //创建光标cursor的div并隐藏
-            this.$cursor = $('<div class="' + attr.classCursor + '"></div>')
+            this.$cursor = divWithClass(attr.classCursor);
             this.$cursor.hide();
-            this.$callObject.append(this.$cursor);
+            this.$callObject.after(this.$cursor);
 
             //按下按钮触发的方法
             // this.onPress = attr.onPress;
@@ -61,7 +61,7 @@
             var $cursor = this.$cursor;
             $cursor.show();
             this.$callObject.bind('mousemove', function(e) {
-                var offset = getMouseOffset($(this), e);
+                var offset = {left: e.clientX, top: e.clientY};
                 $cursor.css(offset);
             });
 
