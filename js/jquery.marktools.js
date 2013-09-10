@@ -198,23 +198,24 @@
 
         function init() {
             //$this为调用插件的jQuery对象，对应组件中的$callObject
-            var $this = $(this);
+            var $this = $callObject = $(this);
 
             toolButtonContainer = new ToolButtonContainer($this);
             //初始化Pin按钮
             if (options.showPin) {
                 var btnPin = new ToolButton(toolsMap['pin'], $this);
                 btnPin.onPress = function() {
-                    var tbc = this.container;
-                    this.$callObject.bind('click', function(e) {
+                    $callObject.bind('click', function(e) {
                         //创建静态图钉
                         var $staticPin = divWithClass('static-mark static-pin');
+                        $callObject.append($staticPin);
                         //获取鼠标偏移量，显示并定位对话框
                         var offset = getMouseOffset($(this), e);
+                        console.log(offset);
                         var markDialog = showMarkDialog(offset, $staticPin);
                         $(this).append(markDialog);
                         //弹起所有按钮
-                        tbc.popupAll();
+                        toolButtonContainer.popupAll();
                     });
                 };
                 toolButtonContainer.add(btnPin);
@@ -224,7 +225,87 @@
             if (options.showRegion) {
                 var btnRegion = new ToolButton(toolsMap['region'], $this);
                 btnRegion.onPress = function() {
-                    console.log('region');
+                    var width = $callObject.width(),
+                        height = $callObject.height(),
+                        startDrag = false,
+                        canvasMargin = 10;
+                    var $newCanvas = $('<canvas></canvas>').attr('class', 'draw-canvas')
+                        .attr('width', width).attr('height', height);
+                    $callObject.append($newCanvas);
+
+                    var context = $newCanvas.get(0).getContext("2d");
+
+                    function clear() {
+                        context.clearRect(0, 0, width, height);
+                    }
+
+                    context.fillStyle = "rgba(0,0,0,0)";
+                    context.fillRect(0, 0, width, height);
+                    var selection = {
+                        x1: 0,
+                        y1: 0,
+                        x2: 0,
+                        y2: 0
+                    };
+
+                    $newCanvas.mousedown(
+                        function(e) {
+                            if (!startDrag) {
+                                startDrag = true;
+                                selection.x1 = e.offsetX;
+                                selection.y1 = e.offsetY;
+
+                            }
+                        }).mousemove(
+                        function(e) {
+                            if (startDrag) {
+                                clear();
+                                selection.x2 = e.offsetX;
+                                selection.y2 = e.offsetY;
+                                context.lineWidth = 1;
+                                context.strokeStyle = "rgba(0,255,255,1)";
+                                context.strokeRect(selection.x1, selection.y1,
+                                    selection.x2 - selection.x1, selection.y2 - selection.y1);
+                            }
+                        }).mouseup(
+                        function(e) {
+                            if (startDrag) {
+                                startDrag = false;
+                                // var regionId = 'region_' + regionCount;
+                                // regionCount += 1;
+                                $newCanvas.attr('id', 'hehe');
+                                $newCanvas.attr('width', selection.x2 - selection.x1 + 20).
+                                attr('height', selection.y2 - selection.y1 + 20);
+                                context.clearRect();
+                                context.strokeStyle = "rgba(0,255,255,1)";
+                                context.strokeRect(canvasMargin, canvasMargin,
+                                    selection.x2 - selection.x1, selection.y2 - selection.y1);
+
+
+
+                                //获取鼠标偏移量，显示并定位对话框
+                                var offset = getMouseOffset($callObject, e);
+                                var markDialog = showMarkDialog({
+                                    left: offset.left + canvasMargin - $newCanvas.width() / 2,
+                                    top: offset.top
+                                }, $newCanvas, canvasMargin);
+                                $callObject.append(markDialog);
+                                //弹起所有按钮
+                                toolButtonContainer.popupAll();
+                                $newCanvas.unbind();
+                                //将canvas转换为静态canvas（绘画canvas拥有相对最高的z-index）
+                                $newCanvas.removeClass('draw-canvas');
+                                $newCanvas.addClass('static-canvas');
+                            }
+                        });
+
+                    $callObject.bind('click', function(e) {
+                        //创建静态图钉
+                        var $staticRegion = divWithClass('static-mark static-shape');
+
+
+
+                    });
                 };
                 toolButtonContainer.add(btnRegion);
             }
@@ -301,10 +382,11 @@
          * @param {Number} mousePos.left
          * @param {Number} mousePos.top
          * @param  {jQuery Object} [$markObj] 预览的标记DOM对应的jQuery对象
+         * @param {margin} [margin] 标记DOM的margin值，一般用于canvas
          * @return {jQuery Object} 包括预览的标记对话框jQuery对象
          */
 
-        function showMarkDialog(mousePos, $markObj) {
+        function showMarkDialog(mousePos, $markObj, margin) {
             var markDialogId = options.markDialogId;
             var $markContainer = $(
                 '<div class="mark-container">' +
@@ -319,6 +401,10 @@
             //         '</div>');
             // }
             if ($markObj !== undefined) {
+                $markObj.css({
+                    'margin-left': -$markObj.width() / 2 + 'px',
+                    'margin-top': -$markObj.height() + (margin ? margin : 0) + 'px'
+                });
                 $markContainer.append($markObj);
             }
             $markContainer.append($markDialog.show());
