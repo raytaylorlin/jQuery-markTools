@@ -30,9 +30,9 @@
             });
 
             //创建光标cursor的div并隐藏
-            this.$cursor = $('<div class="' + attr.classCursor + '"></div>')
+            this.$cursor = divWithClass(attr.classCursor);
             this.$cursor.hide();
-            this.$callObject.append(this.$cursor);
+            this.$callObject.after(this.$cursor);
 
             //按下按钮触发的方法
             // this.onPress = attr.onPress;
@@ -61,7 +61,10 @@
             var $cursor = this.$cursor;
             $cursor.show();
             this.$callObject.bind('mousemove', function(e) {
-                var offset = getMouseOffset($(this), e);
+                var offset = {
+                    left: e.clientX,
+                    top: e.clientY
+                };
                 $cursor.css(offset);
             });
 
@@ -198,7 +201,7 @@
             showFilter: true,
 
             //TODO: 考虑引入一个marktools-template的div专门存放模板
-            markDialogId: 'mark-dialog',
+            markDialogClass: 'mark-dialog',
             markBoxClass: 'mark-box',
             onSaveMark: null
         },
@@ -218,7 +221,7 @@
                 }
             },
             toolButtonContainer,
-            $markDialog;
+            $markDialogTemplate;
 
 
         function init() {
@@ -232,7 +235,7 @@
                 btnPin.onPress = function() {
                     $callObject.bind('click', function(e) {
                         //创建静态图钉
-                        var $staticPin = divWithClass('static-mark static-pin');
+                        var $staticPin = divWithClass('static-pin');
                         $callObject.append($staticPin);
                         //获取鼠标偏移量，显示并定位对话框
                         var offset = getMouseOffset($(this), e);
@@ -332,13 +335,14 @@
                 toolButtonContainer.add(btnRegion);
             }
 
-            //初始化mark对话框
-            //options.markDialogId为用户自定义的对话框DOM的Id
-            if ($('#' + options.markDialogId).exists()) {
-                $markDialog = $('#' + options.markDialogId);
+            //初始化mark对话框模板
+            //后续生成的对话框均由此模板clone而成
+            //options.markDialogClass为用户自定义的对话框DOM模板的class
+            if ($('.' + options.markDialogClass).exists()) {
+                $markDialogTemplate = $('.' + options.markDialogClass);
             } else {
-                $markDialog = $(
-                    '<div id="' + options.markDialogId + '">' +
+                $markDialogTemplate = $(
+                    '<div class="' + options.markDialogClass + '">' +
                     '<div class="mark-dialog-control">' +
                     '<label for="title">Title</label>' +
                     '<input type="text" name="title"/>' +
@@ -351,25 +355,34 @@
                     '<a class="mark-dialog-button mark-dialog-button-save" href="javascript:void(0)">Save</a>' +
                     '<div class="clearfix"></div>' +
                     '</div>');
-                //Cancel按钮事件
-                $markDialog.find('.mark-dialog-button-cancel').bind('click', function() {
-                    $(this).parent().hide();
-                    $markDialog.prev().remove();
+                $callObject.after($markDialogTemplate);
+            }
+            $markDialogTemplate.hide();
+            //Cancel按钮事件
+            $markDialogTemplate.on('click', '.mark-dialog-button-cancel',
+                function() {
+                    //移除整个mark-container
+                    //$(this)为按钮，上2级父节点即mark-container
+                    $(this).parent().parent().remove();
                 });
-                //Save按钮事件
-                $markDialog.find('.mark-dialog-button-save').bind('click', function() {
-                    var $title = $markDialog.find('input[name=title]'),
+            //Save按钮事件
+            $markDialogTemplate.on('click', '.mark-dialog-button-save',
+                function() {
+                    var $markDialog = $(this).parent(),
+                        $markContainer = $markDialog.parent(),
+                        $title = $markDialog.find('input[name=title]'),
                         $description = $markDialog.find('textarea'),
                         title = $title.val(),
                         description = $description.val(),
-                        $markContainer = $markDialog.parent(),
+
                         $markBox,
                         $markObject;
                     if (title.trim() === '' || description.trim === '') {
-                        console.log('Title or description cannot be empty.');
+                        alert('Title or description cannot be empty.');
                         return;
                     }
-                    $markDialog.hide();
+                    $markObject = $markDialog.prev();
+                    $markDialog.remove();
                     $title.val('');
                     $description.val('');
                     //TODO: 由用户指定的单击Save按钮事件
@@ -388,13 +401,11 @@
                         $markBox.find('.mark-box-description').html(description);
                         $markContainer.append($markBox);
                     }
-                    $markObject = $markContainer.find('.static-mark');
+
                     $markObject.bind('click', function() {
                         $markBox.toggle();
                     });
                 });
-            }
-            $markDialog.hide();
         }
 
         /**
@@ -409,19 +420,11 @@
          */
 
         function showMarkDialog(mousePos, $markObj, margin) {
-            var markDialogId = options.markDialogId;
+            var $markDialog = $('.' + options.markDialogClass).first();
             var $markContainer = $(
                 '<div class="mark-container">' +
                 '</div>');
             $markContainer.attr('id', "mark-container-" + Math.floor(Math.random() * 10000000));
-            //     $markContainer = $('.mark-container');
-            // if ($markContainer.exists()) {
-            //     $markContainer.show();
-            // } else {
-            //     $markContainer = $(
-            //         '<div class="mark-container">' +
-            //         '</div>');
-            // }
             if ($markObj !== undefined) {
                 $markObj.css({
                     'margin-left': -$markObj.width() / 2 + 'px',
@@ -429,7 +432,7 @@
                 });
                 $markContainer.append($markObj);
             }
-            $markContainer.append($markDialog.show());
+            $markContainer.append($markDialog.clone(true).show());
 
 
             setOffset($markContainer, mousePos);
