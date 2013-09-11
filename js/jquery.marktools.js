@@ -61,7 +61,10 @@
             var $cursor = this.$cursor;
             $cursor.show();
             this.$callObject.bind('mousemove', function(e) {
-                var offset = {left: e.clientX, top: e.clientY};
+                var offset = {
+                    left: e.clientX,
+                    top: e.clientY
+                };
                 $cursor.css(offset);
             });
 
@@ -329,49 +332,53 @@
                     '<a class="mark-dialog-button mark-dialog-button-save" href="javascript:void(0)">Save</a>' +
                     '<div class="clearfix"></div>' +
                     '</div>');
-                //Cancel按钮事件
-                $markDialog.find('.mark-dialog-button-cancel').bind('click', function() {
-                    $(this).parent().hide();
-                    $markDialog.prev().remove();
-                });
-                //Save按钮事件
-                $markDialog.find('.mark-dialog-button-save').bind('click', function() {
-                    var $title = $markDialog.find('input[name=title]'),
-                        $description = $markDialog.find('textarea'),
-                        title = $title.val(),
-                        description = $description.val(),
-                        $markContainer = $markDialog.parent(),
-                        $markBox,
-                        $markObject;
-                    if (title.trim() === '' || description.trim === '') {
-                        console.log('Title or description cannot be empty.');
-                        return;
-                    }
-                    $markDialog.hide();
-                    $title.val('');
-                    $description.val('');
-                    //TODO: 由用户指定的单击Save按钮事件
-                    if (options.onSaveMark) {
-                        options.onSaveMark($markContainer);
-                    } else {
-                        //创建新的markBox
-                        $markBox = $(
-                            '<div class="mark-box">' +
-                            '<p class="mark-box-title"></p>' +
-                            '<p class="mark-box-description"></p>' +
-                            '</div>'
-                        );
-                        //填充内容
-                        $markBox.find('.mark-box-title').html(title);
-                        $markBox.find('.mark-box-description').html(description);
-                        $markContainer.append($markBox);
-                    }
-                    $markObject = $markContainer.find('.static-mark');
-                    $markObject.bind('click', function() {
-                        $markBox.toggle();
-                    });
-                });
+                $callObject.after($markDialog);
+
             }
+            //Cancel按钮事件
+            $markDialog.find('.mark-dialog-button-cancel').bind('click', function() {
+                //移除mark
+                $markDialog.prev().remove();
+                $markDialog.hide();
+                // $(this).parent().remove();
+            });
+            //Save按钮事件
+            $markDialog.find('.mark-dialog-button-save').bind('click', function() {
+                var $title = $markDialog.find('input[name=title]'),
+                    $description = $markDialog.find('textarea'),
+                    title = $title.val(),
+                    description = $description.val(),
+                    $markContainer = $markDialog.parent(),
+                    $markBox,
+                    $markObject;
+                if (title.trim() === '' || description.trim === '') {
+                    console.log('Title or description cannot be empty.');
+                    return;
+                }
+                $markDialog.hide();
+                $title.val('');
+                $description.val('');
+                //TODO: 由用户指定的单击Save按钮事件
+                if (options.onSaveMark) {
+                    options.onSaveMark($markContainer);
+                } else {
+                    //创建新的markBox
+                    $markBox = $(
+                        '<div class="mark-box">' +
+                        '<p class="mark-box-title"></p>' +
+                        '<p class="mark-box-description"></p>' +
+                        '</div>'
+                    );
+                    //填充内容
+                    $markBox.find('.mark-box-title').html(title);
+                    $markBox.find('.mark-box-description').html(description);
+                    $markContainer.append($markBox);
+                }
+                $markObject = $markContainer.find('.static-mark');
+                $markObject.bind('click', function() {
+                    $markBox.toggle();
+                });
+            });
             $markDialog.hide();
         }
 
