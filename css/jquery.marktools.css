@@ -86,7 +86,7 @@
 }
 
 /* 标记对话框 */
-#mark-dialog, .mark-box {
+#mark-dialog, .mark-box, .style-picker {
     width: 200px;
     position: relative;
     z-index: 10;
@@ -167,56 +167,8 @@
     clear: both;
 }
 
-#FindBtn {
-  background-image: url('../images/icon_action.png');
-  background-position:0px -80px;
-}
-#FindBtn.active{
-  background-image: url('../images/icon_action.png');
-  background-position:-80px -80px;
-}
-
-
-/*鼠标指针*/
-.pointer{
-  position: absolute;
-  display: none;
-}
-/*info指针*/
-#info_pointer{
-  width: 18px;
-  height: 18px;
-  background-image: url('../images/icon_action.png');
-  background-position:-13px -632px;
-}
-
-/*Pin指针*/
-#pin_pointer{
-  width: 30px;
-  height: 32px;
-  background-image: url('../images/icon_action.png');
-  background-position:-42px -449px;
-}
-/*region指针*/
-#region_pointer{
-  width: 38px;
-  height: 40px;
-  background-image: url('../images/icon_action.png');
-  background-position:0px -450px;
-}
-
-/*pin标示图标*/
-.pin{
-  position: absolute;
-  width: 24px;
-  height: 38px;
-  background-image: url('../images/icon_action.png');
-  background-position:0px -497px;
-
-}
-.pin:hover{
-  background-image: url('../images/icon_action.png');
-  background-position:-36px -497px;  
+.style-picker {
+    z-index: 25;
 }
 
 

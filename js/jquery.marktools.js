@@ -156,6 +156,31 @@
         return ToolButtonContainer;
     })();
 
+    var StylePicker = (function() {
+        var StylePicker = function() {
+            this.$dom = $(
+                '<div class="style-picker">' +
+                '<div class="mark-dialog-control">' +
+                '<label>Color</label><input type="text" class="color" name="color"/>' +
+                '<label>Width</label><input type="text" name="width"/>' +
+                // '<input type="button" value="OK"/>' +
+                '</div>' +
+                '</div>');
+            this.$dom.on('change', 'input[name=color]', function(e){
+                console.log($(this).val());
+            });
+            this.$dom.on('change', 'input[name=width]', function(e){
+                console.log($(this).val());
+            });
+        };
+
+        StylePicker.prototype.bind = function() {
+            jscolor.bind();
+        }
+
+        return StylePicker;
+    })();
+
     /**
      * 给所有jquery对象新增一个查询是否存在的方法
      * @return {Boolean} 查找的jquery对象是否存在
@@ -223,15 +248,20 @@
 
             //初始化Region按钮
             if (options.showRegion) {
-                var btnRegion = new ToolButton(toolsMap['region'], $this);
+                var btnRegion = new ToolButton(toolsMap['region'], $this),
+                    stylePicker = new StylePicker();
                 btnRegion.onPress = function() {
                     var width = $callObject.width(),
                         height = $callObject.height(),
                         startDrag = false,
                         canvasMargin = 10;
+
+                    btnRegion.$dom.after(stylePicker.$dom);
+                    stylePicker.bind();
+
                     var $newCanvas = $('<canvas></canvas>').attr('class', 'draw-canvas')
                         .attr('width', width).attr('height', height);
-                    $callObject.append($newCanvas);
+                    // $callObject.append($newCanvas);
 
                     var context = $newCanvas.get(0).getContext("2d");
 
@@ -298,14 +328,6 @@
                                 $newCanvas.addClass('static-canvas');
                             }
                         });
-
-                    $callObject.bind('click', function(e) {
-                        //创建静态图钉
-                        var $staticRegion = divWithClass('static-mark static-shape');
-
-
-
-                    });
                 };
                 toolButtonContainer.add(btnRegion);
             }
