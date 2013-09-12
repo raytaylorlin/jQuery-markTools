@@ -86,7 +86,7 @@
 }
 
 /* 标记对话框 */
-#mark-dialog, .mark-box, .style-picker {
+.mark-dialog, .mark-box, .style-picker {
     width: 200px;
     position: relative;
     z-index: 15;
@@ -141,7 +141,7 @@
     font-family: Helvetica, Arial, sans-serif;
 }
 
-.mark-dialog-button {
+.mark-dialog-button, .style-picker-button {
     display: inline-block;
     padding: 4px 8px;
     line-height: 20px;

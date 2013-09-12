@@ -87,11 +87,6 @@
             this.container.activeType = 'none';
         }
 
-        function createCursor($callObject, cursorId) {
-
-        }
-
-
         return ToolButton;
     })();
 
@@ -160,20 +155,34 @@
     })();
 
     var StylePicker = (function() {
-        var StylePicker = function() {
+        var StylePicker = function(callObject, callback) {
+            //颜色
+            this.color = '#ABCDEF';
+            //笔宽
+            this.width = 1;
+            this.$callObject = callObject;
             this.$dom = $(
                 '<div class="style-picker">' +
                 '<div class="mark-dialog-control">' +
                 '<label>Color</label><input type="text" class="color" name="color"/>' +
-                '<label>Width</label><input type="text" name="width"/>' +
-                // '<input type="button" value="OK"/>' +
                 '</div>' +
+                '<div class="mark-dialog-control">' +
+                '<label>Width</label><input type="text" name="width" value="1"/>' +
+                '</div>' +
+                '<a class="style-picker-button">OK</a>' +
+                '<div class="clearfix"></div>' +
                 '</div>');
-            this.$dom.on('change', 'input[name=color]', function(e){
-                console.log($(this).val());
-            });
-            this.$dom.on('change', 'input[name=width]', function(e){
-                console.log($(this).val());
+
+            var _this = this;
+            this.$dom.on('click', '.style-picker-button', function() {
+                //获取颜色值和笔宽值，并隐藏面板
+                var $dom = $(this).parent(),
+                    drawingCanvas = new DrawingCanvas(_this.$callObject, callback);
+                drawingCanvas.color = '#' + $dom.find('input[name=color]').val();
+                drawingCanvas.penWidth = parseInt($dom.find('input[name=width]').val());
+                $dom.hide();
+
+                _this.$callObject.append(drawingCanvas.$dom);
             });
         };
 
@@ -182,6 +191,87 @@
         }
 
         return StylePicker;
+    })();
+
+    var DrawingCanvas = (function() {
+        var DrawingCanvas = function($callObject, onFinishDraw) {
+            var canvas;
+            //canvas宽高
+            this.width = $callObject.width();
+            this.height = $callObject.height();
+            //画笔颜色
+            this.color = '#ABCDEF';
+            //笔宽
+            this.lineWidth = 1;
+            //canvas边距
+            this.margin = 10;
+            //是否开始在canvas上拖拽的标记
+            this.startDrag = false;
+            this.onFinishDraw = onFinishDraw;
+            this.$callObject = $callObject;
+
+            this.$dom = canvas = $('<canvas></canvas>')
+                .attr('class', 'draw-canvas')
+                .attr('width', this.width)
+                .attr('height', this.height);
+            $callObject.append(this.$dom);
+
+            this.context = canvas.get(0).getContext("2d");
+            this.clear();
+            // this.context.fillStyle = "rgba(0,0,0,0)";
+            // this.context.fillRect(0, 0, this.width, this.height);
+            var selection = {
+                x1: 0,
+                y1: 0,
+                x2: 0,
+                y2: 0
+            },
+                _this = this;
+
+            canvas.mousedown(
+                function(e) {
+                    if (!_this.startDrag) {
+                        _this.startDrag = true;
+                        selection.x1 = e.offsetX;
+                        selection.y1 = e.offsetY;
+                    }
+                }).mousemove(
+                function(e) {
+                    if (_this.startDrag) {
+                        _this.clear();
+                        selection.x2 = e.offsetX;
+                        selection.y2 = e.offsetY;
+                        _this.context.lineWidth = _this.penWidth;
+                        _this.context.strokeStyle = _this.color;
+                        _this.context.strokeRect(selection.x1, selection.y1,
+                            selection.x2 - selection.x1, selection.y2 - selection.y1);
+                    }
+                }).mouseup(
+                function(e) {
+                    if (_this.startDrag) {
+                        _this.startDrag = false;
+                        // var regionId = 'region_' + regionCount;
+                        // regionCount += 1;
+                        canvas.attr('id', 'hehe');
+                        canvas.attr('width', selection.x2 - selection.x1 + 20).
+                        attr('height', selection.y2 - selection.y1 + 20);
+                        _this.context.clearRect();
+                        _this.context.strokeStyle = _this.color;
+                        _this.context.strokeRect(_this.margin, _this.margin,
+                            selection.x2 - selection.x1, selection.y2 - selection.y1);
+
+                        if (_this.onFinishDraw) {
+                            _this.onFinishDraw(_this, e);
+                        }
+                    }
+                });
+        };
+
+        DrawingCanvas.prototype.clear = function() {
+            this.context.clearRect(0, 0, this.width, this.height);
+        };
+
+        return DrawingCanvas;
     })();
 
     /**
@@ -252,7 +342,23 @@
             //初始化Region按钮
             if (options.showRegion) {
                 var btnRegion = new ToolButton(toolsMap['region'], $this),
-                    stylePicker = new StylePicker();
+                    stylePicker = new StylePicker($this, function(drawingCanvas, e) {
+                        //获取鼠标偏移量，显示并定位对话框
+                        var offset = getMouseOffset($callObject, e);
+                        var canvas = drawingCanvas.$dom;
+                        var markDialog = showMarkDialog({
+                            left: offset.left + drawingCanvas.margin - canvas.width() / 2,
+                            top: offset.top
+                        }, canvas, drawingCanvas.margin);
+                        drawingCanvas.$callObject.append(markDialog);
+                        //弹起所有按钮
+                        toolButtonContainer.popupAll();
+                        
+                        canvas.unbind();
+                        //将canvas转换为静态canvas（绘画canvas拥有相对最高的z-index）
+                        canvas.removeClass('draw-canvas');
+                        canvas.addClass('static-canvas');
+                    });
                 btnRegion.onPress = function() {
                     var width = $callObject.width(),
                         height = $callObject.height(),
@@ -262,75 +368,7 @@
                     btnRegion.$dom.after(stylePicker.$dom);
                     stylePicker.bind();
 
-                    var $newCanvas = $('<canvas></canvas>').attr('class', 'draw-canvas')
-                        .attr('width', width).attr('height', height);
-                    // $callObject.append($newCanvas);
 
-                    var context = $newCanvas.get(0).getContext("2d");
-
-                    function clear() {
-                        context.clearRect(0, 0, width, height);
-                    }
-
-                    context.fillStyle = "rgba(0,0,0,0)";
-                    context.fillRect(0, 0, width, height);
-                    var selection = {
-                        x1: 0,
-                        y1: 0,
-                        x2: 0,
-                        y2: 0
-                    };
-
-                    $newCanvas.mousedown(
-                        function(e) {
-                            if (!startDrag) {
-                                startDrag = true;
-                                selection.x1 = e.offsetX;
-                                selection.y1 = e.offsetY;
-
-                            }
-                        }).mousemove(
-                        function(e) {
-                            if (startDrag) {
-                                clear();
-                                selection.x2 = e.offsetX;
-                                selection.y2 = e.offsetY;
-                                context.lineWidth = 1;
-                                context.strokeStyle = "rgba(0,255,255,1)";
-                                context.strokeRect(selection.x1, selection.y1,
-                                    selection.x2 - selection.x1, selection.y2 - selection.y1);
-                            }
-                        }).mouseup(
-                        function(e) {
-                            if (startDrag) {
-                                startDrag = false;
-                                // var regionId = 'region_' + regionCount;
-                                // regionCount += 1;
-                                $newCanvas.attr('id', 'hehe');
-                                $newCanvas.attr('width', selection.x2 - selection.x1 + 20).
-                                attr('height', selection.y2 - selection.y1 + 20);
-                                context.clearRect();
-                                context.strokeStyle = "rgba(0,255,255,1)";
-                                context.strokeRect(canvasMargin, canvasMargin,
-                                    selection.x2 - selection.x1, selection.y2 - selection.y1);
-
-
-
-                                //获取鼠标偏移量，显示并定位对话框
-                                var offset = getMouseOffset($callObject, e);
-                                var markDialog = showMarkDialog({
-                                    left: offset.left + canvasMargin - $newCanvas.width() / 2,
-                                    top: offset.top
-                                }, $newCanvas, canvasMargin);
-                                $callObject.append(markDialog);
-                                //弹起所有按钮
-                                toolButtonContainer.popupAll();
-                                $newCanvas.unbind();
-                                //将canvas转换为静态canvas（绘画canvas拥有相对最高的z-index）
-                                $newCanvas.removeClass('draw-canvas');
-                                $newCanvas.addClass('static-canvas');
-                            }
-                        });
                 };
                 toolButtonContainer.add(btnRegion);
             }
@@ -408,6 +446,7 @@
                 });
         }
 
+
         /**
          * 显示标记对话框和预览的标记
          * 对话框如果不存在会先创建，否则显示已有的对话框
@@ -438,8 +477,6 @@
             setOffset($markContainer, mousePos);
             return $markContainer;
         }
-
-
         options = options || {};
         $.extend(options, defaultOptions);
 
