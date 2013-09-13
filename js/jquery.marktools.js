@@ -116,7 +116,6 @@
             this.$dom = divWithClass('marktools-container');
             this.$callObject = $callObject;
 
-
             //调整位置
             var _this = this;
             var adjust = function() {
@@ -175,7 +174,7 @@
     var StylePicker = (function() {
         var StylePicker = function(callObject) {
             //颜色
-            this.color = '#ABCDEF';
+            this.color = '#000000';
             //笔宽
             this.width = 1;
             this.$callObject = callObject;
@@ -200,7 +199,7 @@
             this.$dom.one('click', '.style-picker-button', function() {
                 //获取颜色值和笔宽值，并隐藏面板
                 var $dom = $(this).parent(),
-                    drawingCanvas = new DrawingCanvas(_this.$callObject, onFinishDraw);
+                    drawingCanvas = new DrawingCanvas(_this.$callObject, null, onFinishDraw);
                 drawingCanvas.color = '#' + $dom.find('input[name=color]').val();
                 drawingCanvas.penWidth = parseInt($dom.find('input[name=width]').val());
                 $dom.hide();
@@ -213,22 +212,24 @@
     })();
 
     var DrawingCanvas = (function() {
-        var DrawingCanvas = function($callObject, onFinishDraw) {
+        var DrawingCanvas = function($callObject, onDraw, onFinishDraw) {
             var canvas;
             //canvas宽高
             this.width = $callObject.width();
             this.height = $callObject.height();
             //画笔颜色
-            this.color = '#ABCDEF';
+            this.color = '#000000';
             //笔宽
             this.lineWidth = 1;
             //canvas边距
             this.margin = 10;
             //是否开始在canvas上拖拽的标记
             this.startDrag = false;
+            this.onDraw = onDraw;
             this.onFinishDraw = onFinishDraw;
             this.$callObject = $callObject;
 
+            //初始化canvas并添加到调用插件的主容器
             this.$dom = canvas = $('<canvas></canvas>')
                 .attr('class', 'draw-canvas')
                 .attr('width', this.width)
@@ -236,20 +237,20 @@
             $callObject.append(this.$dom);
 
             this.context = canvas.get(0).getContext("2d");
-            this.clear();
-            // this.context.fillStyle = "rgba(0,0,0,0)";
-            // this.context.fillRect(0, 0, this.width, this.height);
+            
             var selection = {
                 x1: 0,
                 y1: 0,
                 x2: 0,
                 y2: 0
-            },
-                _this = this;
+            }, _this = this;
 
+            this.clear();
+            //绑定canvas的鼠标事件
             canvas.mousedown(
                 function(e) {
                     if (!_this.startDrag) {
+                        //开始拖动
                         _this.startDrag = true;
                         selection.x1 = e.offsetX;
                         selection.y1 = e.offsetY;
@@ -257,33 +258,39 @@
                 }).mousemove(
                 function(e) {
                     if (_this.startDrag) {
-                        _this.clear();
                         selection.x2 = e.offsetX;
                         selection.y2 = e.offsetY;
-                        _this.context.lineWidth = _this.penWidth;
-                        _this.context.strokeStyle = _this.color;
+
+                        _this.clear();
+                        _this.setStyle(_this.color, _this.penWidth);
                         _this.context.strokeRect(selection.x1, selection.y1,
                             selection.x2 - selection.x1, selection.y2 - selection.y1);
                     }
                 }).mouseup(
                 function(e) {
                     if (_this.startDrag) {
+                        var width = selection.x2 - selection.x1,
+                            height = selection.y2 - selection.y1;
+
                         _this.startDrag = false;
-                        // var regionId = 'region_' + regionCount;
-                        // regionCount += 1;
-                        canvas.attr('id', 'hehe');
-                        canvas.attr('width', selection.x2 - selection.x1 + 20).
-                        attr('height', selection.y2 - selection.y1 + 20);
-                        _this.context.clearRect();
-                        _this.context.strokeStyle = _this.color;
+                        canvas.attr('width', width + _this.margin * 2).
+                        attr('height', height + _this.margin * 2);
+
+                        _this.clear();
+                        _this.setStyle(_this.color, _this.penWidth);
                         _this.context.strokeRect(_this.margin, _this.margin,
-                            selection.x2 - selection.x1, selection.y2 - selection.y1);
+                            width, height);
 
                         if (_this.onFinishDraw) {
                             _this.onFinishDraw(_this, e);
                         }
                     }
                 });
+        };
+
+        DrawingCanvas.prototype.setStyle = function(color, penWidth) {
+            this.context.strokeStyle = color;
+            this.context.lineWidth = penWidth;
         };
 
         DrawingCanvas.prototype.clear = function() {
