@@ -19,6 +19,8 @@
             this.container = null;
             //激活时的鼠标指针
             this.activeCursor = null;
+            //样式选择器
+            this.stylePicker = null;
 
             //调用插件的jquery对象
             this.$callObject = $callObject;
@@ -54,6 +56,11 @@
             this.$dom.removeClass(this.attr.classRest);
             this.$dom.addClass(this.attr.classActive);
 
+            //若样式选择器存在则显示
+            if (this.stylePicker) {
+                this.stylePicker.$dom.show();
+            }
+
             //设置按钮组的状态
             this.container.changeType(this.type);
 
@@ -80,11 +87,22 @@
             this.$dom.removeClass(this.attr.classActive);
             this.$dom.addClass(this.attr.classRest);
 
+            if (this.stylePicker) {
+                this.stylePicker.$dom.hide();
+            }
+
             //隐藏光标
             this.$cursor.hide();
             this.$callObject.unbind();
 
             this.container.activeType = 'none';
+        }
+
+        ToolButton.prototype.addStylePicker = function(stylePicker) {
+            if (this.stylePicker === null) {
+                this.stylePicker = stylePicker;
+                this.$dom.after(stylePicker.$dom);
+            }
         }
 
         return ToolButton;
@@ -172,8 +190,6 @@
                 '<a class="style-picker-button">OK</a>' +
                 '<div class="clearfix"></div>' +
                 '</div>');
-
-
         };
 
         StylePicker.prototype.bind = function(onFinishDraw) {
@@ -181,7 +197,7 @@
             jscolor.bind();
 
             var _this = this;
-            this.$dom.on('click', '.style-picker-button', function() {
+            this.$dom.one('click', '.style-picker-button', function() {
                 //获取颜色值和笔宽值，并隐藏面板
                 var $dom = $(this).parent(),
                     drawingCanvas = new DrawingCanvas(_this.$callObject, onFinishDraw);
@@ -336,7 +352,7 @@
                         var markDialog = showMarkDialog(offset, $staticPin);
                         $(this).append(markDialog);
                         //弹起所有按钮
-                        toolButtonContainer.popupAll();
+                        btnPin.popup();
                     });
                 };
                 toolButtonContainer.add(btnPin);
@@ -346,29 +362,29 @@
             if (options.showRegion) {
                 var btnRegion = new ToolButton(toolsMap['region'], $this),
                     stylePicker = new StylePicker($this);
-                btnRegion.onPress = function() {
-                    var width = $callObject.width(),
-                        height = $callObject.height(),
-                        startDrag = false,
-                        canvasMargin = 10;
 
-                    btnRegion.$dom.after(stylePicker.$dom);
+                btnRegion.onPress = function() {
+                    btnRegion.addStylePicker(stylePicker);
+                    //绑定绘画结束事件
                     stylePicker.bind(function(drawingCanvas, e) {
                         //获取鼠标偏移量，显示并定位对话框
-                        var offset = getMouseOffset($callObject, e);
-                        var canvas = drawingCanvas.$dom;
-                        var markDialog = showMarkDialog({
-                            left: offset.left + drawingCanvas.margin - canvas.width() / 2,
-                            top: offset.top
-                        }, canvas, drawingCanvas.margin);
-                        drawingCanvas.$callObject.append(markDialog);
-                        //弹起所有按钮
-                        toolButtonContainer.popupAll();
+                        var offset = getMouseOffset($callObject, e),
+                            $canvas = drawingCanvas.$dom,
+                            margin = drawingCanvas.margin;
 
-                        canvas.unbind();
+                        var markDialog = showMarkDialog({
+                            left: offset.left + margin - $canvas.width() / 2,
+                            top: offset.top
+                        }, $canvas, drawingCanvas.margin);
+
+                        $callObject.append(markDialog);
+                        //弹起按钮
+                        btnRegion.popup();
+
+                        $canvas.unbind();
                         //将canvas转换为静态canvas（绘画canvas拥有相对最高的z-index）
-                        canvas.removeClass('draw-canvas');
-                        canvas.addClass('static-canvas');
+                        $canvas.removeClass('draw-canvas');
+                        $canvas.addClass('static-canvas');
                     });
                 };
                 toolButtonContainer.add(btnRegion);
