@@ -237,7 +237,7 @@
             $callObject.append(this.$dom);
 
             this.context = canvas.get(0).getContext("2d");
-            
+
             var selection = {
                 x1: 0,
                 y1: 0,
@@ -397,13 +397,8 @@
                 toolButtonContainer.add(btnRegion);
             }
 
-            //初始化mark对话框模板
-            //后续生成的对话框均由此模板clone而成
-            //options.markDialogClass为用户自定义的对话框DOM模板的class
-            if ($('.' + options.markDialogClass).exists()) {
-                $markDialogTemplate = $('.' + options.markDialogClass);
-            } else {
-                $markDialogTemplate = $(
+            var $marktoolsTemplate = $('#marktools-template'),
+                markDialogTemplateHtml =
                     '<div class="' + options.markDialogClass + '">' +
                     '<div class="mark-dialog-control">' +
                     '<label for="title">Title</label>' +
@@ -416,10 +411,27 @@
                     '<a class="mark-dialog-button mark-dialog-button-cancel" href="javascript:void(0)">Cancel</a>' +
                     '<a class="mark-dialog-button mark-dialog-button-save" href="javascript:void(0)">Save</a>' +
                     '<div class="clearfix"></div>' +
-                    '</div>');
-                $callObject.after($markDialogTemplate);
+                    '</div>',
+                $markDialogTemplate = $(markDialogTemplateHtml).hide();
+            //若模板不存在则创建一个默认的模板div
+            if (!$marktoolsTemplate.exists()) {
+                $marktoolsTemplate = $('<div id="marktools-template"></div>');
+                $('body').append($marktoolsTemplate);
+
+                $marktoolsTemplate.append($markDialogTemplate);
+            } else {
+                //初始化mark对话框模板
+                //后续生成的对话框均由此模板clone而成
+                //options.markDialogClass为用户自定义的对话框DOM模板的class
+                if (!$('.' + options.markDialogClass).exists()) {
+                    //插件默认的对话框
+                    $marktoolsTemplate.append($markDialogTemplate);
+                } else {
+                    //用户自定义的对话框
+                    $markDialogTemplate = $('.' + options.markDialogClass);
+                }
             }
-            $markDialogTemplate.hide();
+
             //Cancel按钮事件
             $markDialogTemplate.on('click', '.mark-dialog-button-cancel',
                 function() {
@@ -449,7 +461,7 @@
                     $description.val('');
                     //TODO: 由用户指定的单击Save按钮事件
                     if (options.onSaveMark) {
-                        options.onSaveMark($markContainer);
+                        options.onSaveMark($markContainer, $markBox);
                     } else {
                         //创建新的markBox
                         $markBox = $(
