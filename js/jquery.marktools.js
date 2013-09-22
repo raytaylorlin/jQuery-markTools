@@ -321,6 +321,7 @@
             markBoxClass: 'mark-box',
             onSaveMark: null
         },
+            currentOptions = defaultOptions,
             currentFunc = 'none',
             toolsMap = {
                 pin: {
@@ -346,7 +347,7 @@
 
             toolButtonContainer = new ToolButtonContainer($this);
             //初始化Pin按钮
-            if (options.showPin) {
+            if (currentOptions.showPin) {
                 var btnPin = new ToolButton(toolsMap['pin'], $this);
                 btnPin.onPress = function() {
                     $callObject.bind('click', function(e) {
@@ -366,7 +367,7 @@
             }
 
             //初始化Region按钮
-            if (options.showRegion) {
+            if (currentOptions.showRegion) {
                 var btnRegion = new ToolButton(toolsMap['region'], $this),
                     stylePicker = new StylePicker($this);
 
@@ -399,7 +400,7 @@
 
             var $marktoolsTemplate = $('#marktools-template'),
                 markDialogTemplateHtml =
-                    '<div class="' + options.markDialogClass + '">' +
+                    '<div class="' + currentOptions.markDialogClass + '">' +
                     '<div class="mark-dialog-control">' +
                     '<label for="title">Title</label>' +
                     '<input type="text" name="title"/>' +
@@ -422,13 +423,13 @@
             } else {
                 //初始化mark对话框模板
                 //后续生成的对话框均由此模板clone而成
-                //options.markDialogClass为用户自定义的对话框DOM模板的class
-                if (!$('.' + options.markDialogClass).exists()) {
+                //currentOptions.markDialogClass为用户自定义的对话框DOM模板的class
+                if (!$('.' + currentOptions.markDialogClass).exists()) {
                     //插件默认的对话框
                     $marktoolsTemplate.append($markDialogTemplate);
                 } else {
                     //用户自定义的对话框
-                    $markDialogTemplate = $('.' + options.markDialogClass);
+                    $markDialogTemplate = $('.' + currentOptions.markDialogClass);
                 }
             }
 
@@ -460,8 +461,8 @@
                     $title.val('');
                     $description.val('');
                     //TODO: 由用户指定的单击Save按钮事件
-                    if (options.onSaveMark) {
-                        options.onSaveMark($markContainer, $markBox);
+                    if (currentOptions.onSaveMark) {
+                        currentOptions.onSaveMark($markContainer, $markBox);
                     } else {
                         //创建新的markBox
                         $markBox = $(
@@ -495,7 +496,7 @@
          */
 
         function showMarkDialog(mousePos, $markObj, margin) {
-            var $markDialog = $('.' + options.markDialogClass).first();
+            var $markDialog = $('.' + currentOptions.markDialogClass).first();
             var $markContainer = $(
                 '<div class="mark-container">' +
                 '</div>');
@@ -513,8 +514,8 @@
             setOffset($markContainer, mousePos);
             return $markContainer;
         }
-        options = options || {};
-        $.extend(options, defaultOptions);
+
+        $.extend(currentOptions, options);
 
         return this.each(init);
     };
