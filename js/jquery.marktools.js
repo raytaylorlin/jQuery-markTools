@@ -34,7 +34,7 @@
             //创建光标cursor的div并隐藏
             this.$cursor = divWithClass(attr.classCursor);
             this.$cursor.hide();
-            this.$callObject.after(this.$cursor);
+            $('body').append(this.$cursor);
 
             //按下按钮触发的方法
             // this.onPress = attr.onPress;
@@ -327,7 +327,7 @@
                     type: 'pin',
                     classRest: 'btn-marktools-pin',
                     classActive: 'btn-marktools-pin-active',
-                    classCursor: 'cursor-pin',
+                    classCursor: 'cursor-pin'
                 },
                 region: {
                     type: 'region',
