@@ -67,7 +67,7 @@
 
 .static-pin {
     z-index: 12;
-    position: relative;
+    position: absolute;
     width: 14px;
     height: 24px;
     background-image: url('../images/icon_pin.png');
@@ -88,7 +88,7 @@
 /* 标记对话框 */
 .mark-dialog, .mark-box, .style-picker {
     width: 200px;
-    position: relative;
+    position: absolute;
     z-index: 15;
     padding: 10px;
     background-color: #EBEBEB;

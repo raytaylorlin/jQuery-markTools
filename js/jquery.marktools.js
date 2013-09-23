@@ -476,20 +476,16 @@
                     $markDialog.remove();
                     $title.val('');
                     $description.val('');
-                    //TODO: 由用户指定的单击Save按钮事件
+
                     if (currentOptions.onSaveMark) {
                         currentOptions.onSaveMark($markContainer, $markBox);
-                    } else {
-                        //创建新的markBox
-                        $markBox = $.markTools.createMarkBox($markBoxTemplate, {
-                            title: title,
-                            description: description
-                        });
-                        //填充内容
-                        // $markBox.find('.mark-box-title').html(title);
-                        // $markBox.find('.mark-box-description').html(description);
-                        $markContainer.append($markBox);
                     }
+                    //创建新的markBox
+                    $markBox = $.markTools.createMarkBox($markBoxTemplate, {
+                        title: title,
+                        description: description
+                    });
+                    $markContainer.append($markBox);
 
                     $markObject.bind('click', function() {
                         $markBox.toggle();
@@ -538,7 +534,7 @@
         createMarkBox: function($template, data) {
             var key,
                 $newMarkBox = $template.clone(true).show();
-            for(key in data){
+            for (key in data) {
                 $newMarkBox.find('.' + $template.attr('class') + '-' + key).html(data[key]);
             }
             return $newMarkBox;
