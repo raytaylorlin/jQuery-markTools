@@ -381,12 +381,12 @@
                             $canvas = drawingCanvas.$dom,
                             margin = drawingCanvas.margin;
 
-                        var markDialog = showMarkDialog({
-                            left: offset.left + margin - $canvas.width() / 2,
-                            top: offset.top
-                        }, $canvas, drawingCanvas.margin);
+                        offset.left = offset.left + margin - $canvas.width() / 2;
+                        //创建mark容器
+                        var $markContainer = $.markTools.createMarkContainer('hehe', $canvas, offset, margin);
+                        //显示对话框
+                        $markContainer.append(showMarkDialog(offset));
 
-                        $callObject.append(markDialog);
                         //弹起按钮
                         btnRegion.popup();
 
@@ -549,8 +549,7 @@
 
             $markObj.css({
                 'margin-left': -$markObj.width() / 2 + 'px',
-                'margin-top': -$markObj.height() + 'px'
-                // + (margin ? margin : 0) + 'px'
+                'margin-top': -$markObj.height() + (margin === undefined ? 0 : margin) + 'px'
             });
             return $newContainer;
         },
