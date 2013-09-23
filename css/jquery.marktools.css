@@ -40,11 +40,12 @@
 /* pin鼠标光标 */
 .cursor-pin {
     position: absolute;
-    width: 14px;
-    height: 24px;
-    margin-left: -7px;
-    margin-top: -25px;
-    background-image: url('../images/icon_pin.png');
+    width: 24px;
+    height: 38px;
+    margin-left: -12px;
+    margin-top: -39px;
+    background-image: url('../images/icon_action.png');
+    background-position: 0px -497px;
     background-repeat: no-repeat;
 }
 
@@ -68,16 +69,18 @@
 .static-pin {
     z-index: 12;
     position: absolute;
-    width: 14px;
-    height: 24px;
-    background-image: url('../images/icon_pin.png');
+    width: 24px;
+    height: 38px;
+    background-image: url('../images/icon_action.png');
+    background-position: 0px -497px;
     background-repeat: no-repeat;
 }
 
 .static-pin:hover {
-    background-image: url('../images/icon_pin_hover.png');
-    width: 18px;
-    height: 28px;
+    background-image: url('../images/icon_action.png');
+    background-position: -36px -497px;
+    width: 24px;
+    height: 38px;
 }
 
 .static-canvas {

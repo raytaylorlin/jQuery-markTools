@@ -357,7 +357,7 @@
                         //创建静态图钉
                         var $staticPin = $.markTools.createMark('pin');
                         //创建mark容器
-                        var $markContainer = $.markTools.createMarkContainer('hehe', offset, $staticPin);
+                        var $markContainer = $.markTools.createMarkContainer('hehe', $staticPin, offset);
                         //显示对话框
                         $markContainer.append(showMarkDialog(offset));
                         //弹起所有按钮
@@ -527,21 +527,23 @@
         /**
          * 创建mark容器，该容器包含mark本身和mark-box信息框
          * @param  {String} strId 该容器的id
-         * @param  {Object} offset      [description]
-         * @param  {Number} offset.left
-         * @param  {Number} offset.top
          * @param  {jQuery Object} $markObj    [description]
+         * @param  {Object} [offset]      [description]
+         * @param  {Number} [offset.left]
+         * @param  {Number} [offset.top]
          * @param  {[type]} margin      [description]
          * @return {[type]}             创建好的mark容器
          */
-        createMarkContainer: function(strId, offset, $markObj, margin) {
-            var $newContainer = $('<div class="mark-container"></div>')
+        createMarkContainer: function(strId, $markObj, offset, margin) {
+            var $newContainer = $('<div class="mark-container"></div>'),
                 $callObject = $.markTools.$callObject;
-            $newContainer.attr('id', strId)
-                .css({
+            $newContainer.attr('id', strId);
+            if(offset !== undefined){
+                $newContainer.css({
                     'left': offset.left,
                     'top': offset.top
                 });
+            }
             $newContainer.append($markObj);
             $callObject.append($newContainer);
 
