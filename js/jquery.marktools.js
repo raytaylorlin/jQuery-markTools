@@ -351,14 +351,14 @@
                 var btnPin = new ToolButton(toolsMap['pin'], $this);
                 btnPin.onPress = function() {
                     $callObject.bind('click', function(e) {
-                        //创建静态图钉
-                        var $staticPin = divWithClass('static-pin');
-                        $callObject.append($staticPin);
-                        //获取鼠标偏移量，显示并定位对话框
+                        //获取鼠标偏移量
                         var offset = getMouseOffset($(this), e);
-                        console.log(offset);
-                        var markDialog = showMarkDialog(offset, $staticPin);
-                        $(this).append(markDialog);
+                        //创建静态图钉
+                        var $staticPin = $.markTools.createMark('pin');
+                        //创建mark容器
+                        var $markContainer = $.markTools.createMarkContainer($callObject, offset, $staticPin);
+                        //显示对话框
+                        $markContainer.append(showMarkDialog(offset));
                         //弹起所有按钮
                         btnPin.popup();
                     });
@@ -398,7 +398,7 @@
                 toolButtonContainer.add(btnRegion);
             }
 
-            var $marktoolsTemplate = $('#marktools-template'),
+            var $marktoolsTemplate = $('#marktools-template').hide(),
                 markDialogTemplateHtml =
                     '<div class="' + currentOptions.markDialogClass + '">' +
                     '<div class="mark-dialog-control">' +
@@ -497,32 +497,18 @@
         /**
          * 显示标记对话框和预览的标记
          * 对话框如果不存在会先创建，否则显示已有的对话框
-         * @param  {Object} mousePos 鼠标相对父容器的偏移量
+         * @param {Object} mousePos 鼠标相对父容器的偏移量
          * @param {Number} mousePos.left
          * @param {Number} mousePos.top
-         * @param  {jQuery Object} [$markObj] 预览的标记DOM对应的jQuery对象
+         * @param {jQuery Object} [$markObj] 预览的标记DOM对应的jQuery对象
          * @param {margin} [margin] 标记DOM的margin值，一般用于canvas
          * @return {jQuery Object} 包括预览的标记对话框jQuery对象
          */
 
-        function showMarkDialog(mousePos, $markObj, margin) {
-            var $markDialog = $('.' + currentOptions.markDialogClass).first();
-            var $markContainer = $(
-                '<div class="mark-container">' +
-                '</div>');
-            $markContainer.attr('id', "mark-container-" + Math.floor(Math.random() * 10000000));
-            if ($markObj !== undefined) {
-                $markObj.css({
-                    'margin-left': -$markObj.width() / 2 + 'px',
-                    'margin-top': -$markObj.height() + (margin ? margin : 0) + 'px'
-                });
-                $markContainer.append($markObj);
-            }
-            $markContainer.append($markDialog.clone(true).show());
-
-
-            setOffset($markContainer, mousePos);
-            return $markContainer;
+        function showMarkDialog(mousePos) {
+            var $markDialogTemplate = $('#marktools-template').find('.' + currentOptions.markDialogClass),
+                $markDialog = $markDialogTemplate.clone(true).show();
+            return $markDialog;
         }
 
         $.extend(currentOptions, options);
@@ -538,6 +524,34 @@
                 $newMarkBox.find('.' + $template.attr('class') + '-' + key).html(data[key]);
             }
             return $newMarkBox;
+        },
+        createMarkContainer: function($callObject, offset, $markObj, margin) {
+            var $newContainer = $(
+                '<div class="mark-container">' +
+                '</div>');
+            $newContainer.attr('id', "mark-container-" + Math.floor(Math.random() * 10000000))
+                .css({
+                    'left': offset.left,
+                    'top': offset.top
+                });
+            $newContainer.append($markObj);
+            $callObject.append($newContainer);
+
+            $markObj.css({
+                'margin-left': -$markObj.width() / 2 + 'px',
+                'margin-top': -$markObj.height() + 'px'
+                // + (margin ? margin : 0) + 'px'
+            });
+            return $newContainer;
+        },
+        createMark: function(type, data) {
+            var $newMark;
+            if (type === 'pin') {
+                $newMark = divWithClass('static-pin');
+            } else if (type === 'canvas') {
+
+            }
+            return $newMark;
         }
     };
 
