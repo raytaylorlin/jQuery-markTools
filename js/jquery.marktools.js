@@ -413,16 +413,23 @@
                     '<a class="mark-dialog-button mark-dialog-button-save" href="javascript:void(0)">Save</a>' +
                     '<div class="clearfix"></div>' +
                     '</div>',
-                $markDialogTemplate = $(markDialogTemplateHtml).hide();
+                markBoxTemplateHtml =
+                    '<div class="mark-box">' +
+                    '<p class="mark-box-title"></p>' +
+                    '<p class="mark-box-description"></p>' +
+                    '</div>',
+                $markDialogTemplate = $(markDialogTemplateHtml).hide(),
+                $markBoxTemplate = $(markBoxTemplateHtml).hide();
             //若模板不存在则创建一个默认的模板div
             if (!$marktoolsTemplate.exists()) {
                 $marktoolsTemplate = $('<div id="marktools-template"></div>');
                 $('body').append($marktoolsTemplate);
 
                 $marktoolsTemplate.append($markDialogTemplate);
+                $marktoolsTemplate.append($markBoxTemplate);
             } else {
-                //初始化mark对话框模板
-                //后续生成的对话框均由此模板clone而成
+                /* 后续生成的对话框均由此模板clone而成 */
+
                 //currentOptions.markDialogClass为用户自定义的对话框DOM模板的class
                 if (!$('.' + currentOptions.markDialogClass).exists()) {
                     //插件默认的对话框
@@ -430,6 +437,15 @@
                 } else {
                     //用户自定义的对话框
                     $markDialogTemplate = $('.' + currentOptions.markDialogClass);
+                }
+
+                //currentOptions.markBoxClass为用户自定义的标记内容框DOM模板的class
+                if (!$('.' + currentOptions.markBoxClass).exists()) {
+                    //插件默认的标记内容框
+                    $marktoolsTemplate.append($markBoxTemplate);
+                } else {
+                    //用户自定义的标记内容框
+                    $markBoxTemplate = $('.' + currentOptions.markBoxClass);
                 }
             }
 
@@ -465,15 +481,13 @@
                         currentOptions.onSaveMark($markContainer, $markBox);
                     } else {
                         //创建新的markBox
-                        $markBox = $(
-                            '<div class="mark-box">' +
-                            '<p class="mark-box-title"></p>' +
-                            '<p class="mark-box-description"></p>' +
-                            '</div>'
-                        );
+                        $markBox = $.markTools.createMarkBox($markBoxTemplate, {
+                            title: title,
+                            description: description
+                        });
                         //填充内容
-                        $markBox.find('.mark-box-title').html(title);
-                        $markBox.find('.mark-box-description').html(description);
+                        // $markBox.find('.mark-box-title').html(title);
+                        // $markBox.find('.mark-box-description').html(description);
                         $markContainer.append($markBox);
                     }
 
@@ -518,6 +532,17 @@
         $.extend(currentOptions, options);
 
         return this.each(init);
+    };
+
+    $.markTools = {
+        createMarkBox: function($template, data) {
+            var key,
+                $newMarkBox = $template.clone(true).show();
+            for(key in data){
+                $newMarkBox.find('.' + $template.attr('class') + '-' + key).html(data[key]);
+            }
+            return $newMarkBox;
+        }
     };
 
 
