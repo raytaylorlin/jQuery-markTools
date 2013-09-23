@@ -344,6 +344,7 @@
         function init() {
             //$this为调用插件的jQuery对象，对应组件中的$callObject
             var $this = $callObject = $(this);
+            $.markTools.$callObject = $this;
 
             toolButtonContainer = new ToolButtonContainer($this);
             //初始化Pin按钮
@@ -356,7 +357,7 @@
                         //创建静态图钉
                         var $staticPin = $.markTools.createMark('pin');
                         //创建mark容器
-                        var $markContainer = $.markTools.createMarkContainer($callObject, offset, $staticPin);
+                        var $markContainer = $.markTools.createMarkContainer('hehe', offset, $staticPin);
                         //显示对话框
                         $markContainer.append(showMarkDialog(offset));
                         //弹起所有按钮
@@ -509,6 +510,7 @@
     };
 
     $.markTools = {
+        $callObject: null,
         createMarkBox: function(data, $template) {
             var key,
                 $newMarkBox,
@@ -522,17 +524,20 @@
             $newMarkBox.html(newMarkBoxHtml);
             return $newMarkBox;
         },
-         /* @param {Object} mousePos 鼠标相对父容器的偏移量
-         * @param {Number} mousePos.left
-         * @param {Number} mousePos.top
-         * @param {jQuery Object} [$markObj] 预览的标记DOM对应的jQuery对象
-         * @param {margin} [margin] 标记DOM的margin值，一般用于canvas
-         * @return {jQuery Object} 包括预览的标记对话框jQuery对象*/
-        createMarkContainer: function($callObject, offset, $markObj, margin) {
-            var $newContainer = $(
-                '<div class="mark-container">' +
-                '</div>');
-            $newContainer.attr('id', "mark-container-" + Math.floor(Math.random() * 10000000))
+        /**
+         * 创建mark容器，该容器包含mark本身和mark-box信息框
+         * @param  {String} strId 该容器的id
+         * @param  {Object} offset      [description]
+         * @param  {Number} offset.left
+         * @param  {Number} offset.top
+         * @param  {jQuery Object} $markObj    [description]
+         * @param  {[type]} margin      [description]
+         * @return {[type]}             创建好的mark容器
+         */
+        createMarkContainer: function(strId, offset, $markObj, margin) {
+            var $newContainer = $('<div class="mark-container"></div>')
+                $callObject = $.markTools.$callObject;
+            $newContainer.attr('id', strId)
                 .css({
                     'left': offset.left,
                     'top': offset.top
