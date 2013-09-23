@@ -415,8 +415,8 @@
                     '</div>',
                 markBoxTemplateHtml =
                     '<div class="mark-box">' +
-                    '<p class="mark-box-title"></p>' +
-                    '<p class="mark-box-description"></p>' +
+                    '<p class="mark-box-title">${title}</p>' +
+                    '<p class="mark-box-description">${description}</p>' +
                     '</div>',
                 $markDialogTemplate = $(markDialogTemplateHtml).hide(),
                 $markBoxTemplate = $(markBoxTemplateHtml).hide();
@@ -481,10 +481,10 @@
                         currentOptions.onSaveMark($markContainer, $markBox);
                     }
                     //创建新的markBox
-                    $markBox = $.markTools.createMarkBox($markBoxTemplate, {
+                    $markBox = $.markTools.createMarkBox({
                         title: title,
                         description: description
-                    });
+                    }, $markBoxTemplate);
                     $markContainer.append($markBox);
 
                     $markObject.bind('click', function() {
@@ -495,16 +495,8 @@
 
 
         /**
-         * 显示标记对话框和预览的标记
-         * 对话框如果不存在会先创建，否则显示已有的对话框
-         * @param {Object} mousePos 鼠标相对父容器的偏移量
-         * @param {Number} mousePos.left
-         * @param {Number} mousePos.top
-         * @param {jQuery Object} [$markObj] 预览的标记DOM对应的jQuery对象
-         * @param {margin} [margin] 标记DOM的margin值，一般用于canvas
-         * @return {jQuery Object} 包括预览的标记对话框jQuery对象
+         * 显示标记对话框，对话框由模板创建
          */
-
         function showMarkDialog(mousePos) {
             var $markDialogTemplate = $('#marktools-template').find('.' + currentOptions.markDialogClass),
                 $markDialog = $markDialogTemplate.clone(true).show();
@@ -517,14 +509,25 @@
     };
 
     $.markTools = {
-        createMarkBox: function($template, data) {
+        createMarkBox: function(data, $template) {
             var key,
-                $newMarkBox = $template.clone(true).show();
+                $newMarkBox,
+                $template = $template || $('.' + currentOptions.markBoxClass),
+                newMarkBoxHtml;
+            $newMarkBox = $template.clone(true).show();
+            newMarkBoxHtml = $newMarkBox.html();
             for (key in data) {
-                $newMarkBox.find('.' + $template.attr('class') + '-' + key).html(data[key]);
+                newMarkBoxHtml = newMarkBoxHtml.replace('${' + key + '}', data[key]);
             }
+            $newMarkBox.html(newMarkBoxHtml);
             return $newMarkBox;
         },
+         /* @param {Object} mousePos 鼠标相对父容器的偏移量
+         * @param {Number} mousePos.left
+         * @param {Number} mousePos.top
+         * @param {jQuery Object} [$markObj] 预览的标记DOM对应的jQuery对象
+         * @param {margin} [margin] 标记DOM的margin值，一般用于canvas
+         * @return {jQuery Object} 包括预览的标记对话框jQuery对象*/
         createMarkContainer: function($callObject, offset, $markObj, margin) {
             var $newContainer = $(
                 '<div class="mark-container">' +
