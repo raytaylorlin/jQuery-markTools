@@ -291,8 +291,8 @@
         };
 
         DrawingCanvas.prototype.setStyle = function(color, penWidth) {
-            this.context.strokeStyle = color;
-            this.context.lineWidth = penWidth;
+            this.context.strokeStyle = '#FFFF00';
+            this.context.lineWidth = 4;
         };
 
         DrawingCanvas.prototype.clear = function() {
@@ -458,6 +458,10 @@
                     //$(this)为按钮，上2级父节点即mark-container
                     $(this).parent().prev().remove();
                     $(this).parent().remove();
+                    //触发保存mark时的自定义方法
+                    if (options.onCancelMark) {
+                        options.onCancelMark();
+                    }
                 });
             //Save按钮事件
             $markDialogTemplate.on('click', '.mark-dialog-button-save',
@@ -524,6 +528,7 @@
             markDialogClass: 'mark-dialog',
             markBoxClass: 'mark-box',
             onSaveMark: function() {},
+            onCancelMark: function() {},
             onClickMark: function() {},
             onToolButtonActivated: function() {}
         },
@@ -602,7 +607,6 @@
                 });
                 $markBox.toggle();
 
-                $.markTools.onClickMark();
             });
         }
     };
