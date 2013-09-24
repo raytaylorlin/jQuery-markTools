@@ -275,12 +275,12 @@
                             height = selection.y2 - selection.y1;
 
                         _this.startDrag = false;
-                        canvas.attr('width', width + _this.margin * 2).
-                        attr('height', height + _this.margin * 2);
+                        canvas.attr('width', width).
+                        attr('height', height);
 
                         _this.clear();
                         _this.setStyle(_this.color, _this.penWidth);
-                        _this.context.strokeRect(_this.margin, _this.margin,
+                        _this.context.strokeRect(0, 0,
                             width, height);
 
                         if (_this.onFinishDraw) {
@@ -376,7 +376,7 @@
                             $canvas = drawingCanvas.$dom,
                             margin = drawingCanvas.margin;
 
-                        offset.left = offset.left + margin - $canvas.width() / 2;
+                        offset.left = offset.left + 0 - $canvas.width() / 2;
 
                         $markObject = $.markTools.createCanvas($canvas, offset, {
                             margin: margin
@@ -524,6 +524,7 @@
             markDialogClass: 'mark-dialog',
             markBoxClass: 'mark-box',
             onSaveMark: function() {},
+            onClickMark: function() {},
             onToolButtonActivated: function() {}
         },
         createMarkBox: function(data, $template) {
@@ -585,7 +586,8 @@
             setOffset($canvas, offset);
             $canvas.css({
                 'margin-left': -$canvas.width() / 2 + 'px',
-                'margin-top': -$canvas.height() + (data.margin === undefined ? 0 : data.margin) + 'px'
+                // 'margin-top': -$canvas.height() + (data.margin === undefined ? 0 : data.margin) + 'px'
+                'margin-top': -$canvas.height() + 'px'
             });
             return $canvas;
         },
@@ -594,7 +596,13 @@
             $markObj.after($markBox);
 
             $markObj.bind('click', function() {
+                var visibility = $markBox.css('visibility');
+                $markBox.css({
+                    'visibility': (visibility === 'visible' ? 'hidden' : 'visible')
+                });
                 $markBox.toggle();
+
+                $.markTools.onClickMark();
             });
         }
     };
