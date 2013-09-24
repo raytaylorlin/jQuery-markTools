@@ -1,6 +1,7 @@
 /**
  * MarkTools - jQuery plugin
  * @author Ray Taylor Lin
+ * //TODO 这个插件应该是一个单例模式，一个页面均允许存在一个插件实例
  */
 
 (function($) {
@@ -309,20 +310,7 @@
     };
 
     $.fn.markTools = function(options) {
-        var defaultOptions = {
-            showInfo: true,
-            showPin: true,
-            showRegion: true,
-            showRecluster: true,
-            showFilter: true,
-
-            //TODO: 考虑引入一个marktools-template的div专门存放模板
-            markDialogClass: 'mark-dialog',
-            markBoxClass: 'mark-box',
-            onSaveMark: null
-        },
-            currentOptions = defaultOptions,
-            currentFunc = 'none',
+        var currentFunc = 'none',
             toolsMap = {
                 pin: {
                     type: 'pin',
@@ -343,12 +331,13 @@
 
         function init() {
             //$this为调用插件的jQuery对象，对应组件中的$callObject
-            var $this = $callObject = $(this);
+            var $this = $callObject = $(this),
+                options = $.markTools.options;
             $.markTools.$callObject = $this;
 
             toolButtonContainer = new ToolButtonContainer($this);
             //初始化Pin按钮
-            if (currentOptions.showPin) {
+            if (options.showPin) {
                 var btnPin = new ToolButton(toolsMap['pin'], $this);
                 btnPin.onPress = function() {
                     $callObject.bind('click', function(e) {
@@ -368,7 +357,7 @@
             }
 
             //初始化Region按钮
-            if (currentOptions.showRegion) {
+            if (options.showRegion) {
                 var btnRegion = new ToolButton(toolsMap['region'], $this),
                     stylePicker = new StylePicker($this);
 
@@ -401,7 +390,7 @@
 
             var $marktoolsTemplate = $('#marktools-template').hide(),
                 markDialogTemplateHtml =
-                    '<div class="' + currentOptions.markDialogClass + '">' +
+                    '<div class="' + options.markDialogClass + '">' +
                     '<div class="mark-dialog-control">' +
                     '<label for="title">Title</label>' +
                     '<input type="text" name="title"/>' +
@@ -431,22 +420,22 @@
             } else {
                 /* 后续生成的对话框均由此模板clone而成 */
 
-                //currentOptions.markDialogClass为用户自定义的对话框DOM模板的class
-                if (!$('.' + currentOptions.markDialogClass).exists()) {
+                //options.markDialogClass为用户自定义的对话框DOM模板的class
+                if (!$('.' + options.markDialogClass).exists()) {
                     //插件默认的对话框
                     $marktoolsTemplate.append($markDialogTemplate);
                 } else {
                     //用户自定义的对话框
-                    $markDialogTemplate = $('.' + currentOptions.markDialogClass);
+                    $markDialogTemplate = $('.' + options.markDialogClass);
                 }
 
-                //currentOptions.markBoxClass为用户自定义的标记内容框DOM模板的class
-                if (!$('.' + currentOptions.markBoxClass).exists()) {
+                //options.markBoxClass为用户自定义的标记内容框DOM模板的class
+                if (!$('.' + options.markBoxClass).exists()) {
                     //插件默认的标记内容框
                     $marktoolsTemplate.append($markBoxTemplate);
                 } else {
                     //用户自定义的标记内容框
-                    $markBoxTemplate = $('.' + currentOptions.markBoxClass);
+                    $markBoxTemplate = $('.' + options.markBoxClass);
                 }
             }
 
@@ -478,8 +467,8 @@
                     $title.val('');
                     $description.val('');
 
-                    if (currentOptions.onSaveMark) {
-                        currentOptions.onSaveMark($markContainer, $markBox);
+                    if (options.onSaveMark) {
+                        options.onSaveMark($markContainer, $markBox);
                     }
                     //创建新的markBox
                     $markBox = $.markTools.createMarkBox({
@@ -499,22 +488,34 @@
          * 显示标记对话框，对话框由模板创建
          */
         function showMarkDialog(mousePos) {
-            var $markDialogTemplate = $('#marktools-template').find('.' + currentOptions.markDialogClass),
+            var $markDialogTemplate = $('#marktools-template').find('.' + $.markTools.options.markDialogClass),
                 $markDialog = $markDialogTemplate.clone(true).show();
             return $markDialog;
         }
 
-        $.extend(currentOptions, options);
+        $.extend($.markTools.options, options);
 
         return this.each(init);
     };
 
     $.markTools = {
         $callObject: null,
+        options: {
+            showInfo: true,
+            showPin: true,
+            showRegion: true,
+            showRecluster: true,
+            showFilter: true,
+
+            //TODO: 考虑引入一个marktools-template的div专门存放模板
+            markDialogClass: 'mark-dialog',
+            markBoxClass: 'mark-box',
+            onSaveMark: null
+        },
         createMarkBox: function(data, $template) {
             var key,
                 $newMarkBox,
-                $template = $template || $('.' + currentOptions.markBoxClass),
+                $template = $template || $('.' + $.markTools.options.markBoxClass),
                 newMarkBoxHtml;
             $newMarkBox = $template.clone(true).show();
             newMarkBoxHtml = $newMarkBox.html();
