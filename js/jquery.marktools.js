@@ -78,6 +78,7 @@
 
             //触发按钮按下的事件
             this.onPress();
+            $.markTools.options.onToolButtonActivated();
         };
 
         /**
@@ -344,11 +345,14 @@
                         //获取鼠标偏移量
                         var offset = getMouseOffset($(this), e);
                         //创建静态图钉
-                        var $staticPin = $.markTools.createMark('pin');
+                        var $staticPin = $.markTools.createPin(offset, {id: 'hehe'});
+                        $.markTools.$callObject.append($staticPin);
+                        $.markTools.$callObject.append(showMarkDialog(offset));
+
                         //创建mark容器
-                        var $markContainer = $.markTools.createMarkContainer('hehe', $staticPin, offset);
+                        // var $markContainer = $.markTools.createMarkContainer('hehe', $staticPin, offset);
                         //显示对话框
-                        $markContainer.append(showMarkDialog(offset));
+                        // $markContainer.append(showMarkDialog(offset));
                         //弹起所有按钮
                         btnPin.popup();
                     });
@@ -371,10 +375,14 @@
                             margin = drawingCanvas.margin;
 
                         offset.left = offset.left + margin - $canvas.width() / 2;
+
+                        $markObject = $.markTools.createCanvas($canvas, offset, {margin: margin});
+                        $.markTools.$callObject.append($markObject);
+                        $.markTools.$callObject.append(showMarkDialog(offset));
                         //创建mark容器
-                        var $markContainer = $.markTools.createMarkContainer('hehe', $canvas, offset, margin);
+                        // var $markContainer = $.markTools.createMarkContainer('hehe', $canvas, offset, margin);
                         //显示对话框
-                        $markContainer.append(showMarkDialog(offset));
+                        // $markContainer.append(showMarkDialog(offset));
 
                         //弹起按钮
                         btnRegion.popup();
@@ -444,7 +452,8 @@
                 function() {
                     //移除整个mark-container
                     //$(this)为按钮，上2级父节点即mark-container
-                    $(this).parent().parent().remove();
+                    $(this).parent().prev().remove();
+                    $(this).parent().remove();
                 });
             //Save按钮事件
             $markDialogTemplate.on('click', '.mark-dialog-button-save',
@@ -468,14 +477,15 @@
                     $description.val('');
 
                     if (options.onSaveMark) {
-                        options.onSaveMark($markContainer, $markBox);
+                        options.onSaveMark($markObject);
                     }
                     //创建新的markBox
                     $markBox = $.markTools.createMarkBox({
                         title: title,
                         description: description
                     }, $markBoxTemplate);
-                    $markContainer.append($markBox);
+                    setOffset($markBox, getOffset($markObject));
+                    $markObject.after($markBox);
 
                     $markObject.bind('click', function() {
                         $markBox.toggle();
@@ -487,9 +497,11 @@
         /**
          * 显示标记对话框，对话框由模板创建
          */
+
         function showMarkDialog(mousePos) {
             var $markDialogTemplate = $('#marktools-template').find('.' + $.markTools.options.markDialogClass),
                 $markDialog = $markDialogTemplate.clone(true).show();
+            setOffset($markDialog, mousePos);
             return $markDialog;
         }
 
@@ -510,7 +522,8 @@
             //TODO: 考虑引入一个marktools-template的div专门存放模板
             markDialogClass: 'mark-dialog',
             markBoxClass: 'mark-box',
-            onSaveMark: null
+            onSaveMark: function() {},
+            onToolButtonActivated: function() {}
         },
         createMarkBox: function(data, $template) {
             var key,
@@ -539,7 +552,7 @@
             var $newContainer = $('<div class="mark-container"></div>'),
                 $callObject = $.markTools.$callObject;
             $newContainer.attr('id', strId);
-            if(offset !== undefined){
+            if (offset !== undefined) {
                 $newContainer.css({
                     'left': offset.left,
                     'top': offset.top
@@ -554,14 +567,26 @@
             });
             return $newContainer;
         },
-        createMark: function(type, data) {
+        createPin: function(offset, data) {
             var $newMark;
-            if (type === 'pin') {
-                $newMark = divWithClass('static-pin');
-            } else if (type === 'canvas') {
-
+            $newMark = divWithClass('static-pin').attr('id', data.id);
+            $.markTools.$callObject.append($newMark);
+            if(offset){
+                setOffset($newMark, offset);
             }
+            $newMark.css({
+                'margin-left': -$newMark.width() / 2 + 'px',
+                'margin-top': -$newMark.height() + 'px'
+            });
             return $newMark;
+        },
+        createCanvas: function($canvas, offset, data) {
+            setOffset($canvas, offset);
+            $canvas.css({
+                'margin-left': -$canvas.width() / 2 + 'px',
+                'margin-top': -$canvas.height() + (data.margin === undefined ? 0 : data.margin) + 'px'
+            });
+            return $canvas;
         }
     };
 
@@ -582,6 +607,13 @@
             left: offset.left,
             top: offset.top
         });
+    }
+
+    function getOffset(obj) {
+        return {
+            left: obj.css('left'),
+            top: obj.css('top')
+        };
     }
 
     /**
