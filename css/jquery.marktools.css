@@ -89,7 +89,7 @@
 }
 
 /* 标记对话框 */
-.mark-dialog, .mark-box, .style-picker {
+.mark-dialog, .mark-box {
     width: 200px;
     position: absolute;
     z-index: 15;
@@ -97,6 +97,23 @@
     background-color: #EBEBEB;
     margin-left: -71px;
     margin-top: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    *border-right-width: 2px;
+    *border-bottom-width: 2px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    -webkit-background-clip: padding-box;
+    -moz-background-clip: padding;
+    background-clip: padding-box;
+}
+
+.style-picker {
+    width: 200px;
+    position: absolute;
+    z-index: 15;
+    padding: 10px;
+    background-color: #EBEBEB;
     border: 1px solid rgba(0, 0, 0, 0.2);
     *border-right-width: 2px;
     *border-bottom-width: 2px;
