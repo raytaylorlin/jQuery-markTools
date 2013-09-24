@@ -345,7 +345,9 @@
                         //获取鼠标偏移量
                         var offset = getMouseOffset($(this), e);
                         //创建静态图钉
-                        var $staticPin = $.markTools.createPin(offset, {id: 'hehe'});
+                        var $staticPin = $.markTools.createPin(offset, {
+                            id: 'hehe'
+                        });
                         $.markTools.$callObject.append($staticPin);
                         $.markTools.$callObject.append(showMarkDialog(offset));
 
@@ -376,7 +378,9 @@
 
                         offset.left = offset.left + margin - $canvas.width() / 2;
 
-                        $markObject = $.markTools.createCanvas($canvas, offset, {margin: margin});
+                        $markObject = $.markTools.createCanvas($canvas, offset, {
+                            margin: margin
+                        });
                         $.markTools.$callObject.append($markObject);
                         $.markTools.$callObject.append(showMarkDialog(offset));
                         //创建mark容器
@@ -476,20 +480,17 @@
                     $title.val('');
                     $description.val('');
 
-                    if (options.onSaveMark) {
-                        options.onSaveMark($markObject);
-                    }
                     //创建新的markBox
                     $markBox = $.markTools.createMarkBox({
                         title: title,
                         description: description
                     }, $markBoxTemplate);
-                    setOffset($markBox, getOffset($markObject));
-                    $markObject.after($markBox);
+                    $.markTools.bindMarkAndBox($markObject, $markBox);
 
-                    $markObject.bind('click', function() {
-                        $markBox.toggle();
-                    });
+                    //触发保存mark时的自定义方法
+                    if (options.onSaveMark) {
+                        options.onSaveMark($markObject, $markBox);
+                    }
                 });
         }
 
@@ -571,7 +572,7 @@
             var $newMark;
             $newMark = divWithClass('static-pin').attr('id', data.id);
             $.markTools.$callObject.append($newMark);
-            if(offset){
+            if (offset) {
                 setOffset($newMark, offset);
             }
             $newMark.css({
@@ -587,6 +588,14 @@
                 'margin-top': -$canvas.height() + (data.margin === undefined ? 0 : data.margin) + 'px'
             });
             return $canvas;
+        },
+        bindMarkAndBox: function($markObj, $markBox) {
+            setOffset($markBox, getOffset($markObj));
+            $markObj.after($markBox);
+
+            $markObj.bind('click', function() {
+                $markBox.toggle();
+            });
         }
     };
 
