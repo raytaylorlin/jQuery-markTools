@@ -271,20 +271,19 @@
                 }).mouseup(
                 function(e) {
                     if (_this.startDrag) {
-                        var width = selection.x2 - selection.x1,
-                            height = selection.y2 - selection.y1;
+                        var drawData = {
+                            width: selection.x2 - selection.x1,
+                            height: selection.y2 - selection.y1,
+                            color: '#FFFF00',
+                            penWidth: 4,
+                        };
+                        // var width = selection.x2 - selection.x1,
+                        // height = selection.y2 - selection.y1;
 
                         _this.startDrag = false;
-                        canvas.attr('width', width).
-                        attr('height', height);
-
-                        _this.clear();
-                        _this.setStyle(_this.color, _this.penWidth);
-                        _this.context.strokeRect(0, 0,
-                            width, height);
 
                         if (_this.onFinishDraw) {
-                            _this.onFinishDraw(_this, e);
+                            _this.onFinishDraw(_this, e, drawData);
                         }
                     }
                 });
@@ -370,17 +369,15 @@
                 btnRegion.onPress = function() {
                     btnRegion.addStylePicker(stylePicker);
                     //绑定绘画结束事件
-                    stylePicker.bind(function(drawingCanvas, e) {
+                    stylePicker.bind(function(drawingCanvas, e, drawData) {
                         //获取鼠标偏移量，显示并定位对话框
                         var offset = getMouseOffset($callObject, e),
                             $canvas = drawingCanvas.$dom,
                             margin = drawingCanvas.margin;
 
-                        offset.left = offset.left + 0 - $canvas.width() / 2;
+                        offset.left = offset.left + 0 - drawData.width / 2;
 
-                        $markObject = $.markTools.createCanvas($canvas, offset, {
-                            margin: margin
-                        });
+                        $markObject = $.markTools.createCanvas($canvas, offset, drawData);
                         $.markTools.$callObject.append($markObject);
                         $.markTools.$callObject.append(showMarkDialog(offset));
                         //创建mark容器
@@ -588,6 +585,15 @@
             return $newMark;
         },
         createCanvas: function($canvas, offset, data) {
+            $canvas = $canvas || $('<canvas></canvas>');
+            var context = $canvas[0].getContext('2d');
+            $canvas.attr('width', data.width).attr('height', data.height);
+
+            context.clearRect(0, 0, this.width, this.height);
+            context.strokeStyle = '#FFFF00';
+            context.lineWidth = 4;
+
+            context.strokeRect(0, 0,data.width, data.height);
             setOffset($canvas, offset);
             $canvas.css({
                 'margin-left': -$canvas.width() / 2 + 'px',
