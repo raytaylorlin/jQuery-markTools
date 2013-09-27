@@ -488,8 +488,8 @@
                         type: markType,
                         mouseX: parseInt($markObject.css('left')),
                         mouseY: parseInt($markObject.css('top')),
-                        width: markType === 'pin' ? null : $markObject.width(),
-                        height: markType === 'pin' ? null : $markObject.height()
+                        width: markType === 'pin' ? 0 : $markObject.width(),
+                        height: markType === 'pin' ? 0 : $markObject.height()
                     };
 
                     //创建新的markBox
@@ -555,6 +555,16 @@
             }
             $newMarkBox.html(newMarkBoxHtml);
             return $newMarkBox;
+        },
+        fillMarkBox: function ($markBox, data) {
+            var key,
+                markBoxHtml;
+            markBoxHtml = $markBox.html();
+            for (key in data) {
+                markBoxHtml = markBoxHtml.replace('${' + key + '}', data[key]);
+            }
+            $markBox.html(markBoxHtml);
+            return $markBox;
         },
         /**
          * 创建mark容器，该容器包含mark本身和mark-box信息框
@@ -645,10 +655,12 @@
     }
 
     function setOffset(obj, offset) {
-        obj.css({
-            left: offset.left,
-            top: offset.top
-        });
+        if (offset) {
+            obj.css({
+                left: offset.left,
+                top: offset.top
+            });
+        }
     }
 
     function getOffset(obj) {
