@@ -254,14 +254,14 @@
                     if (!_this.startDrag) {
                         //开始拖动
                         _this.startDrag = true;
-                        selection.x1 = e.offsetX;
-                        selection.y1 = e.offsetY;
+                        selection.x1 = e.offsetX || (e.clientX - $(e.target).offset().left);
+                        selection.y1 = e.offsetY || (e.clientY - $(e.target).offset().top);
                     }
                 }).mousemove(
                 function (e) {
                     if (_this.startDrag) {
-                        selection.x2 = e.offsetX;
-                        selection.y2 = e.offsetY;
+                        selection.x2 = e.offsetX || (e.clientX - $(e.target).offset().left);
+                        selection.y2 = e.offsetY || (e.clientY - $(e.target).offset().top);
 
                         _this.clear();
                         _this.setStyle(_this.color, _this.penWidth);
@@ -471,8 +471,8 @@
 
                         $markBox,
                         $markObject;
-                    if (title.trim() === '' || description.trim === '') {
-                        alert('Title or description cannot be empty.');
+                    if (title.trim() == '' || description.trim() == '') {
+                        alert('Title and description cannot be empty.');
                         return;
                     }
                     $markObject = $markDialog.prev();
@@ -482,7 +482,7 @@
 
                     var markType = $markObject.hasClass('static-pin') ? 'pin' : 'region';
 
-                    var markData = {
+                    var markData = {  
                         title: title,
                         description: description,
                         type: markType,
@@ -546,7 +546,7 @@
                 $newMarkBox,
                 $template = $template || $('.' + $.markTools.options.markBoxClass),
                 newMarkBoxHtml;
-            $newMarkBox = $template.clone(true).show();
+            $newMarkBox = $template.clone(true).show(); 
             $newMarkBox.data = {};
             newMarkBoxHtml = $newMarkBox.html();
             for (key in data) {
@@ -563,6 +563,7 @@
             for (key in data) {
                 markBoxHtml = markBoxHtml.replace('${' + key + '}', data[key]);
             }
+
             $markBox.html(markBoxHtml);
             return $markBox;
         },
@@ -631,14 +632,10 @@
         bindMarkAndBox: function ($markObj, $markBox) {
             setOffset($markBox, getOffset($markObj));
             $markObj.after($markBox);
+            $markBox.hide();
 
             $markObj.bind('click', function () {
-                var visibility = $markBox.css('visibility');
-                $markBox.css({
-                    'visibility': (visibility === 'visible' ? 'hidden' : 'visible')
-                });
                 $markBox.toggle();
-
             });
         }
     };
