@@ -456,6 +456,44 @@
                 toolButtonContainer.add(btnEllipse);
             }
 
+            if (options.showLine) {
+                var btnLine = new ToolButton(toolsMap['region'], $this),
+                    stylePicker = new StylePicker($this);
+
+                btnLine.onPress = function() {
+                    var onDraw = function(context, selection) {
+                        context.beginPath();
+                        context.moveTo(selection.x1, selection.y1);
+                        context.lineTo(selection.x2, selection.y2);
+                        context.closePath();
+                        context.stroke();
+                    },
+                        onFinishDraw = function(drawingCanvas, e, drawData) {
+                            //获取鼠标偏移量，显示并定位对话框
+                            var offset = getMouseOffset($callObject, e),
+                                $canvas = drawingCanvas.$dom,
+                                margin = drawingCanvas.margin;
+                            offset.left = offset.left + 0 - Math.abs(drawData.selection.x2 - drawData.selection.x1) / 2;
+
+                            $markObject = $.markTools.createCanvas($canvas, offset, drawData);
+                            $.markTools.$callObject.append($markObject);
+                            $.markTools.$callObject.append(showMarkDialog(offset));
+
+                            //弹起按钮
+                            btnLine.popup();
+
+                            $canvas.unbind();
+                            //将canvas转换为静态canvas（绘画canvas拥有相对最高的z-index）
+                            $canvas.removeClass('draw-canvas');
+                            $canvas.addClass('static-canvas');
+                        };
+                    btnLine.addStylePicker(stylePicker);
+                    //绑定绘画结束事件
+                    stylePicker.bind(onDraw, onFinishDraw);
+                };
+                toolButtonContainer.add(btnLine);
+            }
+
             var $marktoolsTemplate = $('#marktools-template').hide(),
                 markDialogTemplateHtml =
                     '<div class="' + options.markDialogClass + '">' +
@@ -586,6 +624,7 @@
             showPin: true,
             showRegion: true,
             showEllipse: true,
+            showLine: true,
             showRecluster: true,
             showFilter: true,
 
