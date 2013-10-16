@@ -375,6 +375,8 @@
                                 $canvas = drawingCanvas.$dom,
                                 margin = drawingCanvas.margin;
                             offset.left = offset.left + 0 - (drawData.selection.x2 - drawData.selection.x1) / 2;
+                            offset.top = offset.top + (drawData.selection.y2 > drawData.selection.y1 ? 0 :
+                                drawData.selection.y1 - drawData.selection.y2);
 
                             $markObject = $.markTools.createCanvas($canvas, offset, drawData);
                             $.markTools.$callObject.append($markObject);
@@ -436,6 +438,8 @@
                                 $canvas = drawingCanvas.$dom,
                                 margin = drawingCanvas.margin;
                             offset.left = offset.left + 0 - (drawData.selection.x2 - drawData.selection.x1) / 2;
+                            offset.top = offset.top + (drawData.selection.y2 > drawData.selection.y1 ? 0 :
+                                drawData.selection.y1 - drawData.selection.y2);
 
                             $markObject = $.markTools.createCanvas($canvas, offset, drawData);
                             $.markTools.$callObject.append($markObject);
@@ -471,11 +475,23 @@
                         onFinishDraw = function(drawingCanvas, e, drawData) {
                             //获取鼠标偏移量，显示并定位对话框
                             var offset = getMouseOffset($callObject, e),
+                                originOffset = getMouseOffset($callObject, e),
                                 $canvas = drawingCanvas.$dom,
                                 margin = drawingCanvas.margin;
-                            offset.left = offset.left + 0 - Math.abs(drawData.selection.x2 - drawData.selection.x1) / 2;
+                            offset.left = offset.left + 0 - (drawData.selection.x2 - drawData.selection.x1) / 2;
+                            offset.top = offset.top + (drawData.selection.y2 > drawData.selection.y1 ? 0 :
+                                drawData.selection.y1 - drawData.selection.y2);
 
-                            $markObject = $.markTools.createCanvas($canvas, offset, drawData);
+                            $markObject = $.markTools.createCanvas($canvas, offset, drawData, function(selection) {
+                                var flagX = selection.x2 > selection.x1,
+                                    flagY = selection.y2 > selection.y1,
+                                    width = Math.abs(selection.x2 - selection.x1),
+                                    height = Math.abs(selection.y2 - selection.y1);
+                                selection.x1 = flagX ? 0 : width;
+                                selection.x2 = flagX ? width : 0;
+                                selection.y1 = flagY ? 0 : height;
+                                selection.y2 = flagY ? height : 0;
+                            });
                             $.markTools.$callObject.append($markObject);
                             $.markTools.$callObject.append(showMarkDialog(offset));
 
@@ -704,12 +720,12 @@
             });
             return $newMark;
         },
-        createCanvas: function($canvas, offset, data) {
+        createCanvas: function($canvas, offset, data, changeSelection) {
             $canvas = $canvas || $('<canvas class="static-canvas"></canvas>');
             $.markTools.$callObject.append($canvas);
             var context = $canvas[0].getContext('2d'),
-                width = data.selection.x2 - data.selection.x1,
-                height = data.selection.y2 - data.selection.y1,
+                width = Math.abs(data.selection.x2 - data.selection.x1),
+                height = Math.abs(data.selection.y2 - data.selection.y1),
                 onDraw = data.onDraw;
             $canvas.attr('width', width).attr('height', height);
 
@@ -717,11 +733,14 @@
             context.strokeStyle = data.color;
             context.lineWidth = data.penWidth;
 
-            // context.strokeRect(0, 0, data.width, data.height);
-            data.selection.x2 = width;
-            data.selection.y2 = height;
-            data.selection.x1 = 0;
-            data.selection.y1 = 0;
+            if (changeSelection !== undefined) {
+                changeSelection(data.selection);
+            } else {
+                data.selection.x2 = width;
+                data.selection.y2 = height;
+                data.selection.x1 = 0;
+                data.selection.y1 = 0;
+            }
             onDraw(context, data.selection);
 
             setOffset($canvas, offset);
