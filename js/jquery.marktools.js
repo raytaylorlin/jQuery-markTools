@@ -182,13 +182,10 @@
             this.$callObject = callObject;
             this.$dom = $(
                 '<div class="style-picker">' +
-                '<div class="mark-dialog-control">' +
-                '<label>Color</label><input type="text" class="color" name="color"/>' +
-                '</div>' +
-                '<div class="mark-dialog-control">' +
-                '<label>Width</label><input type="text" name="width" value="1"/>' +
-                '</div>' +
-                '<a class="style-picker-button">OK</a>' +
+                '<div class="color-block color-block-red"></div>' + 
+                '<div class="color-block color-block-yellow"></div>' + 
+                '<div class="color-block color-block-blue"></div>' + 
+                '<div class="color-block color-block-green"></div>' +
                 '<div class="clearfix"></div>' +
                 '</div>');
         };

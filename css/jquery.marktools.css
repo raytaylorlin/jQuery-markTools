@@ -109,7 +109,7 @@
 }
 
 .style-picker {
-    width: 200px;
+    width: 160px;
     position: absolute;
     z-index: 15;
     padding: 10px;
@@ -123,6 +123,30 @@
     -webkit-background-clip: padding-box;
     -moz-background-clip: padding;
     background-clip: padding-box;
+}
+
+.color-block {
+    display: inline-block;
+    margin: 5px;
+    width: 20px;
+    height: 20px;
+    border: solid 1px #000;
+}
+
+.color-block-red {
+    background-color: #FF0000;
+}
+
+.color-block-yellow {
+    background-color: #FFF700;
+}
+
+.color-block-blue {
+    background-color: #1977FF;
+}
+
+.color-block-green {
+    background-color: #00E800;
 }
 
 .mark-dialog:before, .mark-box:before {
