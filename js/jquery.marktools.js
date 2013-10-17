@@ -220,10 +220,6 @@
             //canvas宽高
             this.width = $callObject.width();
             this.height = $callObject.height();
-            //画笔颜色
-            this.color = '#000000';
-            //笔宽
-            this.lineWidth = 1;
             //canvas边距
             this.margin = 10;
             //是否开始在canvas上拖拽的标记
@@ -265,7 +261,7 @@
                         selection.y2 = e.offsetY || (e.clientY - $(e.target).offset().top);
 
                         _this.clear();
-                        _this.setStyle(_this.color, _this.penWidth);
+                        _this.refreshStyle();
                         _this.onDraw(_this.context, selection);
                     }
                 }).mouseup(
@@ -276,8 +272,8 @@
                             // height: selection.y2 - selection.y1,
                             selection: selection,
                             onDraw: _this.onDraw,
-                            color: '#FFFF00',
-                            penWidth: 4
+                            color: $.markTools.options.color,
+                            penWidth: $.markTools.options.penWidth
                         };
                         _this.startDrag = false;
 
@@ -288,9 +284,9 @@
                 });
         };
 
-        DrawingCanvas.prototype.setStyle = function(color, penWidth) {
-            this.context.strokeStyle = '#FFFF00';
-            this.context.lineWidth = 4;
+        DrawingCanvas.prototype.refreshStyle = function() {
+            this.context.strokeStyle = $.markTools.options.color;
+            this.context.lineWidth = $.markTools.options.penWidth;
         };
 
         DrawingCanvas.prototype.clear = function() {
@@ -349,10 +345,6 @@
                         $.markTools.$callObject.append($staticPin);
                         $.markTools.$callObject.append(showMarkDialog(offset));
 
-                        //创建mark容器
-                        // var $markContainer = $.markTools.createMarkContainer('hehe', $staticPin, offset);
-                        //显示对话框
-                        // $markContainer.append(showMarkDialog(offset));
                         //弹起所有按钮
                         btnPin.popup();
                     });
@@ -391,9 +383,9 @@
                             $canvas.removeClass('draw-canvas');
                             $canvas.addClass('static-canvas');
                         };
-                    btnRegion.addStylePicker(stylePicker);
-                    //绑定绘画结束事件
-                    stylePicker.bind(onDraw, onFinishDraw);
+
+                    drawingCanvas = new DrawingCanvas($callObject, onDraw, onFinishDraw);
+                    $callObject.append(drawingCanvas.$dom);
                 };
                 toolButtonContainer.add(btnRegion);
             }
@@ -454,9 +446,8 @@
                             $canvas.removeClass('draw-canvas');
                             $canvas.addClass('static-canvas');
                         };
-                    btnEllipse.addStylePicker(stylePicker);
-                    //绑定绘画结束事件
-                    stylePicker.bind(onDraw, onFinishDraw);
+                    drawingCanvas = new DrawingCanvas($callObject, onDraw, onFinishDraw);
+                    $callObject.append(drawingCanvas.$dom);
                 };
                 toolButtonContainer.add(btnEllipse);
             }
@@ -484,14 +475,15 @@
                                 drawData.selection.y1 - drawData.selection.y2);
 
                             $markObject = $.markTools.createCanvas($canvas, offset, drawData, function(selection) {
-                                var flagX = selection.x2 > selection.x1,
+                                var margin = $.markTools.options.canvasMargin,
+                                    flagX = selection.x2 > selection.x1,
                                     flagY = selection.y2 > selection.y1,
-                                    width = Math.abs(selection.x2 - selection.x1),
-                                    height = Math.abs(selection.y2 - selection.y1);
-                                selection.x1 = flagX ? 0 : width;
-                                selection.x2 = flagX ? width : 0;
-                                selection.y1 = flagY ? 0 : height;
-                                selection.y2 = flagY ? height : 0;
+                                    width = Math.abs(selection.x2 - selection.x1) + margin,
+                                    height = Math.abs(selection.y2 - selection.y1) + margin;
+                                selection.x1 = flagX ? margin : width;
+                                selection.x2 = flagX ? width : margin;
+                                selection.y1 = flagY ? margin : height;
+                                selection.y2 = flagY ? height : margin;
                             });
                             $.markTools.$callObject.append($markObject);
                             $.markTools.$callObject.append(showMarkDialog(offset));
@@ -504,9 +496,8 @@
                             $canvas.removeClass('draw-canvas');
                             $canvas.addClass('static-canvas');
                         };
-                    btnLine.addStylePicker(stylePicker);
-                    //绑定绘画结束事件
-                    stylePicker.bind(onDraw, onFinishDraw);
+                    drawingCanvas = new DrawingCanvas($callObject, onDraw, onFinishDraw);
+                    $callObject.append(drawingCanvas.$dom);
                 };
                 toolButtonContainer.add(btnLine);
             }
@@ -657,6 +648,8 @@
             showFilter: true,
 
             color: '#FF0000',
+            penWidth: 4,
+            canvasMargin: 10,
 
             //TODO: 考虑引入一个marktools-template的div专门存放模板
             markDialogClass: 'mark-dialog',
@@ -738,8 +731,8 @@
             $canvas = $canvas || $('<canvas class="static-canvas"></canvas>');
             $.markTools.$callObject.append($canvas);
             var context = $canvas[0].getContext('2d'),
-                width = Math.abs(data.selection.x2 - data.selection.x1),
-                height = Math.abs(data.selection.y2 - data.selection.y1),
+                width = Math.abs(data.selection.x2 - data.selection.x1) + $.markTools.options.canvasMargin * 2,
+                height = Math.abs(data.selection.y2 - data.selection.y1) + $.markTools.options.canvasMargin * 2,
                 onDraw = data.onDraw;
             $canvas.attr('width', width).attr('height', height);
 
@@ -750,14 +743,17 @@
             if (changeSelection !== undefined) {
                 changeSelection(data.selection);
             } else {
-                data.selection.x2 = width;
-                data.selection.y2 = height;
-                data.selection.x1 = 0;
-                data.selection.y1 = 0;
+                data.selection.x2 = width - $.markTools.options.canvasMargin;
+                data.selection.y2 = height - $.markTools.options.canvasMargin;
+                data.selection.x1 = $.markTools.options.canvasMargin;
+                data.selection.y1 = $.markTools.options.canvasMargin;
             }
             onDraw(context, data.selection);
 
-            setOffset($canvas, offset);
+            setOffset($canvas, {
+                left: offset.left,
+                top: offset.top + $.markTools.options.canvasMargin
+            });
             $canvas.css({
                 'margin-left': -$canvas.width() / 2 + 'px',
                 // 'margin-top': -$canvas.height() + (data.margin === undefined ? 0 : data.margin) + 'px'
