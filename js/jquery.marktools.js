@@ -130,8 +130,8 @@
             var adjust = function() {
                 var offset = $callObject.offset();
                 _this.$dom.css({
-                    left: offset.left + 20,
-                    top: offset.top + 20
+                    left: offset.left,
+                    top: offset.top + 40
                 });
             };
             adjust();
@@ -315,10 +315,22 @@
                 },
                 region: {
                     type: 'region',
-                    classRest: 'btn-marktools-region',
-                    classActive: 'btn-marktools-region-active',
+                    classRest: 'btn-marktools-rect',
+                    classActive: 'btn-marktools-rect-active',
                     classCursor: 'cursor-region'
-                }
+                },
+                ellipse: {
+                    type: 'ellipse',
+                    classRest: 'btn-marktools-ellipse',
+                    classActive: 'btn-marktools-ellipse-active',
+                    classCursor: 'cursor-ellipse'
+                },
+                line: {
+                    type: 'line',
+                    classRest: 'btn-marktools-line',
+                    classActive: 'btn-marktools-line-active',
+                    classCursor: 'cursor-line'
+                },
             },
             toolButtonContainer,
             $markDialogTemplate;
@@ -391,7 +403,7 @@
             }
 
             if (options.showEllipse) {
-                var btnEllipse = new ToolButton(toolsMap['region'], $this),
+                var btnEllipse = new ToolButton(toolsMap['ellipse'], $this),
                     stylePicker = new StylePicker($this);
 
                 btnEllipse.onPress = function() {
@@ -453,7 +465,7 @@
             }
 
             if (options.showLine) {
-                var btnLine = new ToolButton(toolsMap['region'], $this),
+                var btnLine = new ToolButton(toolsMap['line'], $this),
                     stylePicker = new StylePicker($this);
 
                 btnLine.onPress = function() {
