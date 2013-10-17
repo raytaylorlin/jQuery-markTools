@@ -101,9 +101,16 @@
         }
 
         ToolButton.prototype.addStylePicker = function(stylePicker) {
+            var _this = this;
             if (this.stylePicker === null) {
                 this.stylePicker = stylePicker;
                 this.$dom.after(stylePicker.$dom);
+
+                $('.color-block').on('click', function() {
+                    var color = $(this).css('background-color');
+                    $.markTools.options.color = color;
+                    _this.popup();
+                });
             }
         }
 
@@ -182,18 +189,15 @@
             this.$callObject = callObject;
             this.$dom = $(
                 '<div class="style-picker">' +
-                '<div class="color-block color-block-red"></div>' + 
-                '<div class="color-block color-block-yellow"></div>' + 
-                '<div class="color-block color-block-blue"></div>' + 
+                '<div class="color-block color-block-red"></div>' +
+                '<div class="color-block color-block-yellow"></div>' +
+                '<div class="color-block color-block-blue"></div>' +
                 '<div class="color-block color-block-green"></div>' +
                 '<div class="clearfix"></div>' +
                 '</div>');
         };
 
         StylePicker.prototype.bind = function(onDraw, onFinishDraw) {
-            //激活颜色面板
-            jscolor.bind();
-
             var _this = this;
             this.$dom.one('click', '.style-picker-button', function() {
                 //获取颜色值和笔宽值，并隐藏面板
@@ -507,6 +511,17 @@
                 toolButtonContainer.add(btnLine);
             }
 
+            if (true) {
+                var btnColorPicker = new ToolButton(toolsMap['region'], $this),
+                    stylePicker = new StylePicker($this);
+
+                btnColorPicker.onPress = function() {
+                    btnColorPicker.addStylePicker(stylePicker);
+                    // stylePicker.bind(onDraw, onFinishDraw);
+                };
+                toolButtonContainer.add(btnColorPicker);
+            }
+
             var $marktoolsTemplate = $('#marktools-template').hide(),
                 markDialogTemplateHtml =
                     '<div class="' + options.markDialogClass + '">' +
@@ -640,6 +655,8 @@
             showLine: true,
             showRecluster: true,
             showFilter: true,
+
+            color: '#FF0000',
 
             //TODO: 考虑引入一个marktools-template的div专门存放模板
             markDialogClass: 'mark-dialog',
