@@ -109,6 +109,7 @@
                 $('.color-block').on('click', function() {
                     var color = $(this).css('background-color');
                     $.markTools.options.color = color;
+                    $('.color-show-block').css('background-color', color);
                     _this.popup();
                 });
             }
@@ -268,8 +269,6 @@
                 function(e) {
                     if (_this.startDrag) {
                         var drawData = {
-                            // width: selection.x2 - selection.x1,
-                            // height: selection.y2 - selection.y1,
                             selection: selection,
                             onDraw: _this.onDraw,
                             color: $.markTools.options.color,
@@ -331,6 +330,10 @@
                     classActive: 'btn-marktools-line-active',
                     classCursor: 'cursor-line'
                 },
+                none: {
+                    classRest: 'btn-marktools-color',
+                    classActive: 'btn-marktools-color'
+                }
             },
             toolButtonContainer,
             $markDialogTemplate;
@@ -515,8 +518,9 @@
             }
 
             if (true) {
-                var btnColorPicker = new ToolButton(toolsMap['region'], $this),
+                var btnColorPicker = new ToolButton(toolsMap['none'], $this),
                     stylePicker = new StylePicker($this);
+                btnColorPicker.$dom.append('<div class="color-show-block"></div>');
 
                 btnColorPicker.onPress = function() {
                     btnColorPicker.addStylePicker(stylePicker);
