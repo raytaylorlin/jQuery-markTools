@@ -98,22 +98,29 @@
             this.$callObject.unbind();
 
             this.container.activeType = 'none';
-        }
+        };
 
+        /**
+         * 添加（绑定）样式选取器
+         * @param {StylePicker} stylePicker 样式选取器对象
+         */
         ToolButton.prototype.addStylePicker = function(stylePicker) {
             var _this = this;
+            //若没有绑定则绑定
             if (this.stylePicker === null) {
                 this.stylePicker = stylePicker;
+                //添加在按钮之后
                 this.$dom.after(stylePicker.$dom);
-
+                //颜色选取器的色块点击事件
                 $('.color-block').on('click', function() {
                     var color = $(this).css('background-color');
                     $.markTools.options.color = color;
+                    //改变显示色块的颜色
                     $('.color-show-block').css('background-color', color);
                     _this.popup();
                 });
             }
-        }
+        };
 
         return ToolButton;
     })();
@@ -373,10 +380,7 @@
                     stylePicker = new StylePicker($this);
 
                 btnRegion.onPress = function() {
-                    var onDraw = function(context, selection) {
-                        context.strokeRect(selection.x1, selection.y1,
-                            selection.x2 - selection.x1, selection.y2 - selection.y1);
-                    },
+                    var onDraw = options.onDrawFuncMap['rect'],
                         onFinishDraw = function(drawingCanvas, e, drawData) {
                             //获取鼠标偏移量，显示并定位对话框
                             var offset = getMouseOffset($callObject, e),
@@ -410,36 +414,7 @@
                     stylePicker = new StylePicker($this);
 
                 btnEllipse.onPress = function() {
-                    var onDraw = function(context, selection) {
-                        //---------使用三次贝塞尔曲线模拟椭圆---------------
-                        //此方法也会产生当lineWidth较宽，椭圆较扁时，
-                        //长轴端较尖锐，不平滑的现象
-                        function bezierEllipse(context, x, y, a, b) {
-                            //关键是bezierCurveTo中两个控制点的设置
-                            //0.5和0.6是两个关键系数（在本函数中为试验而得）
-                            var ox = 0.5 * a,
-                                oy = 0.6 * b;
-
-                            context.save();
-                            context.translate(x, y);
-                            context.beginPath();
-                            //从椭圆纵轴下端开始逆时针方向绘制
-                            context.moveTo(0, b);
-                            context.bezierCurveTo(ox, b, a, oy, a, 0);
-                            context.bezierCurveTo(a, -oy, ox, -b, 0, -b);
-                            context.bezierCurveTo(-ox, -b, -a, -oy, -a, 0);
-                            context.bezierCurveTo(-a, oy, -ox, b, 0, b);
-                            context.closePath();
-                            context.stroke();
-                            context.restore();
-                        }
-
-                        var a = (selection.x2 - selection.x1) / 2,
-                            b = (selection.y2 - selection.y1) / 2,
-                            x = selection.x1 + a,
-                            y = selection.y1 + b;
-                        bezierEllipse(context, x, y, a, b);
-                    },
+                    var onDraw = options.onDrawFuncMap['ellipse'],
                         onFinishDraw = function(drawingCanvas, e, drawData) {
                             //获取鼠标偏移量，显示并定位对话框
                             var offset = getMouseOffset($callObject, e),
@@ -472,13 +447,7 @@
                     stylePicker = new StylePicker($this);
 
                 btnLine.onPress = function() {
-                    var onDraw = function(context, selection) {
-                        context.beginPath();
-                        context.moveTo(selection.x1, selection.y1);
-                        context.lineTo(selection.x2, selection.y2);
-                        context.closePath();
-                        context.stroke();
-                    },
+                    var onDraw = options.onDrawFuncMap['line'],
                         onFinishDraw = function(drawingCanvas, e, drawData) {
                             //获取鼠标偏移量，显示并定位对话框
                             var offset = getMouseOffset($callObject, e),
@@ -524,7 +493,6 @@
 
                 btnColorPicker.onPress = function() {
                     btnColorPicker.addStylePicker(stylePicker);
-                    // stylePicker.bind(onDraw, onFinishDraw);
                 };
                 toolButtonContainer.add(btnColorPicker);
             }
@@ -673,7 +641,48 @@
             onSaveMark: function() {},
             onCancelMark: function() {},
             onClickMark: function() {},
-            onToolButtonActivated: function() {}
+            onToolButtonActivated: function() {},
+
+            onDrawFuncMap: {
+                rect: function(context, selection) {
+                    context.strokeRect(selection.x1, selection.y1,
+                        selection.x2 - selection.x1, selection.y2 - selection.y1);
+                },
+                ellipse: function(context, selection) {
+                    //使用三次贝塞尔曲线模拟椭圆
+                    function bezierEllipse(context, x, y, a, b) {
+                        //关键是bezierCurveTo中两个控制点的设置
+                        //0.5和0.6是两个关键系数（在本函数中为试验而得）
+                        var ox = 0.5 * a,
+                            oy = 0.6 * b;
+                        context.save();
+                        context.translate(x, y);
+                        context.beginPath();
+                        //从椭圆纵轴下端开始逆时针方向绘制
+                        context.moveTo(0, b);
+                        context.bezierCurveTo(ox, b, a, oy, a, 0);
+                        context.bezierCurveTo(a, -oy, ox, -b, 0, -b);
+                        context.bezierCurveTo(-ox, -b, -a, -oy, -a, 0);
+                        context.bezierCurveTo(-a, oy, -ox, b, 0, b);
+                        context.closePath();
+                        context.stroke();
+                        context.restore();
+                    }
+
+                    var a = (selection.x2 - selection.x1) / 2,
+                        b = (selection.y2 - selection.y1) / 2,
+                        x = selection.x1 + a,
+                        y = selection.y1 + b;
+                    bezierEllipse(context, x, y, a, b);
+                },
+                line: function(context, selection) {
+                    context.beginPath();
+                    context.moveTo(selection.x1, selection.y1);
+                    context.lineTo(selection.x2, selection.y2);
+                    context.closePath();
+                    context.stroke();
+                }
+            }
         },
         createMarkBox: function(data, $template) {
             var key,
@@ -732,7 +741,7 @@
         },
         createPin: function(offset, data) {
             var $newMark;
-            $newMark = divWithClass('static-pin').attr('id', data.id);
+            $newMark = divWithClass('static-pin');
             $.markTools.$callObject.append($newMark);
             if (offset) {
                 setOffset($newMark, offset);
@@ -747,29 +756,33 @@
             $canvas = $canvas || $('<canvas class="static-canvas"></canvas>');
             $.markTools.$callObject.append($canvas);
             var context = $canvas[0].getContext('2d'),
-                width = Math.abs(data.selection.x2 - data.selection.x1) + $.markTools.options.canvasMargin * 2,
-                height = Math.abs(data.selection.y2 - data.selection.y1) + $.markTools.options.canvasMargin * 2,
-                onDraw = data.onDraw;
+                options = $.markTools.options,
+                width = Math.abs(data.selection.x2 - data.selection.x1) + options.canvasMargin * 2,
+                height = Math.abs(data.selection.y2 - data.selection.y1) + options.canvasMargin * 2,
+                onDraw = options.onDrawFuncMap[data.type] || data.onDraw;
             $canvas.attr('width', width).attr('height', height);
 
             context.clearRect(0, 0, width, height);
             context.strokeStyle = data.color;
-            context.lineWidth = data.penWidth;
+            context.lineWidth = options.penWidth;
 
             if (changeSelection !== undefined) {
                 changeSelection(data.selection);
             } else {
-                data.selection.x2 = width - $.markTools.options.canvasMargin;
-                data.selection.y2 = height - $.markTools.options.canvasMargin;
-                data.selection.x1 = $.markTools.options.canvasMargin;
-                data.selection.y1 = $.markTools.options.canvasMargin;
+                data.selection.x2 = width - options.canvasMargin;
+                data.selection.y2 = height - options.canvasMargin;
+                data.selection.x1 = options.canvasMargin;
+                data.selection.y1 = options.canvasMargin;
             }
+
             onDraw(context, data.selection);
 
-            setOffset($canvas, {
-                left: offset.left,
-                top: offset.top + $.markTools.options.canvasMargin
-            });
+            if ($canvas && offset) {
+                setOffset($canvas, {
+                    left: offset.left,
+                    top: offset.top + options.canvasMargin
+                });
+            }
             $canvas.css({
                 'margin-left': -$canvas.width() / 2 + 'px',
                 // 'margin-top': -$canvas.height() + (data.margin === undefined ? 0 : data.margin) + 'px'
