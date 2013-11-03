@@ -312,7 +312,7 @@
         DrawingCanvas.prototype.activeEdit = function() {
             var canvas = this.$dom,
                 _this = this,
-                startDragPoint = {}, 
+                startDragPoint = {},
                 originSelection = {
                     x1: this.selection.x1,
                     x2: this.selection.x2,
@@ -468,18 +468,14 @@
                             offset.top = drawData.selection.y2 + (drawData.selection.y2 > drawData.selection.y1 ? 0 :
                                 drawData.selection.y1 - drawData.selection.y2);
 
+                            $.markTools.cache.drawData = drawData;
+                            $.markTools.cache.offset = offset;
+
                             drawingCanvas.activeEdit();
-                            // $markObject = $.markTools.createCanvas($canvas, offset, drawData);
-                            // $.markTools.$callObject.append($markObject);
                             $.markTools.$callObject.append(showMarkDialog(offset));
 
                             //弹起按钮
                             btnRect.popup();
-
-                            // $canvas.unbind();
-                            //将canvas转换为静态canvas（绘画canvas拥有相对最高的z-index）
-                            // $canvas.removeClass('draw-canvas');
-                            // $canvas.addClass('static-canvas');
                         };
 
                     drawingCanvas = new DrawingCanvas($callObject, onDraw, onFinishDraw, 'rect');
@@ -631,7 +627,7 @@
             $markDialogTemplate.on('click', '.mark-dialog-button-cancel',
                 function() {
                     //移除整个mark-container
-                    //$(this)为按钮，上2级父节点即mark-container
+                    //$(this)为按钮，上1级父节点的前一节点即mark-container
                     $(this).parent().prev().remove();
                     $(this).parent().remove();
                     //触发保存mark时的自定义方法
@@ -649,12 +645,27 @@
                         description = $description.val(),
 
                         $markBox,
-                        $markObject;
+                        $markObject,
+                        offset, drawData;
                     if (title.trim() == '' || description.trim() == '') {
                         // alert('Title and description cannot be empty.');
-                        return;
+                        // return;
                     }
+
+                    // $markObject = $.markTools.createCanvas($canvas, offset, drawData);
+                    // $.markTools.$callObject.append($markObject);
+
+                    offset = $.markTools.cache.offset;
+                    drawData = $.markTools.cache.drawData;
                     $markObject = $markDialog.prev();
+
+                    if (drawData !== undefined) {
+                        $markObject = $.markTools.createCanvas($markObject, offset, drawData);
+                        //将canvas转换为静态canvas（绘画canvas拥有相对最高的z-index）
+                        $markObject.removeClass('draw-canvas').addClass('static-canvas');
+                        $markObject.off();
+                    }
+
                     $markDialog.remove();
                     $title.val('');
                     $description.val('');
@@ -681,6 +692,9 @@
                     if (options.onSaveMark) {
                         options.onSaveMark($markObject, $markBox, markData);
                     }
+
+                    $.markTools.cache.drawData = undefined;
+                    $.markTools.cache.offset = undefined;
                 });
         }
 
