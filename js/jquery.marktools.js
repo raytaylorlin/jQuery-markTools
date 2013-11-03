@@ -98,7 +98,7 @@
             this.$callObject.unbind();
 
             this.container.activeType = 'none';
-        };
+        }
 
         /**
          * 添加（绑定）样式选取器
@@ -120,7 +120,7 @@
                     _this.popup();
                 });
             }
-        };
+        }
 
         return ToolButton;
     })();
@@ -223,7 +223,7 @@
     })();
 
     var DrawingCanvas = (function() {
-        var DrawingCanvas = function($callObject, onDraw, onFinishDraw) {
+        var DrawingCanvas = function($callObject, onDraw, onFinishDraw, type) {
             var canvas;
             //canvas宽高
             this.width = $callObject.width();
@@ -234,6 +234,7 @@
             this.startDrag = false;
             this.onDraw = onDraw;
             this.onFinishDraw = onFinishDraw;
+            this.type = type;
             this.$callObject = $callObject;
 
             //初始化canvas并添加到调用插件的主容器
@@ -279,7 +280,8 @@
                             selection: selection,
                             onDraw: _this.onDraw,
                             color: $.markTools.options.color,
-                            penWidth: $.markTools.options.penWidth
+                            penWidth: $.markTools.options.penWidth,
+                            type: type
                         };
                         _this.startDrag = false;
 
@@ -376,10 +378,10 @@
 
             //初始化Region按钮
             if (options.showRegion) {
-                var btnRegion = new ToolButton(toolsMap['region'], $this),
+                var btnRect = new ToolButton(toolsMap['region'], $this),
                     stylePicker = new StylePicker($this);
 
-                btnRegion.onPress = function() {
+                btnRect.onPress = function() {
                     var onDraw = options.onDrawFuncMap['rect'],
                         onFinishDraw = function(drawingCanvas, e, drawData) {
                             //获取鼠标偏移量，显示并定位对话框
@@ -395,7 +397,7 @@
                             $.markTools.$callObject.append(showMarkDialog(offset));
 
                             //弹起按钮
-                            btnRegion.popup();
+                            btnRect.popup();
 
                             $canvas.unbind();
                             //将canvas转换为静态canvas（绘画canvas拥有相对最高的z-index）
@@ -403,10 +405,10 @@
                             $canvas.addClass('static-canvas');
                         };
 
-                    drawingCanvas = new DrawingCanvas($callObject, onDraw, onFinishDraw);
+                    drawingCanvas = new DrawingCanvas($callObject, onDraw, onFinishDraw, 'rect');
                     $callObject.append(drawingCanvas.$dom);
                 };
-                toolButtonContainer.add(btnRegion);
+                toolButtonContainer.add(btnRect);
             }
 
             if (options.showEllipse) {
@@ -436,7 +438,7 @@
                             $canvas.removeClass('draw-canvas');
                             $canvas.addClass('static-canvas');
                         };
-                    drawingCanvas = new DrawingCanvas($callObject, onDraw, onFinishDraw);
+                    drawingCanvas = new DrawingCanvas($callObject, onDraw, onFinishDraw, 'ellipse');
                     $callObject.append(drawingCanvas.$dom);
                 };
                 toolButtonContainer.add(btnEllipse);
@@ -480,7 +482,7 @@
                             $canvas.removeClass('draw-canvas');
                             $canvas.addClass('static-canvas');
                         };
-                    drawingCanvas = new DrawingCanvas($callObject, onDraw, onFinishDraw);
+                    drawingCanvas = new DrawingCanvas($callObject, onDraw, onFinishDraw, 'line');
                     $callObject.append(drawingCanvas.$dom);
                 };
                 toolButtonContainer.add(btnLine);
@@ -572,7 +574,7 @@
                         $markBox,
                         $markObject;
                     if (title.trim() == '' || description.trim() == '') {
-                        alert('Title and description cannot be empty.');
+                        // alert('Title and description cannot be empty.');
                         return;
                     }
                     $markObject = $markDialog.prev();
@@ -580,12 +582,14 @@
                     $title.val('');
                     $description.val('');
 
-                    var markType = $markObject.hasClass('static-pin') ? 'pin' : 'region';
+                    var markType = $markObject.hasClass('static-pin') ?
+                        'pin' : $markObject.attr('mark-type');
 
                     var markData = {
                         title: title,
                         description: description,
                         type: markType,
+                        color: $.markTools.options.color,
                         mouseX: parseInt($markObject.css('left')),
                         mouseY: parseInt($markObject.css('top')),
                         width: markType === 'pin' ? 0 : $markObject.width(),
@@ -761,6 +765,7 @@
                 height = Math.abs(data.selection.y2 - data.selection.y1) + options.canvasMargin * 2,
                 onDraw = options.onDrawFuncMap[data.type] || data.onDraw;
             $canvas.attr('width', width).attr('height', height);
+            $canvas.attr('mark-type', data.type);
 
             context.clearRect(0, 0, width, height);
             context.strokeStyle = data.color;
