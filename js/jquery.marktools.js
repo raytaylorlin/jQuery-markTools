@@ -77,6 +77,7 @@
             });
 
             //触发按钮按下的事件
+            $.markTools.cache.userStartDraw = false;
             this.onPress();
             $.markTools.options.onToolButtonActivated();
         };
@@ -96,6 +97,11 @@
             //隐藏光标
             this.$cursor.hide();
             this.$callObject.unbind();
+
+            //若用户没有开始绘画，则在切换按钮的时候删除所有现存canvas
+            if (!$.markTools.cache.userStartDraw) {
+                $('.draw-canvas').remove();
+            }
 
             this.container.activeType = 'none';
         }
@@ -260,6 +266,7 @@
                     if (!_this.startDrag) {
                         //开始拖动
                         _this.startDrag = true;
+                        $.markTools.cache.userStartDraw = true;
                         selection.x1 = e.offsetX || (e.clientX - $(e.target).offset().left);
                         selection.y1 = e.offsetY || (e.clientY - $(e.target).offset().top);
                     }
@@ -399,7 +406,7 @@
                             //弹起按钮
                             btnRect.popup();
 
-                            $canvas.unbind();
+                            // $canvas.unbind();
                             //将canvas转换为静态canvas（绘画canvas拥有相对最高的z-index）
                             $canvas.removeClass('draw-canvas');
                             $canvas.addClass('static-canvas');
@@ -687,6 +694,9 @@
                     context.stroke();
                 }
             }
+        },
+        cache: {
+            userStartDraw: false
         },
         createMarkBox: function(data, $template) {
             var key,
