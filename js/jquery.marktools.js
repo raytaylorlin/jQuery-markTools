@@ -252,43 +252,44 @@
 
             this.context = canvas.get(0).getContext("2d");
 
-            var selection = {
+            this.selection = {
                 x1: 0,
                 y1: 0,
                 x2: 0,
                 y2: 0
-            }, _this = this;
+            }
+            var _this = this;
 
             this.clear();
             //绑定canvas的鼠标事件
-            canvas.mousedown(
+            canvas.on('mousedown',
                 function(e) {
                     if (!_this.startDrag) {
                         //开始拖动
                         _this.startDrag = true;
                         $.markTools.cache.userStartDraw = true;
-                        selection.x1 = e.offsetX || (e.clientX - $(e.target).offset().left);
-                        selection.y1 = e.offsetY || (e.clientY - $(e.target).offset().top);
+                        _this.selection.x1 = e.offsetX || (e.clientX - $(e.target).offset().left);
+                        _this.selection.y1 = e.offsetY || (e.clientY - $(e.target).offset().top);
                     }
-                }).mousemove(
+                }).on('mousemove',
                 function(e) {
                     if (_this.startDrag) {
-                        selection.x2 = e.offsetX || (e.clientX - $(e.target).offset().left);
-                        selection.y2 = e.offsetY || (e.clientY - $(e.target).offset().top);
+                        _this.selection.x2 = e.offsetX || (e.clientX - $(e.target).offset().left);
+                        _this.selection.y2 = e.offsetY || (e.clientY - $(e.target).offset().top);
 
                         _this.clear();
                         _this.refreshStyle();
-                        _this.onDraw(_this.context, selection);
+                        _this.onDraw(_this.context, _this.selection);
                     }
-                }).mouseup(
+                }).on('mouseup',
                 function(e) {
                     if (_this.startDrag) {
                         var drawData = {
-                            selection: selection,
+                            selection: _this.selection,
                             onDraw: _this.onDraw,
                             color: $.markTools.options.color,
                             penWidth: $.markTools.options.penWidth,
-                            type: type
+                            type: _this.type
                         };
                         _this.startDrag = false;
 
@@ -306,6 +307,74 @@
 
         DrawingCanvas.prototype.clear = function() {
             this.context.clearRect(0, 0, this.width, this.height);
+        };
+
+        DrawingCanvas.prototype.activeEdit = function() {
+            var canvas = this.$dom,
+                _this = this,
+                startDragPoint = {}, 
+                originSelection = {
+                    x1: this.selection.x1,
+                    x2: this.selection.x2,
+                    y1: this.selection.y1,
+                    y2: this.selection.y2
+                };
+            canvas.off();
+            this.startDrag = false;
+
+            canvas.on('mousedown',
+                function(e) {
+                    if (!_this.startDrag && _this.isMouseInSelection(e)) {
+                        //开始拖动
+                        _this.startDrag = true;
+                        startDragPoint.x1 = e.offsetX || (e.clientX - $(e.target).offset().left);
+                        startDragPoint.y1 = e.offsetY || (e.clientY - $(e.target).offset().top);
+                        canvas.next('.mark-dialog').remove();
+                    }
+                }).on('mousemove',
+                function(e) {
+                    if (_this.startDrag) {
+                        startDragPoint.x2 = e.offsetX || (e.clientX - $(e.target).offset().left);
+                        startDragPoint.y2 = e.offsetY || (e.clientY - $(e.target).offset().top);
+                        var offsetX = startDragPoint.x2 - startDragPoint.x1,
+                            offsetY = startDragPoint.y2 - startDragPoint.y1;
+
+                        _this.selection.x1 = originSelection.x1 + offsetX;
+                        _this.selection.x2 = originSelection.x2 + offsetX;
+                        _this.selection.y1 = originSelection.y1 + offsetY;
+                        _this.selection.y2 = originSelection.y2 + offsetY;
+
+                        _this.clear();
+                        _this.refreshStyle();
+                        _this.onDraw(_this.context, _this.selection);
+                    }
+                }).on('mouseup',
+                function(e) {
+                    if (_this.startDrag) {
+                        var drawData = {
+                            selection: _this.selection,
+                            onDraw: _this.onDraw,
+                            color: $.markTools.options.color,
+                            penWidth: $.markTools.options.penWidth,
+                            type: _this.type
+                        };
+                        _this.startDrag = false;
+
+                        if (_this.onFinishDraw) {
+                            _this.onFinishDraw(_this, e, drawData);
+                        }
+                    }
+                });
+        };
+
+        DrawingCanvas.prototype.isMouseInSelection = function(e) {
+            var mouseX = e.offsetX || (e.clientX - $(e.target).offset().left),
+                mouseY = e.offsetY || (e.clientY - $(e.target).offset().top),
+                x1 = this.selection.x1 < this.selection.x2 ? this.selection.x1 : this.selection.x2,
+                y1 = this.selection.y1 < this.selection.y2 ? this.selection.y1 : this.selection.y2,
+                w = Math.abs(this.selection.x1 - this.selection.x2),
+                h = Math.abs(this.selection.y1 - this.selection.y2);
+            return (mouseX >= x1 && mouseX <= x1 + w && mouseY >= y1 && mouseY <= y1 + h);
         };
 
         return DrawingCanvas;
@@ -395,12 +464,13 @@
                             var offset = getMouseOffset($callObject, e),
                                 $canvas = drawingCanvas.$dom,
                                 margin = drawingCanvas.margin;
-                            offset.left = offset.left + 0 - (drawData.selection.x2 - drawData.selection.x1) / 2;
-                            offset.top = offset.top + (drawData.selection.y2 > drawData.selection.y1 ? 0 :
+                            offset.left = drawData.selection.x2 - (drawData.selection.x2 - drawData.selection.x1) / 2;
+                            offset.top = drawData.selection.y2 + (drawData.selection.y2 > drawData.selection.y1 ? 0 :
                                 drawData.selection.y1 - drawData.selection.y2);
 
-                            $markObject = $.markTools.createCanvas($canvas, offset, drawData);
-                            $.markTools.$callObject.append($markObject);
+                            drawingCanvas.activeEdit();
+                            // $markObject = $.markTools.createCanvas($canvas, offset, drawData);
+                            // $.markTools.$callObject.append($markObject);
                             $.markTools.$callObject.append(showMarkDialog(offset));
 
                             //弹起按钮
@@ -408,8 +478,8 @@
 
                             // $canvas.unbind();
                             //将canvas转换为静态canvas（绘画canvas拥有相对最高的z-index）
-                            $canvas.removeClass('draw-canvas');
-                            $canvas.addClass('static-canvas');
+                            // $canvas.removeClass('draw-canvas');
+                            // $canvas.addClass('static-canvas');
                         };
 
                     drawingCanvas = new DrawingCanvas($callObject, onDraw, onFinishDraw, 'rect');
