@@ -470,7 +470,6 @@
 
                             $.markTools.cache.drawData = drawData;
                             $.markTools.cache.offset = offset;
-
                             drawingCanvas.activeEdit();
                             $.markTools.$callObject.append(showMarkDialog(offset));
 
@@ -495,21 +494,17 @@
                             var offset = getMouseOffset($callObject, e),
                                 $canvas = drawingCanvas.$dom,
                                 margin = drawingCanvas.margin;
-                            offset.left = offset.left + 0 - (drawData.selection.x2 - drawData.selection.x1) / 2;
-                            offset.top = offset.top + (drawData.selection.y2 > drawData.selection.y1 ? 0 :
+                            offset.left = drawData.selection.x2 - (drawData.selection.x2 - drawData.selection.x1) / 2;
+                            offset.top = drawData.selection.y2 + (drawData.selection.y2 > drawData.selection.y1 ? 0 :
                                 drawData.selection.y1 - drawData.selection.y2);
 
-                            $markObject = $.markTools.createCanvas($canvas, offset, drawData);
-                            $.markTools.$callObject.append($markObject);
+                            $.markTools.cache.drawData = drawData;
+                            $.markTools.cache.offset = offset;
+                            drawingCanvas.activeEdit();
                             $.markTools.$callObject.append(showMarkDialog(offset));
 
                             //弹起按钮
                             btnEllipse.popup();
-
-                            $canvas.unbind();
-                            //将canvas转换为静态canvas（绘画canvas拥有相对最高的z-index）
-                            $canvas.removeClass('draw-canvas');
-                            $canvas.addClass('static-canvas');
                         };
                     drawingCanvas = new DrawingCanvas($callObject, onDraw, onFinishDraw, 'ellipse');
                     $callObject.append(drawingCanvas.$dom);
@@ -529,11 +524,13 @@
                                 originOffset = getMouseOffset($callObject, e),
                                 $canvas = drawingCanvas.$dom,
                                 margin = drawingCanvas.margin;
-                            offset.left = offset.left + 0 - (drawData.selection.x2 - drawData.selection.x1) / 2;
-                            offset.top = offset.top + (drawData.selection.y2 > drawData.selection.y1 ? 0 :
+                            offset.left = drawData.selection.x2 - (drawData.selection.x2 - drawData.selection.x1) / 2;
+                            offset.top = drawData.selection.y2 + (drawData.selection.y2 > drawData.selection.y1 ? 0 :
                                 drawData.selection.y1 - drawData.selection.y2);
 
-                            $markObject = $.markTools.createCanvas($canvas, offset, drawData, function(selection) {
+                            $.markTools.cache.drawData = drawData;
+                            $.markTools.cache.offset = offset;
+                            $.markTools.cache.changeSelection = function(selection) {
                                 var margin = $.markTools.options.canvasMargin,
                                     flagX = selection.x2 > selection.x1,
                                     flagY = selection.y2 > selection.y1,
@@ -543,17 +540,12 @@
                                 selection.x2 = flagX ? width : margin;
                                 selection.y1 = flagY ? margin : height;
                                 selection.y2 = flagY ? height : margin;
-                            });
-                            $.markTools.$callObject.append($markObject);
+                            };
+                            drawingCanvas.activeEdit();
                             $.markTools.$callObject.append(showMarkDialog(offset));
 
                             //弹起按钮
                             btnLine.popup();
-
-                            $canvas.unbind();
-                            //将canvas转换为静态canvas（绘画canvas拥有相对最高的z-index）
-                            $canvas.removeClass('draw-canvas');
-                            $canvas.addClass('static-canvas');
                         };
                     drawingCanvas = new DrawingCanvas($callObject, onDraw, onFinishDraw, 'line');
                     $callObject.append(drawingCanvas.$dom);
@@ -646,21 +638,19 @@
 
                         $markBox,
                         $markObject,
-                        offset, drawData;
+                        offset, drawData, changeSelection;
                     if (title.trim() == '' || description.trim() == '') {
                         // alert('Title and description cannot be empty.');
                         // return;
                     }
 
-                    // $markObject = $.markTools.createCanvas($canvas, offset, drawData);
-                    // $.markTools.$callObject.append($markObject);
-
                     offset = $.markTools.cache.offset;
                     drawData = $.markTools.cache.drawData;
+                    changeSelection = $.markTools.cache.changeSelection;
                     $markObject = $markDialog.prev();
 
                     if (drawData !== undefined) {
-                        $markObject = $.markTools.createCanvas($markObject, offset, drawData);
+                        $markObject = $.markTools.createCanvas($markObject, offset, drawData, changeSelection);
                         //将canvas转换为静态canvas（绘画canvas拥有相对最高的z-index）
                         $markObject.removeClass('draw-canvas').addClass('static-canvas');
                         $markObject.off();
@@ -687,7 +677,7 @@
                     //创建新的markBox
                     $markBox = $.markTools.createMarkBox(markData, $markBoxTemplate);
                     $.markTools.bindMarkAndBox($markObject, $markBox);
-
+ 
                     //触发保存mark时的自定义方法
                     if (options.onSaveMark) {
                         options.onSaveMark($markObject, $markBox, markData);
