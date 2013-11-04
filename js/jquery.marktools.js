@@ -316,6 +316,7 @@
             var canvas = this.$dom,
                 _this = this,
                 startDragPoint = {},
+                startResizePoint = -1,
                 originSelection = {
                     x1: this.selection.x1,
                     x2: this.selection.x2,
@@ -332,6 +333,14 @@
 
             canvas.on('mousedown',
                 function(e) {
+                    if(!_this.startResize){
+                        startResizePoint = resizeHandlerGroup.checkMouseOn(e);
+                        if(startResizePoint >= 0) {
+                            _this.startResize = true;
+                            //拖动时隐藏对话框
+                            canvas.next('.mark-dialog').hide();
+                        }
+                    }
                     if (!_this.startDrag && _this.checkMouseOn(e)) {
                         //开始拖动
                         _this.startDrag = true;
@@ -340,15 +349,15 @@
                         startDragPoint.y1 = e.offsetY || (e.clientY - $(e.target).offset().top);
                         //拖动时隐藏对话框
                         canvas.next('.mark-dialog').hide();
-                    } else {
-                        
-                    }
+                    } 
                 }).on('mousemove',
                 function(e) {
+                    var mouseX = e.offsetX || (e.clientX - $(e.target).offset().left),
+                        mouseY = e.offsetY || (e.clientY - $(e.target).offset().top);
                     if (_this.startDrag) {
                         //记录拖动终点
-                        startDragPoint.x2 = e.offsetX || (e.clientX - $(e.target).offset().left);
-                        startDragPoint.y2 = e.offsetY || (e.clientY - $(e.target).offset().top);
+                        startDragPoint.x2 = mouseX;
+                        startDragPoint.y2 = mouseY;
                         //计算本次拖动的偏移量
                         var offsetX = startDragPoint.x2 - startDragPoint.x1,
                             offsetY = startDragPoint.y2 - startDragPoint.y1;
@@ -362,12 +371,33 @@
                         _this.refreshStyle();
                         _this.onDraw(_this.context, _this.selection);
                         resizeHandlerGroup.draw(_this.selection);
-                    } else {
-                        
+                    } else if(_this.startResize) {
+                        switch(startResizePoint) {
+                            case 0:
+                                _this.selection.x1 = mouseX;
+                                _this.selection.y1 = mouseY;
+                                break;
+                            case 1:
+                                _this.selection.x2 = mouseX;
+                                _this.selection.y1 = mouseY;
+                                break;
+                            case 2:
+                                _this.selection.x1 = mouseX;
+                                _this.selection.y2 = mouseY;
+                                break;
+                            case 3:
+                                _this.selection.x2 = mouseX;
+                                _this.selection.y2 = mouseY;
+                                break;
+                        }
+                        _this.clear();
+                        _this.refreshStyle();
+                        _this.onDraw(_this.context, _this.selection);
+                        resizeHandlerGroup.draw(_this.selection);
                     }
                 }).on('mouseup',
                 function(e) {
-                    if (_this.startDrag) {
+                    if (_this.startDrag || _this.startResize) {
                         var drawData = {
                             selection: _this.selection,
                             onDraw: _this.onDraw,
