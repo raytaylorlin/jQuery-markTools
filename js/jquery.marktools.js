@@ -309,7 +309,10 @@
             this.context.clearRect(0, 0, this.width, this.height);
         };
 
-        DrawingCanvas.prototype.activeEdit = function() {
+        /**
+         * 开启图形的编辑
+         */
+        DrawingCanvas.prototype.activeEdit = function(type) {
             var canvas = this.$dom,
                 _this = this,
                 startDragPoint = {},
@@ -318,28 +321,38 @@
                     x2: this.selection.x2,
                     y1: this.selection.y1,
                     y2: this.selection.y2
-                };
+                },
+                resizeHandlerGroup = new ResizeHandlerGroup(this.context, this.selection, type);
+            //禁用canvas之前绑定的事件
             canvas.off();
             this.startDrag = false;
+            this.startResize = false;
+
+            resizeHandlerGroup.draw(this.selection);
 
             canvas.on('mousedown',
                 function(e) {
-                    if (!_this.startDrag && _this.isMouseInSelection(e)) {
+                    if (!_this.startDrag && _this.checkMouseOn(e)) {
                         //开始拖动
                         _this.startDrag = true;
                         //记录拖动的起点
                         startDragPoint.x1 = e.offsetX || (e.clientX - $(e.target).offset().left);
                         startDragPoint.y1 = e.offsetY || (e.clientY - $(e.target).offset().top);
+                        //拖动时隐藏对话框
                         canvas.next('.mark-dialog').hide();
+                    } else {
+                        
                     }
                 }).on('mousemove',
                 function(e) {
                     if (_this.startDrag) {
+                        //记录拖动终点
                         startDragPoint.x2 = e.offsetX || (e.clientX - $(e.target).offset().left);
                         startDragPoint.y2 = e.offsetY || (e.clientY - $(e.target).offset().top);
+                        //计算本次拖动的偏移量
                         var offsetX = startDragPoint.x2 - startDragPoint.x1,
                             offsetY = startDragPoint.y2 - startDragPoint.y1;
-
+                        //重新计算绘制位置
                         _this.selection.x1 = originSelection.x1 + offsetX;
                         _this.selection.x2 = originSelection.x2 + offsetX;
                         _this.selection.y1 = originSelection.y1 + offsetY;
@@ -348,6 +361,9 @@
                         _this.clear();
                         _this.refreshStyle();
                         _this.onDraw(_this.context, _this.selection);
+                        resizeHandlerGroup.draw(_this.selection);
+                    } else {
+                        
                     }
                 }).on('mouseup',
                 function(e) {
@@ -361,6 +377,7 @@
                         };
                         _this.startDrag = false;
 
+                        //结束拖动后显示对话框
                         canvas.next('.mark-dialog').show();
                         if (_this.onFinishDraw) {
                             _this.onFinishDraw(_this, e, drawData);
@@ -369,7 +386,7 @@
                 });
         };
 
-        DrawingCanvas.prototype.isMouseInSelection = function(e) {
+        DrawingCanvas.prototype.checkMouseOn = function(e) {
             var mouseX = e.offsetX || (e.clientX - $(e.target).offset().left),
                 mouseY = e.offsetY || (e.clientY - $(e.target).offset().top),
                 x1 = this.selection.x1 < this.selection.x2 ? this.selection.x1 : this.selection.x2,
@@ -377,6 +394,72 @@
                 w = Math.abs(this.selection.x1 - this.selection.x2),
                 h = Math.abs(this.selection.y1 - this.selection.y2);
             return (mouseX >= x1 && mouseX <= x1 + w && mouseY >= y1 && mouseY <= y1 + h);
+        };
+
+        var ResizeHandlerGroup = function(context, selection, type) {
+            this.context = context;
+            this.selection = selection;
+            this.type = type;
+            this.handlerList = [
+                new ResizeHandler(),
+                new ResizeHandler(),
+                new ResizeHandler(),
+                new ResizeHandler()
+            ];
+            if (type === 'line') {
+                this.handlerList[1].canDraw = false;
+                this.handlerList[2].canDraw = false;
+            }
+        };
+
+        ResizeHandlerGroup.prototype.draw = function(selection) {
+            var i;
+            this.handlerList[0].setPosition(selection.x1, selection.y1);
+            this.handlerList[1].setPosition(selection.x2, selection.y1);
+            this.handlerList[2].setPosition(selection.x1, selection.y2);
+            this.handlerList[3].setPosition(selection.x2, selection.y2);
+            for (i = 0; i < this.handlerList.length; i++) {
+                this.handlerList[i].draw(this.context);
+            }
+        };
+
+        ResizeHandlerGroup.prototype.checkMouseOn = function(e) {
+            var i;
+            for (i = 0; i < this.handlerList.length; i++) {
+                if(this.handlerList[i].checkMouseOn(e)) {
+                    return i;
+                }
+            }
+            return -1;
+        };
+
+        var ResizeHandler = function() {
+            this.canDraw = true;
+        };
+
+        ResizeHandler.prototype.setPosition = function(x, y) {
+            this.x = x;
+            this.y = y;
+            this.r = 4;
+        };
+
+        ResizeHandler.prototype.draw = function(context) {
+            if (this.canDraw) {
+                context.beginPath();
+                context.strokeStyle = '#fff';
+                context.fillStyle = '#1977FF';
+                context.arc(this.x, this.y, this.r, 0, Math.PI * 2, true);
+                context.stroke();
+                context.fill();
+                context.closePath();
+            }
+        };
+
+        ResizeHandler.prototype.checkMouseOn = function(e) {
+            var mouseX = e.offsetX || (e.clientX - $(e.target).offset().left),
+                mouseY = e.offsetY || (e.clientY - $(e.target).offset().top);
+            return (mouseX >= this.x - this.r && mouseX <= this.x + this.r && 
+                mouseY >= this.y - this.r && mouseY <= this.y + this.r);
         };
 
         return DrawingCanvas;
@@ -472,8 +555,8 @@
 
                             $.markTools.cache.drawData = drawData;
                             $.markTools.cache.offset = offset;
-                            drawingCanvas.activeEdit();
-                            if(!drawingCanvas.$dom.next('.mark-dialog').exists()) {
+                            drawingCanvas.activeEdit('rect');
+                            if (!drawingCanvas.$dom.next('.mark-dialog').exists()) {
                                 $.markTools.$callObject.append(showMarkDialog(offset));
                             } else {
                                 setOffset(drawingCanvas.$dom.next('.mark-dialog'), offset);
@@ -506,8 +589,8 @@
 
                             $.markTools.cache.drawData = drawData;
                             $.markTools.cache.offset = offset;
-                            drawingCanvas.activeEdit();
-                            if(!drawingCanvas.$dom.next('.mark-dialog').exists()) {
+                            drawingCanvas.activeEdit('ellipse');
+                            if (!drawingCanvas.$dom.next('.mark-dialog').exists()) {
                                 $.markTools.$callObject.append(showMarkDialog(offset));
                             } else {
                                 setOffset(drawingCanvas.$dom.next('.mark-dialog'), offset);
@@ -551,8 +634,8 @@
                                 selection.y1 = flagY ? margin : height;
                                 selection.y2 = flagY ? height : margin;
                             };
-                            drawingCanvas.activeEdit();
-                            if(!drawingCanvas.$dom.next('.mark-dialog').exists()) {
+                            drawingCanvas.activeEdit('line');
+                            if (!drawingCanvas.$dom.next('.mark-dialog').exists()) {
                                 $.markTools.$callObject.append(showMarkDialog(offset));
                             } else {
                                 setOffset(drawingCanvas.$dom.next('.mark-dialog'), offset);
@@ -691,7 +774,7 @@
                     //创建新的markBox
                     $markBox = $.markTools.createMarkBox(markData, $markBoxTemplate);
                     $.markTools.bindMarkAndBox($markObject, $markBox);
- 
+
                     //触发保存mark时的自定义方法
                     if (options.onSaveMark) {
                         options.onSaveMark($markObject, $markBox, markData);
