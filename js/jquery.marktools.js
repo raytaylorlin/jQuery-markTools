@@ -327,9 +327,10 @@
                     if (!_this.startDrag && _this.isMouseInSelection(e)) {
                         //开始拖动
                         _this.startDrag = true;
+                        //记录拖动的起点
                         startDragPoint.x1 = e.offsetX || (e.clientX - $(e.target).offset().left);
                         startDragPoint.y1 = e.offsetY || (e.clientY - $(e.target).offset().top);
-                        canvas.next('.mark-dialog').remove();
+                        canvas.next('.mark-dialog').hide();
                     }
                 }).on('mousemove',
                 function(e) {
@@ -360,6 +361,7 @@
                         };
                         _this.startDrag = false;
 
+                        canvas.next('.mark-dialog').show();
                         if (_this.onFinishDraw) {
                             _this.onFinishDraw(_this, e, drawData);
                         }
@@ -471,7 +473,11 @@
                             $.markTools.cache.drawData = drawData;
                             $.markTools.cache.offset = offset;
                             drawingCanvas.activeEdit();
-                            $.markTools.$callObject.append(showMarkDialog(offset));
+                            if(!drawingCanvas.$dom.next('.mark-dialog').exists()) {
+                                $.markTools.$callObject.append(showMarkDialog(offset));
+                            } else {
+                                setOffset(drawingCanvas.$dom.next('.mark-dialog'), offset);
+                            }
 
                             //弹起按钮
                             btnRect.popup();
@@ -501,7 +507,11 @@
                             $.markTools.cache.drawData = drawData;
                             $.markTools.cache.offset = offset;
                             drawingCanvas.activeEdit();
-                            $.markTools.$callObject.append(showMarkDialog(offset));
+                            if(!drawingCanvas.$dom.next('.mark-dialog').exists()) {
+                                $.markTools.$callObject.append(showMarkDialog(offset));
+                            } else {
+                                setOffset(drawingCanvas.$dom.next('.mark-dialog'), offset);
+                            }
 
                             //弹起按钮
                             btnEllipse.popup();
@@ -542,7 +552,11 @@
                                 selection.y2 = flagY ? height : margin;
                             };
                             drawingCanvas.activeEdit();
-                            $.markTools.$callObject.append(showMarkDialog(offset));
+                            if(!drawingCanvas.$dom.next('.mark-dialog').exists()) {
+                                $.markTools.$callObject.append(showMarkDialog(offset));
+                            } else {
+                                setOffset(drawingCanvas.$dom.next('.mark-dialog'), offset);
+                            }
 
                             //弹起按钮
                             btnLine.popup();
