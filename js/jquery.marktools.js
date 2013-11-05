@@ -801,13 +801,13 @@
                         height: markType === 'pin' ? 0 : $markObject.height()
                     };
 
-                    //创建新的markBox
-                    $markBox = $.markTools.createMarkBox(markData, $markBoxTemplate);
-                    $.markTools.bindMarkAndBox($markObject, $markBox);
-
                     //触发保存mark时的自定义方法
                     if (options.onSaveMark) {
                         options.onSaveMark($markObject, $markBox, markData);
+                    } else {
+                        //创建新的markBox
+                        $markBox = $.markTools.createMarkBox(markData, $markBoxTemplate);
+                        $.markTools.bindMarkAndBox($markObject, $markBox);
                     }
 
                     $.markTools.cache.drawData = undefined;
@@ -1013,7 +1013,7 @@
             $markBox.hide();
 
             $markObj.bind('click', function() {
-                $markBox.toggle();
+                $markBox.fadeToggle();
             });
         }
     };
