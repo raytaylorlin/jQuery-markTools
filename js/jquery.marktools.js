@@ -339,9 +339,10 @@
                             _this.startResize = true;
                             //拖动时隐藏对话框
                             canvas.next('.mark-dialog').hide();
+                            return;
                         }
                     }
-                    if (!_this.startDrag && _this.checkMouseOn(e)) {
+                    if(!_this.startDrag && _this.checkMouseOn(e)) {
                         //开始拖动
                         _this.startDrag = true;
                         //记录拖动的起点
@@ -456,7 +457,7 @@
         ResizeHandlerGroup.prototype.checkMouseOn = function(e) {
             var i;
             for (i = 0; i < this.handlerList.length; i++) {
-                if(this.handlerList[i].checkMouseOn(e)) {
+                if(this.handlerList[i].checkMouseOn(e, this.context)) {
                     return i;
                 }
             }
@@ -487,9 +488,10 @@
 
         ResizeHandler.prototype.checkMouseOn = function(e) {
             var mouseX = e.offsetX || (e.clientX - $(e.target).offset().left),
-                mouseY = e.offsetY || (e.clientY - $(e.target).offset().top);
-            return (mouseX >= this.x - this.r && mouseX <= this.x + this.r && 
-                mouseY >= this.y - this.r && mouseY <= this.y + this.r);
+                mouseY = e.offsetY || (e.clientY - $(e.target).offset().top),
+                rOffset = 4;
+            return (mouseX >= this.x - (this.r + rOffset) && mouseX <= this.x + (this.r + rOffset) && 
+                mouseY >= this.y - (this.r + rOffset) && mouseY <= this.y + (this.r + rOffset));
         };
 
         return DrawingCanvas;
