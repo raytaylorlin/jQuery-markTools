@@ -76,10 +76,18 @@
                 $cursor.css(offset);
             });
 
-            //触发按钮按下的事件
-            $.markTools.cache.userStartDraw = false;
-            this.onPress();
-            $.markTools.options.onToolButtonActivated();
+            //判断当前是否有画布存在，不允许存在多个画布
+            if(!this.$callObject.find('.draw-canvas').exists()) {
+                //清空缓存
+                $.markTools.cache.userStartDraw = false;
+                //触发按钮按下的事件
+                this.onPress();
+                $.markTools.options.onToolButtonActivated();
+            } else {
+                console.log(this.type);
+                //画布存在则直接弹起按钮
+                this.popup();
+            }
         };
 
         /**
@@ -532,7 +540,8 @@
                     classActive: 'btn-marktools-line-active',
                     classCursor: 'cursor-line'
                 },
-                none: {
+                'color-picker': {
+                    type: 'color-picker',
                     classRest: 'btn-marktools-color',
                     classActive: 'btn-marktools-color'
                 }
@@ -683,7 +692,7 @@
             }
 
             if (true) {
-                var btnColorPicker = new ToolButton(toolsMap['none'], $this),
+                var btnColorPicker = new ToolButton(toolsMap['color-picker'], $this),
                     stylePicker = new StylePicker($this);
                 btnColorPicker.$dom.append('<div class="color-show-block"></div>');
 
