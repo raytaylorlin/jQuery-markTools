@@ -68,7 +68,7 @@
             //显示光标并绑定到鼠标移动事件
             var $cursor = this.$cursor;
             $cursor.show();
-            this.$callObject.bind('mousemove', function(e) {
+            this.$callObject.on('mousemove', function(e) {
                 var offset = {
                     left: e.clientX,
                     top: e.clientY
@@ -552,7 +552,7 @@
             if (options.showPin) {
                 var btnPin = new ToolButton(toolsMap['pin'], $this);
                 btnPin.onPress = function() {
-                    $callObject.bind('click', function(e) {
+                    $callObject.on('click', function(e) {
                         //获取鼠标偏移量
                         var offset = getMouseOffset($(this), e);
                         //创建静态图钉
@@ -852,9 +852,9 @@
             //TODO: 考虑引入一个marktools-template的div专门存放模板
             markDialogClass: 'mark-dialog',
             markBoxClass: 'mark-box',
-            onSaveMark: function() {},
-            onCancelMark: function() {},
-            onClickMark: function() {},
+            onSaveMark: null,
+            onCancelMark: null,
+            onClickMark: null,
             onToolButtonActivated: function() {},
 
             onDrawFuncMap: {
@@ -1014,7 +1014,7 @@
             $markObj.after($markBox);
             $markBox.hide();
 
-            $markObj.bind('click', function() {
+            $markObj.on('click', function() {
                 $markBox.fadeToggle();
             });
         }
