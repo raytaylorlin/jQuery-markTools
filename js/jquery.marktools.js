@@ -84,9 +84,13 @@
                 this.onPress();
                 $.markTools.options.onToolButtonActivated();
             } else {
-                console.log(this.type);
-                //画布存在则直接弹起按钮
-                this.popup();
+                //若按下的按钮是颜色选取，也触发按钮按下事件
+                if(this.type === 'color-picker') {
+                    this.onPress();
+                } else {
+                    //画布存在则直接弹起按钮
+                    this.popup();
+                }
             }
         };
 
@@ -131,6 +135,7 @@
                     $.markTools.options.color = color;
                     //改变显示色块的颜色
                     $('.color-show-block').css('background-color', color);
+                    $('body').trigger('STYLE_PICKER_COLOR_CHANGE', color);
                     _this.popup();
                 });
             }
@@ -306,6 +311,12 @@
                         }
                     }
                 });
+
+            //捕获颜色改变的事件
+            $('body').on('STYLE_PICKER_COLOR_CHANGE', function(e, color){
+                _this.refreshStyle();
+                _this.onDraw(_this.context, _this.selection);
+            });
         };
 
         DrawingCanvas.prototype.refreshStyle = function() {
