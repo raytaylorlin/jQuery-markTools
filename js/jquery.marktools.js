@@ -135,7 +135,7 @@
                     $.markTools.options.color = color;
                     //改变显示色块的颜色
                     $('.color-show-block').css('background-color', color);
-                    $('body').trigger('STYLE_PICKER_COLOR_CHANGE', color);
+                    _this.$callObject.parent().trigger('STYLE_PICKER_COLOR_CHANGE', color);
                     _this.popup();
                 });
             }
@@ -311,12 +311,6 @@
                         }
                     }
                 });
-
-            //捕获颜色改变的事件
-            $('body').on('STYLE_PICKER_COLOR_CHANGE', function(e, color){
-                _this.refreshStyle();
-                _this.onDraw(_this.context, _this.selection);
-            });
         };
 
         DrawingCanvas.prototype.refreshStyle = function() {
@@ -434,6 +428,14 @@
                         }
                     }
                 });
+
+            //捕获颜色改变的事件
+            this.$callObject.parent().on('STYLE_PICKER_COLOR_CHANGE', function(e, color){
+                _this.clear();
+                _this.refreshStyle();
+                _this.onDraw(_this.context, _this.selection);
+                resizeHandlerGroup.draw(_this.selection);
+            });
         };
 
         DrawingCanvas.prototype.checkMouseOn = function(e) {
