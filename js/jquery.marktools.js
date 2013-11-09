@@ -250,7 +250,8 @@
             //canvas边距
             this.margin = 10;
             //是否开始在canvas上拖拽的标记
-            this.startDrag = false;
+            this.startMouseDown = false;
+            this.startMouseMove = false;
             this.onDraw = onDraw;
             this.onFinishDraw = onFinishDraw;
             this.type = type;
@@ -277,16 +278,18 @@
             //绑定canvas的鼠标事件
             canvas.on('mousedown',
                 function(e) {
-                    if (!_this.startDrag) {
-                        //开始拖动
-                        _this.startDrag = true;
+                    if (!_this.startMouseDown) {
+                        //标记鼠标开始按下
+                        _this.startMouseDown = true;
                         $.markTools.cache.userStartDraw = true;
                         _this.selection.x1 = e.offsetX || (e.clientX - $(e.target).offset().left);
                         _this.selection.y1 = e.offsetY || (e.clientY - $(e.target).offset().top);
                     }
                 }).on('mousemove',
                 function(e) {
-                    if (_this.startDrag) {
+                    if (_this.startMouseDown && !_this.startMouseMove) {
+                        //标记鼠标开始移动
+                        _this.startMouseMove = true;
                         _this.selection.x2 = e.offsetX || (e.clientX - $(e.target).offset().left);
                         _this.selection.y2 = e.offsetY || (e.clientY - $(e.target).offset().top);
 
@@ -296,7 +299,11 @@
                     }
                 }).on('mouseup',
                 function(e) {
-                    if (_this.startDrag) {
+                    if (_this.startMouseDown) {
+                        if(!_this.startMouseMove) {
+                            _this.selection.x2 = _this.selection.x1;
+                            _this.selection.y2 = _this.selection.y1;
+                        }
                         var drawData = {
                             selection: _this.selection,
                             onDraw: _this.onDraw,
