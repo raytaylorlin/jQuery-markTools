@@ -287,7 +287,7 @@
                     }
                 }).on('mousemove',
                 function(e) {
-                    if (_this.startMouseDown && !_this.startMouseMove) {
+                    if (_this.startMouseDown) {
                         //标记鼠标开始移动
                         _this.startMouseMove = true;
                         _this.selection.x2 = e.offsetX || (e.clientX - $(e.target).offset().left);
