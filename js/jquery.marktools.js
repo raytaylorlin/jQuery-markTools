@@ -374,7 +374,13 @@
                 }).on('mousemove',
                 function(e) {
                     var mouseX = e.offsetX || (e.clientX - $(e.target).offset().left),
-                        mouseY = e.offsetY || (e.clientY - $(e.target).offset().top);
+                        mouseY = e.offsetY || (e.clientY - $(e.target).offset().top),
+                        startResizePoint;
+                    if(_this.checkMouseOn(e)) {
+                        e.target.style.cursor = 'move';
+                    } else {
+                        e.target.style.cursor = 'default';
+                    }
                     if (_this.startDrag) {
                         //记录拖动终点
                         startDragPoint.x2 = mouseX;
