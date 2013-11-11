@@ -374,13 +374,8 @@
                 }).on('mousemove',
                 function(e) {
                     var mouseX = e.offsetX || (e.clientX - $(e.target).offset().left),
-                        mouseY = e.offsetY || (e.clientY - $(e.target).offset().top),
-                        startResizePoint;
-                    if(_this.checkMouseOn(e)) {
-                        e.target.style.cursor = 'move';
-                    } else {
-                        e.target.style.cursor = 'default';
-                    }
+                        mouseY = e.offsetY || (e.clientY - $(e.target).offset().top);
+                    
                     if (_this.startDrag) {
                         //记录拖动终点
                         startDragPoint.x2 = mouseX;
@@ -416,12 +411,22 @@
                                 _this.selection.x2 = mouseX;
                                 _this.selection.y2 = mouseY;
                                 break;
+                        } 
+                    } else {
+                        startResizePoint = resizeHandlerGroup.checkMouseOn(e);
+                        if(startResizePoint >= 0) {
+                            //0是左上角，3是右下角
+                            e.target.style.cursor = (startResizePoint % 3 === 0 ? 'se-resize' : 'ne-resize');
+                        } else if(_this.checkMouseOn(e)) {
+                            e.target.style.cursor = 'move';
+                        } else {
+                            e.target.style.cursor = 'default';
                         }
-                        _this.clear();
-                        _this.refreshStyle();
-                        _this.onDraw(_this.context, _this.selection);
-                        resizeHandlerGroup.draw(_this.selection);
                     }
+                    _this.clear();
+                    _this.refreshStyle();
+                    _this.onDraw(_this.context, _this.selection);
+                    resizeHandlerGroup.draw(_this.selection);
                 }).on('mouseup',
                 function(e) {
                     if (_this.startDrag || _this.startResize) {
