@@ -285,6 +285,7 @@
                         _this.selection.x1 = e.offsetX || (e.clientX - $(e.target).offset().left);
                         _this.selection.y1 = e.offsetY || (e.clientY - $(e.target).offset().top);
                     }
+                    e.preventDefault();
                 }).on('mousemove',
                 function(e) {
                     if (_this.startMouseDown) {
@@ -297,6 +298,7 @@
                         _this.refreshStyle();
                         _this.onDraw(_this.context, _this.selection);
                     }
+                    e.preventDefault();
                 }).on('mouseup',
                 function(e) {
                     if (_this.startMouseDown) {
@@ -317,6 +319,7 @@
                             _this.onFinishDraw(_this, e, drawData);
                         }
                     }
+                    e.preventDefault();
                 });
         };
 
@@ -370,7 +373,8 @@
                         startDragPoint.y1 = e.offsetY || (e.clientY - $(e.target).offset().top);
                         //拖动时隐藏对话框
                         canvas.next('.mark-dialog').hide();
-                    } 
+                    }
+                    e.preventDefault();
                 }).on('mousemove',
                 function(e) {
                     var mouseX = e.offsetX || (e.clientX - $(e.target).offset().left),
@@ -427,6 +431,7 @@
                     _this.refreshStyle();
                     _this.onDraw(_this.context, _this.selection);
                     resizeHandlerGroup.draw(_this.selection);
+                    e.preventDefault();
                 }).on('mouseup',
                 function(e) {
                     if (_this.startDrag || _this.startResize) {
@@ -445,6 +450,7 @@
                             _this.onFinishDraw(_this, e, drawData);
                         }
                     }
+                    e.preventDefault();
                 });
 
             //捕获颜色改变的事件
