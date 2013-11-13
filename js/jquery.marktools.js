@@ -1062,6 +1062,9 @@
 
             $markObj.on('click', function() {
                 $markBox.fadeToggle();
+                if($markBox.css('display') !== 'none') {
+                    $markObj.addClass('highlight-canvas');
+                }
             });
         }
     };

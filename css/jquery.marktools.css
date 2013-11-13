@@ -281,3 +281,20 @@
 .style-picker {
     z-index: 25;
 }
+
+.highlight-canvas {
+    animation: hehe 2s;
+    -webkit-animation: hehe 2s;
+}
+
+@keyframes hehe 
+{
+    from {background: blue;}
+    to {background: none;}
+}
+
+@-webkit-keyframes hehe
+{
+    from {background: blue;}
+    to {background: none;}
+}
