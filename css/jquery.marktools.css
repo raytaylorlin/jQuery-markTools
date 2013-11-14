@@ -283,17 +283,17 @@
 }
 
 .highlight-canvas {
-    animation: hehe 2s;
-    -webkit-animation: hehe 2s;
+    animation: highlight-animation 2s;
+    -webkit-animation: highlight-animation 2s;
 }
 
-@keyframes hehe 
+@keyframes highlight-animation
 {
     from {background: blue;}
     to {background: none;}
 }
 
-@-webkit-keyframes hehe
+@-webkit-keyframes highlight-animation
 {
     from {background: blue;}
     to {background: none;}

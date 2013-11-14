@@ -1061,10 +1061,14 @@
             $markBox.hide();
 
             $markObj.on('click', function() {
-                $markBox.fadeToggle();
-                if($markBox.css('display') !== 'none') {
+                if($markBox.css('display') === 'none') {
                     $markObj.addClass('highlight-canvas');
                 }
+                $markBox.fadeToggle(function() {
+                    setTimeout(function() {
+                        $markObj.removeClass('highlight-canvas');                        
+                    }, 1500);
+                });
             });
         }
     };
