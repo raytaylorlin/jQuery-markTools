@@ -77,7 +77,7 @@
             });
 
             //判断当前是否有画布存在，不允许存在多个画布
-            if(!this.$callObject.find('.draw-canvas').exists()) {
+            if (!this.$callObject.find('.draw-canvas').exists()) {
                 //清空缓存
                 $.markTools.cache.userStartDraw = false;
                 //触发按钮按下的事件
@@ -85,7 +85,7 @@
                 $.markTools.options.onToolButtonActivated();
             } else {
                 //若按下的按钮是颜色选取，也触发按钮按下事件
-                if(this.type === 'color-picker') {
+                if (this.type === 'color-picker') {
                     this.onPress();
                 } else {
                     //画布存在则直接弹起按钮
@@ -302,7 +302,7 @@
                 }).on('mouseup',
                 function(e) {
                     if (_this.startMouseDown) {
-                        if(!_this.startMouseMove) {
+                        if (!_this.startMouseMove) {
                             _this.selection.x2 = _this.selection.x1;
                             _this.selection.y2 = _this.selection.y1;
                         }
@@ -356,16 +356,16 @@
 
             canvas.on('mousedown',
                 function(e) {
-                    if(!_this.startResize){
+                    if (!_this.startResize) {
                         startResizePoint = resizeHandlerGroup.checkMouseOn(e);
-                        if(startResizePoint >= 0) {
+                        if (startResizePoint >= 0) {
                             _this.startResize = true;
                             //拖动时隐藏对话框
                             canvas.next('.mark-dialog').hide();
                             return;
                         }
                     }
-                    if(!_this.startDrag && _this.checkMouseOn(e)) {
+                    if (!_this.startDrag && _this.checkMouseOn(e)) {
                         //开始拖动
                         _this.startDrag = true;
                         //记录拖动的起点
@@ -379,7 +379,7 @@
                 function(e) {
                     var mouseX = e.offsetX || (e.clientX - $(e.target).offset().left),
                         mouseY = e.offsetY || (e.clientY - $(e.target).offset().top);
-                    
+
                     if (_this.startDrag) {
                         //记录拖动终点
                         startDragPoint.x2 = mouseX;
@@ -397,8 +397,8 @@
                         _this.refreshStyle();
                         _this.onDraw(_this.context, _this.selection);
                         resizeHandlerGroup.draw(_this.selection);
-                    } else if(_this.startResize) {
-                        switch(startResizePoint) {
+                    } else if (_this.startResize) {
+                        switch (startResizePoint) {
                             case 0:
                                 _this.selection.x1 = mouseX;
                                 _this.selection.y1 = mouseY;
@@ -415,13 +415,13 @@
                                 _this.selection.x2 = mouseX;
                                 _this.selection.y2 = mouseY;
                                 break;
-                        } 
+                        }
                     } else {
                         startResizePoint = resizeHandlerGroup.checkMouseOn(e);
-                        if(startResizePoint >= 0) {
+                        if (startResizePoint >= 0) {
                             //0是左上角，3是右下角
                             e.target.style.cursor = (startResizePoint % 3 === 0 ? 'se-resize' : 'ne-resize');
-                        } else if(_this.checkMouseOn(e)) {
+                        } else if (_this.checkMouseOn(e)) {
                             e.target.style.cursor = 'move';
                         } else {
                             e.target.style.cursor = 'default';
@@ -454,7 +454,7 @@
                 });
 
             //捕获颜色改变的事件
-            this.$callObject.parent().on('STYLE_PICKER_COLOR_CHANGE', function(e, color){
+            this.$callObject.parent().on('STYLE_PICKER_COLOR_CHANGE', function(e, color) {
                 _this.clear();
                 _this.refreshStyle();
                 _this.onDraw(_this.context, _this.selection);
@@ -502,7 +502,7 @@
         ResizeHandlerGroup.prototype.checkMouseOn = function(e) {
             var i;
             for (i = 0; i < this.handlerList.length; i++) {
-                if(this.handlerList[i].checkMouseOn(e, this.context)) {
+                if (this.handlerList[i].checkMouseOn(e, this.context)) {
                     return i;
                 }
             }
@@ -535,7 +535,7 @@
             var mouseX = e.offsetX || (e.clientX - $(e.target).offset().left),
                 mouseY = e.offsetY || (e.clientY - $(e.target).offset().top),
                 rOffset = 4;
-            return (mouseX >= this.x - (this.r + rOffset) && mouseX <= this.x + (this.r + rOffset) && 
+            return (mouseX >= this.x - (this.r + rOffset) && mouseX <= this.x + (this.r + rOffset) &&
                 mouseY >= this.y - (this.r + rOffset) && mouseY <= this.y + (this.r + rOffset));
         };
 
@@ -947,19 +947,23 @@
         cache: {
             userStartDraw: false
         },
-        createMarkBox: function(data, $template) {
+        createMarkBox: function(data, template) {
             var key,
                 $newMarkBox,
-                $template = $template || $('.' + $.markTools.options.markBoxClass),
-                newMarkBoxHtml;
-            $newMarkBox = $template.clone(true).show();
-            $newMarkBox.data = {};
-            newMarkBoxHtml = $newMarkBox.html();
+                $template, newMarkBoxHtml;
+
+            if (typeof template === 'string') {
+                newMarkBoxHtml = template;
+            } else if (template instanceof jQuery) {
+                newMarkBoxHtml = $('<div>').append(template.clone()).html();
+            }
+            // $template = $template || $('.' + $.markTools.options.markBoxClass);
+            // newMarkBoxHtml = templateHtml;
+
             for (key in data) {
                 newMarkBoxHtml = newMarkBoxHtml.replace('${' + key + '}', data[key]);
-                $newMarkBox.data[key] = data[key];
             }
-            $newMarkBox.html(newMarkBoxHtml);
+            $newMarkBox = $(newMarkBoxHtml);
             return $newMarkBox;
         },
         fillMarkBox: function($markBox, data) {
@@ -1061,12 +1065,12 @@
             $markBox.hide();
 
             $markObj.on('click', function() {
-                if($markBox.css('display') === 'none') {
+                if ($markBox.css('display') === 'none') {
                     $markObj.addClass('highlight-canvas');
                 }
                 $markBox.fadeToggle(function() {
                     setTimeout(function() {
-                        $markObj.removeClass('highlight-canvas');                        
+                        $markObj.removeClass('highlight-canvas');
                     }, 1500);
                 });
             });
