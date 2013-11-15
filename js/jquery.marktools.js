@@ -945,7 +945,8 @@
             }
         },
         cache: {
-            userStartDraw: false
+            userStartDraw: false,
+            openedMarkBox: null
         },
         createMarkBox: function(data, template) {
             var key,
@@ -1059,19 +1060,36 @@
 
             return $canvas;
         },
+        /**
+         * 将mark和mark-box绑定
+         * @param  {jQuery} $markObj mark的jQuery对象
+         * @param  {jQuery} $markBox mark-box的jQuery对象
+         */
         bindMarkAndBox: function($markObj, $markBox) {
             setOffset($markBox, getOffset($markObj));
             $markObj.after($markBox);
             $markBox.hide();
 
+            //点击mark事件
             $markObj.on('click', function() {
+                var $openedMarkBox = $.markTools.cache.openedMarkBox;
+                //添加高亮
                 if ($markBox.css('display') === 'none') {
                     $markObj.addClass('highlight-canvas');
                 }
-                $markBox.fadeToggle(function() {
+                if($openedMarkBox && $openedMarkBox[0] !== $markBox[0]) {
+                    $openedMarkBox.fadeOut();
+                }
+                //mark-box淡入或淡出
+                $markBox.fadeToggle('fast', function() {
+                    var $target = $(this);
                     setTimeout(function() {
                         $markObj.removeClass('highlight-canvas');
                     }, 1500);
+
+                    if($target.is(':visible')) {
+                        $.markTools.cache.openedMarkBox = $target;
+                    }
                 });
             });
         }
