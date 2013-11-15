@@ -108,7 +108,6 @@
 
             //隐藏光标
             this.$cursor.hide();
-            this.$callObject.unbind();
 
             //若用户没有开始绘画，则在切换按钮的时候删除所有现存canvas
             if (!$.markTools.cache.userStartDraw) {
@@ -738,6 +737,15 @@
                 };
                 toolButtonContainer.add(btnColorPicker);
             }
+
+            //点击绑定插件的主体，隐藏掉mark-box，相当于blur
+            $callObject.on('click', function(e) {
+                var $openedMarkBox = $.markTools.cache.openedMarkBox;
+                if($openedMarkBox) {
+                    $openedMarkBox.fadeOut();
+                    $.markTools.cache.openedMarkBox = null;
+                }
+            });
 
             var $marktoolsTemplate = $('#marktools-template').hide(),
                 markDialogTemplateHtml =
