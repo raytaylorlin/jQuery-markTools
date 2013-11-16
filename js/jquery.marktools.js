@@ -589,7 +589,8 @@
         function init() {
             //$this为调用插件的jQuery对象，对应组件中的$callObject
             var $this = $callObject = $(this),
-                options = $.markTools.options;
+                options = $.markTools.options,
+                mouseDownPos;
             $.markTools.$callObject = $this;
 
             toolButtonContainer = new ToolButtonContainer($this);
@@ -739,11 +740,23 @@
             }
 
             //点击绑定插件的主体，隐藏掉mark-box，相当于blur
-            $callObject.on('click', function(e) {
-                var $openedMarkBox = $.markTools.cache.openedMarkBox;
-                if($openedMarkBox) {
-                    $openedMarkBox.fadeOut();
-                    $.markTools.cache.openedMarkBox = null;
+            $callObject.on({
+                'mousedown.callObject_blur': function(e) {
+                    mouseDownPos = {
+                        x: e.pageX,
+                        y: e.pageY
+                    }
+                },
+                'mouseup.callObject_blue': function(e) {
+                    var $openedMarkBox;
+                    //这是一个真点击（非鼠标拖拽）
+                    if (mouseDownPos.x === e.pageX && mouseDownPos.y === e.pageY) {
+                        $openedMarkBox = $.markTools.cache.openedMarkBox;
+                        if ($openedMarkBox) {
+                            $openedMarkBox.fadeOut();
+                            $.markTools.cache.openedMarkBox = null;
+                        }
+                    }
                 }
             });
 
@@ -1085,7 +1098,7 @@
                 if ($markBox.css('display') === 'none') {
                     $markObj.addClass('highlight-canvas');
                 }
-                if($openedMarkBox && $openedMarkBox[0] !== $markBox[0]) {
+                if ($openedMarkBox && $openedMarkBox[0] !== $markBox[0]) {
                     $openedMarkBox.fadeOut();
                 }
                 //mark-box淡入或淡出
@@ -1095,7 +1108,7 @@
                         $markObj.removeClass('highlight-canvas');
                     }, 1500);
 
-                    if($target.is(':visible')) {
+                    if ($target.is(':visible')) {
                         $.markTools.cache.openedMarkBox = $target;
                     }
                 });
