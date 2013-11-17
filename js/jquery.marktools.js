@@ -740,25 +740,30 @@
             }
 
             //点击绑定插件的主体，隐藏掉mark-box，相当于blur
-            $callObject.on({
-                'mousedown.callObject_blur': function(e) {
-                    mouseDownPos = {
-                        x: e.pageX,
-                        y: e.pageY
-                    }
-                },
-                'mouseup.callObject_blue': function(e) {
-                    var $openedMarkBox;
-                    //这是一个真点击（非鼠标拖拽）
-                    if (mouseDownPos.x === e.pageX && mouseDownPos.y === e.pageY) {
-                        $openedMarkBox = $.markTools.cache.openedMarkBox;
-                        if ($openedMarkBox) {
-                            $openedMarkBox.fadeOut();
-                            $.markTools.cache.openedMarkBox = null;
-                        }
-                    }
-                }
-            });
+            // $callObject.on({
+                // 'click': function(e) {
+                //     $openedMarkBox = $.markTools.cache.openedMarkBox;
+                //     if ($openedMarkBox) {
+                //         $openedMarkBox.fadeOut();
+                //         $.markTools.cache.openedMarkBox = null;
+                //     }
+                // }
+                // 'mousedown.callObject_blur': function(e) {
+                //     if (e.button === 0) {
+                //         mouseDownPos = {
+                //             x: e.pageX,
+                //             y: e.pageY
+                //         }
+                //     }
+                // },
+                // 'mouseup.callObject_blue': function(e) {
+                //     var $openedMarkBox;
+                //     //这是一个真左键点击（非鼠标拖拽）
+                //     if (e.button === 0 && mouseDownPos.x === e.pageX && mouseDownPos.y === e.pageY) {
+                //         $callObject.click();
+                //     }
+                // }
+            // });
 
             var $marktoolsTemplate = $('#marktools-template').hide(),
                 markDialogTemplateHtml =
@@ -834,7 +839,7 @@
 
                         $markBox,
                         $markObject,
-                        offset, drawData, changeSelection;
+                        offset, drawData, changeSelection, sel;
                     if (title.trim() == '' || description.trim() == '') {
                         // alert('Title and description cannot be empty.');
                         // return;
@@ -842,6 +847,7 @@
 
                     offset = $.markTools.cache.offset;
                     drawData = $.markTools.cache.drawData;
+                    sel = drawData.selection;
                     changeSelection = $.markTools.cache.changeSelection;
                     $markObject = $markDialog.prev();
 
@@ -869,6 +875,10 @@
                         width: markType === 'pin' ? 0 : $markObject.width(),
                         height: markType === 'pin' ? 0 : $markObject.height()
                     };
+
+                    markData.lineReverse = (drawData.type === 'line' && 
+                        ((sel.x1 < sel.x2 && sel.y1 > sel.y2) ||
+                        (sel.x1 > sel.x2 && sel.y1 < sel.y2)));
 
                     //触发保存mark时的自定义方法
                     if (options.onSaveMark) {
@@ -1056,7 +1066,7 @@
             context.strokeStyle = data.color;
             context.lineWidth = options.penWidth;
 
-            if (changeSelection !== undefined) {
+            if (changeSelection && typeof changeSelection === 'function') {
                 changeSelection(data.selection);
             } else {
                 data.selection.x2 = width - options.canvasMargin;
@@ -1092,7 +1102,7 @@
             $markBox.hide();
 
             //点击mark事件
-            $markObj.on('click', function() {
+            $markObj.on('click', function(e) {
                 var $openedMarkBox = $.markTools.cache.openedMarkBox;
                 //添加高亮
                 if ($markBox.css('display') === 'none') {
@@ -1112,6 +1122,7 @@
                         $.markTools.cache.openedMarkBox = $target;
                     }
                 });
+                e.stopPropagation();
             });
         }
     };
