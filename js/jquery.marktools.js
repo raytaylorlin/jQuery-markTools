@@ -317,6 +317,7 @@
                         if (_this.onFinishDraw) {
                             _this.onFinishDraw(_this, e, drawData);
                         }
+                        _this.checkMarkBoxNearBottom(drawData.selection, canvas.next('.mark-dialog'));
                     }
                     e.preventDefault();
                 });
@@ -448,6 +449,7 @@
                         if (_this.onFinishDraw) {
                             _this.onFinishDraw(_this, e, drawData);
                         }
+                        _this.checkMarkBoxNearBottom(drawData.selection, canvas.next('.mark-dialog'));
                     }
                     e.preventDefault();
                 });
@@ -469,6 +471,23 @@
                 w = Math.abs(this.selection.x1 - this.selection.x2),
                 h = Math.abs(this.selection.y1 - this.selection.y2);
             return (mouseX >= x1 && mouseX <= x1 + w && mouseY >= y1 && mouseY <= y1 + h);
+        };
+
+        /**
+         * 检测所画的mark是否位于调用主体偏下的位置，依次决定是否将mark-box翻转至上面
+         * @param  {Object} selection mark的绘画位置
+         * @param  {jQuery} $markBox  markbox的jQuery对象
+         */
+        DrawingCanvas.prototype.checkMarkBoxNearBottom = function(selection, $markBox) {
+            var $callObject = this.$callObject,
+                markBoxHeight = $markBox.outerHeight(),
+                bottomY = selection.y1 > selection.y2 ? selection.y1 : selection.y2,
+                offset = 10;
+            
+            if(bottomY + markBoxHeight + offset > $callObject.height()) {
+                console.log('need reverse');
+                //TODO: reverse the markbox
+            }
         };
 
         var ResizeHandlerGroup = function(context, selection, type) {
