@@ -314,6 +314,8 @@
                         };
                         _this.startDrag = false;
 
+                        _this.repositionMarkDialog(e, drawData);
+
                         if (_this.onFinishDraw) {
                             _this.onFinishDraw(_this, e, drawData);
                         }
@@ -444,6 +446,7 @@
                         };
                         _this.startDrag = false;
 
+                        _this.repositionMarkDialog(e, drawData);
                         //结束拖动后显示对话框
                         canvas.next('.mark-dialog').show();
                         if (_this.onFinishDraw) {
@@ -473,8 +476,27 @@
             return (mouseX >= x1 && mouseX <= x1 + w && mouseY >= y1 && mouseY <= y1 + h);
         };
 
+        DrawingCanvas.prototype.repositionMarkDialog = function(e, drawData) {
+            var $callObject = this.$callObject;
+            //获取鼠标偏移量，显示并定位对话框
+            var offset = getMouseOffset($callObject, e),
+                sel = drawData.selection;
+
+            offset.left = sel.x2 - (sel.x2 - sel.x1) / 2;
+            offset.top = sel.y2 + (sel.y2 > sel.y1 ? 0 : sel.y1 - sel.y2);
+
+            $.markTools.cache.drawData = drawData;
+            $.markTools.cache.offset = offset;
+            this.activeEdit(this.type);
+            if (!this.$dom.next('.mark-dialog').exists()) {
+                $.markTools.$callObject.append($.markTools.showMarkDialog(offset));
+            } else {
+                setOffset(this.$dom.next('.mark-dialog'), offset);
+            }
+        };
+
         /**
-         * 检测所画的mark是否位于调用主体偏下的位置，依次决定是否将mark-box翻转至上面
+         * 检测所画的mark是否位于调用主体偏下的位置，以次决定是否将mark-box翻转至上面
          * @param  {Object} selection mark的绘画位置
          * @param  {jQuery} $markBox  markbox的jQuery对象
          */
@@ -483,8 +505,8 @@
                 markBoxHeight = $markBox.outerHeight(),
                 bottomY = selection.y1 > selection.y2 ? selection.y1 : selection.y2,
                 offset = 10;
-            
-            if(bottomY + markBoxHeight + offset > $callObject.height()) {
+
+            if (bottomY + markBoxHeight + offset > $callObject.height()) {
                 console.log('need reverse');
                 //TODO: reverse the markbox
             }
@@ -625,7 +647,7 @@
                             id: 'hehe'
                         });
                         $.markTools.$callObject.append($staticPin);
-                        $.markTools.$callObject.append(showMarkDialog(offset));
+                        $.markTools.$callObject.append($.markTools.showMarkDialog(offset));
 
                         //弹起所有按钮
                         btnPin.popup();
@@ -642,23 +664,6 @@
                 btnRect.onPress = function() {
                     var onDraw = options.onDrawFuncMap['rect'],
                         onFinishDraw = function(drawingCanvas, e, drawData) {
-                            //获取鼠标偏移量，显示并定位对话框
-                            var offset = getMouseOffset($callObject, e),
-                                $canvas = drawingCanvas.$dom,
-                                margin = drawingCanvas.margin;
-                            offset.left = drawData.selection.x2 - (drawData.selection.x2 - drawData.selection.x1) / 2;
-                            offset.top = drawData.selection.y2 + (drawData.selection.y2 > drawData.selection.y1 ? 0 :
-                                drawData.selection.y1 - drawData.selection.y2);
-
-                            $.markTools.cache.drawData = drawData;
-                            $.markTools.cache.offset = offset;
-                            drawingCanvas.activeEdit('rect');
-                            if (!drawingCanvas.$dom.next('.mark-dialog').exists()) {
-                                $.markTools.$callObject.append(showMarkDialog(offset));
-                            } else {
-                                setOffset(drawingCanvas.$dom.next('.mark-dialog'), offset);
-                            }
-
                             //弹起按钮
                             btnRect.popup();
                         };
@@ -676,23 +681,6 @@
                 btnEllipse.onPress = function() {
                     var onDraw = options.onDrawFuncMap['ellipse'],
                         onFinishDraw = function(drawingCanvas, e, drawData) {
-                            //获取鼠标偏移量，显示并定位对话框
-                            var offset = getMouseOffset($callObject, e),
-                                $canvas = drawingCanvas.$dom,
-                                margin = drawingCanvas.margin;
-                            offset.left = drawData.selection.x2 - (drawData.selection.x2 - drawData.selection.x1) / 2;
-                            offset.top = drawData.selection.y2 + (drawData.selection.y2 > drawData.selection.y1 ? 0 :
-                                drawData.selection.y1 - drawData.selection.y2);
-
-                            $.markTools.cache.drawData = drawData;
-                            $.markTools.cache.offset = offset;
-                            drawingCanvas.activeEdit('ellipse');
-                            if (!drawingCanvas.$dom.next('.mark-dialog').exists()) {
-                                $.markTools.$callObject.append(showMarkDialog(offset));
-                            } else {
-                                setOffset(drawingCanvas.$dom.next('.mark-dialog'), offset);
-                            }
-
                             //弹起按钮
                             btnEllipse.popup();
                         };
@@ -708,18 +696,7 @@
 
                 btnLine.onPress = function() {
                     var onDraw = options.onDrawFuncMap['line'],
-                        onFinishDraw = function(drawingCanvas, e, drawData) {
-                            //获取鼠标偏移量，显示并定位对话框
-                            var offset = getMouseOffset($callObject, e),
-                                originOffset = getMouseOffset($callObject, e),
-                                $canvas = drawingCanvas.$dom,
-                                margin = drawingCanvas.margin;
-                            offset.left = drawData.selection.x2 - (drawData.selection.x2 - drawData.selection.x1) / 2;
-                            offset.top = drawData.selection.y2 + (drawData.selection.y2 > drawData.selection.y1 ? 0 :
-                                drawData.selection.y1 - drawData.selection.y2);
-
-                            $.markTools.cache.drawData = drawData;
-                            $.markTools.cache.offset = offset;
+                        onFinishDraw = function() {
                             $.markTools.cache.changeSelection = function(selection) {
                                 var margin = $.markTools.options.canvasMargin,
                                     flagX = selection.x2 > selection.x1,
@@ -731,13 +708,6 @@
                                 selection.y1 = flagY ? margin : height;
                                 selection.y2 = flagY ? height : margin;
                             };
-                            drawingCanvas.activeEdit('line');
-                            if (!drawingCanvas.$dom.next('.mark-dialog').exists()) {
-                                $.markTools.$callObject.append(showMarkDialog(offset));
-                            } else {
-                                setOffset(drawingCanvas.$dom.next('.mark-dialog'), offset);
-                            }
-
                             //弹起按钮
                             btnLine.popup();
                         };
@@ -760,28 +730,28 @@
 
             //点击绑定插件的主体，隐藏掉mark-box，相当于blur
             // $callObject.on({
-                // 'click': function(e) {
-                //     $openedMarkBox = $.markTools.cache.openedMarkBox;
-                //     if ($openedMarkBox) {
-                //         $openedMarkBox.fadeOut();
-                //         $.markTools.cache.openedMarkBox = null;
-                //     }
-                // }
-                // 'mousedown.callObject_blur': function(e) {
-                //     if (e.button === 0) {
-                //         mouseDownPos = {
-                //             x: e.pageX,
-                //             y: e.pageY
-                //         }
-                //     }
-                // },
-                // 'mouseup.callObject_blue': function(e) {
-                //     var $openedMarkBox;
-                //     //这是一个真左键点击（非鼠标拖拽）
-                //     if (e.button === 0 && mouseDownPos.x === e.pageX && mouseDownPos.y === e.pageY) {
-                //         $callObject.click();
-                //     }
-                // }
+            // 'click': function(e) {
+            //     $openedMarkBox = $.markTools.cache.openedMarkBox;
+            //     if ($openedMarkBox) {
+            //         $openedMarkBox.fadeOut();
+            //         $.markTools.cache.openedMarkBox = null;
+            //     }
+            // }
+            // 'mousedown.callObject_blur': function(e) {
+            //     if (e.button === 0) {
+            //         mouseDownPos = {
+            //             x: e.pageX,
+            //             y: e.pageY
+            //         }
+            //     }
+            // },
+            // 'mouseup.callObject_blue': function(e) {
+            //     var $openedMarkBox;
+            //     //这是一个真左键点击（非鼠标拖拽）
+            //     if (e.button === 0 && mouseDownPos.x === e.pageX && mouseDownPos.y === e.pageY) {
+            //         $callObject.click();
+            //     }
+            // }
             // });
 
             var $marktoolsTemplate = $('#marktools-template').hide(),
@@ -895,9 +865,9 @@
                         height: markType === 'pin' ? 0 : $markObject.height()
                     };
 
-                    markData.lineReverse = (drawData.type === 'line' && 
+                    markData.lineReverse = (drawData.type === 'line' &&
                         ((sel.x1 < sel.x2 && sel.y1 > sel.y2) ||
-                        (sel.x1 > sel.x2 && sel.y1 < sel.y2)));
+                            (sel.x1 > sel.x2 && sel.y1 < sel.y2)));
 
                     //触发保存mark时的自定义方法
                     if (options.onSaveMark) {
@@ -911,18 +881,6 @@
                     $.markTools.cache.drawData = undefined;
                     $.markTools.cache.offset = undefined;
                 });
-        }
-
-
-        /**
-         * 显示标记对话框，对话框由模板创建
-         */
-
-        function showMarkDialog(mousePos) {
-            var $markDialogTemplate = $('#marktools-template').find('.' + $.markTools.options.markDialogClass),
-                $markDialog = $markDialogTemplate.clone(true).show();
-            setOffset($markDialog, mousePos);
-            return $markDialog;
         }
 
         $.extend($.markTools.options, options);
@@ -997,6 +955,16 @@
         cache: {
             userStartDraw: false,
             openedMarkBox: null
+        },
+
+        /**
+         * 显示标记对话框，对话框由模板创建
+         */
+        showMarkDialog: function(mousePos) {
+            var $markDialogTemplate = $('#marktools-template').find('.' + $.markTools.options.markDialogClass),
+                $markDialog = $markDialogTemplate.clone(true).show();
+            setOffset($markDialog, mousePos);
+            return $markDialog;
         },
         createMarkBox: function(data, template) {
             var key,
