@@ -530,6 +530,11 @@
             if (type === 'line') {
                 this.handlerList[1].canDraw = false;
                 this.handlerList[2].canDraw = false;
+            } else if(type === 'pin') {
+                this.handlerList[0].canDraw = false;
+                this.handlerList[1].canDraw = false;
+                this.handlerList[2].canDraw = false;
+                this.handlerList[3].canDraw = false;
             }
         };
 
@@ -645,19 +650,12 @@
             if (options.showPin) {
                 var btnPin = new ToolButton(toolsMap['pin'], $this);
                 btnPin.onPress = function() {
-                    $callObject.on('click', function(e) {
-                        //获取鼠标偏移量
-                        var offset = getMouseOffset($(this), e);
-                        //创建静态图钉
-                        var $staticPin = $.markTools.createPin(offset, {
-                            id: 'hehe'
-                        });
-                        $.markTools.$callObject.append($staticPin);
-                        $.markTools.$callObject.append($.markTools.showMarkDialog(offset));
-
-                        //弹起所有按钮
-                        btnPin.popup();
-                    });
+                    var onDraw = options.onDrawFuncMap['pin'],
+                        onFinishDraw = function(drawingCanvas, e, drawData) {
+                            //弹起按钮
+                            btnPin.popup();
+                        };
+                    drawingCanvas = new DrawingCanvas($callObject, onDraw, onFinishDraw, 'pin');
                 };
                 toolButtonContainer.add(btnPin);
             }
@@ -911,6 +909,18 @@
             onToolButtonActivated: function() {},
 
             onDrawFuncMap: {
+                pin: function(context, selection) {
+                    context.beginPath();
+                    context.fillStyle = context.strokeStyle;
+                    context.arc(selection.x2, selection.y2, 6, 0, Math.PI * 2, true);
+                    context.fill();
+                    context.save();
+                    context.globalAlpha = 0.5;
+                    context.lineWidth = 6;
+                    context.stroke();
+                    context.restore();
+                    context.closePath();
+                },
                 rect: function(context, selection) {
                     context.strokeRect(selection.x1, selection.y1,
                         selection.x2 - selection.x1, selection.y2 - selection.y1);
