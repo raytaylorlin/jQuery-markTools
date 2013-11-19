@@ -303,8 +303,6 @@
                     e.preventDefault();
                 }).on('mouseup',
                 function(e) {
-
-                    
                     if (_this.startMouseDown) {
                         if (!_this.startMouseMove) {
                             _this.selection.x2 = _this.selection.x1;
@@ -371,6 +369,10 @@
             canvas.off();
             this.startDrag = false;
             this.startResize = false;
+            //若mark的类型是pin，则禁用缩放大小
+            if (this.type === 'pin') {
+                resizeHandlerGroup.isEnable = false;
+            }
 
             resizeHandlerGroup.draw(this.selection);
 
@@ -385,12 +387,16 @@
                             return;
                         }
                     }
-                    if (!_this.startDrag && _this.checkMouseOn(e)) {
+                    if (!_this.startDrag && _this.checkMouseOn(e, _this.type)) {
                         //开始拖动
                         _this.startDrag = true;
                         //记录拖动的起点
                         startDragPoint.x1 = e.offsetX || (e.clientX - $(e.target).offset().left);
                         startDragPoint.y1 = e.offsetY || (e.clientY - $(e.target).offset().top);
+                        if(_this.type === 'pin') {
+                            startDragPoint.x1 = originSelection.x1;
+                            startDragPoint.y1 = originSelection.y1;
+                        }
                         //拖动时隐藏对话框
                         canvas.next('.mark-dialog').hide();
                     }
@@ -400,6 +406,7 @@
                     var mouseX = e.offsetX || (e.clientX - $(e.target).offset().left),
                         mouseY = e.offsetY || (e.clientY - $(e.target).offset().top);
 
+                    //鼠标移动：拖拽移动
                     if (_this.startDrag) {
                         //记录拖动终点
                         startDragPoint.x2 = mouseX;
@@ -416,6 +423,7 @@
                         _this.redraw();
                         resizeHandlerGroup.draw(_this.selection);
                     } else if (_this.startResize) {
+                        //鼠标移动：拖拽缩放大小
                         switch (startResizePoint) {
                             case 0:
                                 _this.selection.x1 = mouseX;
@@ -435,6 +443,7 @@
                                 break;
                         }
                     } else {
+                        //鼠标移动：修改光标
                         startResizePoint = resizeHandlerGroup.checkMouseOn(e);
                         if (startResizePoint >= 0) {
                             //0是左上角，3是右下角
@@ -450,6 +459,13 @@
                     e.preventDefault();
                 }).on('mouseup',
                 function(e) {
+                    //对pin做特殊处理
+                    if (_this.type === 'pin') {
+                        _this.redraw();
+                        //pin只有单点，让左上角坐标和右下角坐标一致方便后面创建canvas
+                        _this.selection.x1 = _this.selection.x2;
+                        _this.selection.y1 = _this.selection.y2;
+                    }
                     if (_this.startDrag || _this.startResize) {
                         var drawData = {
                             selection: _this.selection,
@@ -468,6 +484,7 @@
                         }
                         _this.checkMarkBoxNearBottom(drawData.selection, canvas.next('.mark-dialog'));
                     }
+
                     e.preventDefault();
                 });
 
@@ -478,13 +495,23 @@
             });
         };
 
-        DrawingCanvas.prototype.checkMouseOn = function(e) {
+        DrawingCanvas.prototype.checkMouseOn = function(e, type) {
             var mouseX = e.offsetX || (e.clientX - $(e.target).offset().left),
                 mouseY = e.offsetY || (e.clientY - $(e.target).offset().top),
+                x1, y1, w, h, margin;
+            if (type === 'pin') {
+                margin = $.markTools.options.canvasMargin;
+                x1 = this.selection.x2 - margin;
+                y1 = this.selection.y2 - margin;
+                w =  margin * 2;
+                h =  margin * 2;
+            } else {
                 x1 = this.selection.x1 < this.selection.x2 ? this.selection.x1 : this.selection.x2,
                 y1 = this.selection.y1 < this.selection.y2 ? this.selection.y1 : this.selection.y2,
                 w = Math.abs(this.selection.x1 - this.selection.x2),
                 h = Math.abs(this.selection.y1 - this.selection.y2);
+            }
+
             return (mouseX >= x1 && mouseX <= x1 + w && mouseY >= y1 && mouseY <= y1 + h);
         };
 
@@ -531,6 +558,7 @@
             this.context = context;
             this.selection = selection;
             this.type = type;
+            this.isEnable = true;
             this.handlerList = [
                 new ResizeHandler(),
                 new ResizeHandler(),
@@ -550,6 +578,9 @@
 
         ResizeHandlerGroup.prototype.draw = function(selection) {
             var i;
+            if (!this.isEnable) {
+                return;
+            }
             this.handlerList[0].setPosition(selection.x1, selection.y1);
             this.handlerList[1].setPosition(selection.x2, selection.y1);
             this.handlerList[2].setPosition(selection.x1, selection.y2);
@@ -561,6 +592,9 @@
 
         ResizeHandlerGroup.prototype.checkMouseOn = function(e) {
             var i;
+            if (!this.isEnable) {
+                return -1;
+            }
             for (i = 0; i < this.handlerList.length; i++) {
                 if (this.handlerList[i].checkMouseOn(e, this.context)) {
                     return i;
@@ -919,13 +953,14 @@
 
             onDrawFuncMap: {
                 pin: function(context, selection) {
+                    var radius = 6;
                     context.beginPath();
                     context.fillStyle = context.strokeStyle;
-                    context.arc(selection.x2, selection.y2, 6, 0, Math.PI * 2, true);
+                    context.arc(selection.x2, selection.y2, radius, 0, Math.PI * 2, true);
                     context.fill();
                     context.save();
                     context.globalAlpha = 0.5;
-                    context.lineWidth = 6;
+                    context.lineWidth = radius;
                     context.stroke();
                     context.restore();
                     context.closePath();
