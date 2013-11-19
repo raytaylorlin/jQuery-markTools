@@ -304,6 +304,7 @@
                 }).on('mouseup',
                 function(e) {
 
+                    
                     if (_this.startMouseDown) {
                         if (!_this.startMouseMove) {
                             _this.selection.x2 = _this.selection.x1;
@@ -324,6 +325,13 @@
                             _this.onFinishDraw(_this, e, drawData);
                         }
                         _this.checkMarkBoxNearBottom(drawData.selection, canvas.next('.mark-dialog'));
+                    }
+                    //对pin做特殊处理
+                    if (_this.type === 'pin') {
+                        _this.redraw();
+                        //pin只有单点，让左上角坐标和右下角坐标一致方便后面创建canvas
+                        _this.selection.x1 = _this.selection.x2;
+                        _this.selection.y1 = _this.selection.y2;
                     }
                     e.preventDefault();
                 });
@@ -486,8 +494,11 @@
             var offset = getMouseOffset($callObject, e),
                 sel = drawData.selection;
 
-            offset.left = sel.x2 - (sel.x2 - sel.x1) / 2;
-            offset.top = sel.y2 + (sel.y2 > sel.y1 ? 0 : sel.y1 - sel.y2);
+            //对于pin，直接略过mark-dialog偏移计算
+            if (drawData.type !== 'pin') {
+                offset.left = sel.x2 - (sel.x2 - sel.x1) / 2;
+                offset.top = sel.y2 + (sel.y2 > sel.y1 ? 0 : sel.y1 - sel.y2);
+            }
 
             $.markTools.cache.drawData = drawData;
             $.markTools.cache.offset = offset;
@@ -529,7 +540,7 @@
             if (type === 'line') {
                 this.handlerList[1].canDraw = false;
                 this.handlerList[2].canDraw = false;
-            } else if(type === 'pin') {
+            } else if (type === 'pin') {
                 this.handlerList[0].canDraw = false;
                 this.handlerList[1].canDraw = false;
                 this.handlerList[2].canDraw = false;
@@ -847,8 +858,7 @@
                     $title.val('');
                     $description.val('');
 
-                    var markType = $markObject.hasClass('static-pin') ?
-                        'pin' : $markObject.attr('mark-type');
+                    var markType = $markObject.attr('mark-type');
 
                     var markData = {
                         title: title,
