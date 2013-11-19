@@ -298,13 +298,12 @@
                         _this.selection.x2 = e.offsetX || (e.clientX - $(e.target).offset().left);
                         _this.selection.y2 = e.offsetY || (e.clientY - $(e.target).offset().top);
 
-                        _this.clear();
-                        _this.refreshStyle();
-                        _this.onDraw(_this.context, _this.selection);
+                        _this.redraw();
                     }
                     e.preventDefault();
                 }).on('mouseup',
                 function(e) {
+
                     if (_this.startMouseDown) {
                         if (!_this.startMouseMove) {
                             _this.selection.x2 = _this.selection.x1;
@@ -337,6 +336,12 @@
 
         DrawingCanvas.prototype.clear = function() {
             this.context.clearRect(0, 0, this.width, this.height);
+        };
+
+        DrawingCanvas.prototype.redraw = function() {
+            this.clear();
+            this.refreshStyle();
+            this.onDraw(this.context, this.selection);
         };
 
         /**
@@ -400,9 +405,7 @@
                         _this.selection.y1 = originSelection.y1 + offsetY;
                         _this.selection.y2 = originSelection.y2 + offsetY;
 
-                        _this.clear();
-                        _this.refreshStyle();
-                        _this.onDraw(_this.context, _this.selection);
+                        _this.redraw();
                         resizeHandlerGroup.draw(_this.selection);
                     } else if (_this.startResize) {
                         switch (startResizePoint) {
@@ -434,9 +437,7 @@
                             e.target.style.cursor = 'default';
                         }
                     }
-                    _this.clear();
-                    _this.refreshStyle();
-                    _this.onDraw(_this.context, _this.selection);
+                    _this.redraw();
                     resizeHandlerGroup.draw(_this.selection);
                     e.preventDefault();
                 }).on('mouseup',
@@ -464,9 +465,7 @@
 
             //捕获颜色改变的事件
             this.$callObject.parent().on('STYLE_PICKER_COLOR_CHANGE', function(e, color) {
-                _this.clear();
-                _this.refreshStyle();
-                _this.onDraw(_this.context, _this.selection);
+                _this.redraw();
                 resizeHandlerGroup.draw(_this.selection);
             });
         };
@@ -607,7 +606,7 @@
                     type: 'pin',
                     classRest: 'btn-marktools-pin',
                     classActive: 'btn-marktools-pin-active',
-                    classCursor: 'cursor-pin'
+                    classCursor: 'cursor-pin1'
                 },
                 rect: {
                     type: 'rect',
