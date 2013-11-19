@@ -251,10 +251,15 @@
             //是否开始在canvas上拖拽的标记
             this.startMouseDown = false;
             this.startMouseMove = false;
+
+            this.$callObject = $callObject;
             this.onDraw = onDraw;
             this.onFinishDraw = onFinishDraw;
             this.type = type;
-            this.$callObject = $callObject;
+
+
+            //初始化完成后，将DOM添加进调用主体中
+            this.$callObject.append(this.$dom);
 
             //初始化canvas并添加到调用插件的主容器
             this.$dom = canvas = $('<canvas></canvas>')
@@ -599,8 +604,8 @@
                     classActive: 'btn-marktools-pin-active',
                     classCursor: 'cursor-pin'
                 },
-                region: {
-                    type: 'region',
+                rect: {
+                    type: 'rect',
                     classRest: 'btn-marktools-rect',
                     classActive: 'btn-marktools-rect-active',
                     classCursor: 'cursor-region'
@@ -635,6 +640,7 @@
             $.markTools.$callObject = $this;
 
             toolButtonContainer = new ToolButtonContainer($this);
+
             //初始化Pin按钮
             if (options.showPin) {
                 var btnPin = new ToolButton(toolsMap['pin'], $this);
@@ -658,8 +664,7 @@
 
             //初始化Region按钮
             if (options.showRegion) {
-                var btnRect = new ToolButton(toolsMap['region'], $this),
-                    stylePicker = new StylePicker($this);
+                var btnRect = new ToolButton(toolsMap['rect'], $this);
 
                 btnRect.onPress = function() {
                     var onDraw = options.onDrawFuncMap['rect'],
@@ -667,16 +672,13 @@
                             //弹起按钮
                             btnRect.popup();
                         };
-
                     drawingCanvas = new DrawingCanvas($callObject, onDraw, onFinishDraw, 'rect');
-                    $callObject.append(drawingCanvas.$dom);
                 };
                 toolButtonContainer.add(btnRect);
             }
 
             if (options.showEllipse) {
-                var btnEllipse = new ToolButton(toolsMap['ellipse'], $this),
-                    stylePicker = new StylePicker($this);
+                var btnEllipse = new ToolButton(toolsMap['ellipse'], $this);
 
                 btnEllipse.onPress = function() {
                     var onDraw = options.onDrawFuncMap['ellipse'],
@@ -685,14 +687,12 @@
                             btnEllipse.popup();
                         };
                     drawingCanvas = new DrawingCanvas($callObject, onDraw, onFinishDraw, 'ellipse');
-                    $callObject.append(drawingCanvas.$dom);
                 };
                 toolButtonContainer.add(btnEllipse);
             }
 
             if (options.showLine) {
-                var btnLine = new ToolButton(toolsMap['line'], $this),
-                    stylePicker = new StylePicker($this);
+                var btnLine = new ToolButton(toolsMap['line'], $this);
 
                 btnLine.onPress = function() {
                     var onDraw = options.onDrawFuncMap['line'],
@@ -712,7 +712,6 @@
                             btnLine.popup();
                         };
                     drawingCanvas = new DrawingCanvas($callObject, onDraw, onFinishDraw, 'line');
-                    $callObject.append(drawingCanvas.$dom);
                 };
                 toolButtonContainer.add(btnLine);
             }
