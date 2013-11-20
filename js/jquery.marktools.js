@@ -131,10 +131,11 @@
                 //颜色选取器的色块点击事件
                 $('.color-block').on('click', function() {
                     var color = $(this).css('background-color');
-                    $.markTools.options.color = color;
+                    $.markTools.cache.color = color;
                     //改变显示色块的颜色
                     $('.color-show-block').css('background-color', color);
-                    _this.$callObject.parent().trigger('STYLE_PICKER_COLOR_CHANGE', color);
+                    // _this.$callObject.parent().trigger('STYLE_PICKER_COLOR_CHANGE', color);
+                    $('.draw-canvas').trigger('STYLE_PICKER_COLOR_CHANGE', color);
                     _this.popup();
                 });
             }
@@ -223,19 +224,19 @@
                 '</div>');
         };
 
-        StylePicker.prototype.bind = function(onDraw, onFinishDraw) {
-            var _this = this;
-            this.$dom.one('click', '.style-picker-button', function() {
-                //获取颜色值和笔宽值，并隐藏面板
-                var $dom = $(this).parent(),
-                    drawingCanvas = new DrawingCanvas(_this.$callObject, onDraw, onFinishDraw);
-                drawingCanvas.color = '#' + $dom.find('input[name=color]').val();
-                drawingCanvas.penWidth = parseInt($dom.find('input[name=width]').val());
-                $dom.hide();
+        // StylePicker.prototype.bind = function(onDraw, onFinishDraw) {
+        //     var _this = this;
+        //     this.$dom.one('click', '.style-picker-button', function() {
+        //         //获取颜色值和笔宽值，并隐藏面板
+        //         var $dom = $(this).parent(),
+        //             drawingCanvas = new DrawingCanvas(_this.$callObject, onDraw, onFinishDraw);
+        //         drawingCanvas.color = '#' + $dom.find('input[name=color]').val();
+        //         drawingCanvas.penWidth = parseInt($dom.find('input[name=width]').val());
+        //         $dom.hide();
 
-                _this.$callObject.append(drawingCanvas.$dom);
-            });
-        }
+        //         _this.$callObject.append(drawingCanvas.$dom);
+        //     });
+        // }
 
         return StylePicker;
     })();
@@ -311,7 +312,7 @@
                         var drawData = {
                             selection: _this.selection,
                             onDraw: _this.onDraw,
-                            color: $.markTools.options.color,
+                            color: $.markTools.cache.color,
                             penWidth: $.markTools.options.penWidth,
                             type: _this.type
                         };
@@ -336,7 +337,7 @@
         };
 
         DrawingCanvas.prototype.refreshStyle = function() {
-            this.context.strokeStyle = $.markTools.options.color;
+            this.context.strokeStyle = $.markTools.cache.color;
             this.context.lineWidth = $.markTools.options.penWidth;
         };
 
@@ -470,7 +471,7 @@
                         var drawData = {
                             selection: _this.selection,
                             onDraw: _this.onDraw,
-                            color: $.markTools.options.color,
+                            color: $.markTools.cache.color,
                             penWidth: $.markTools.options.penWidth,
                             type: _this.type
                         };
@@ -489,12 +490,21 @@
                 });
 
             //捕获颜色改变的事件
-            this.$callObject.parent().on('STYLE_PICKER_COLOR_CHANGE', function(e, color) {
+            $('.draw-canvas').on('STYLE_PICKER_COLOR_CHANGE', function(e, color) {
+                //将颜色保存在缓存中
+                $.markTools.cache.drawData.color = color;
+                //重画
                 _this.redraw();
                 resizeHandlerGroup.draw(_this.selection);
             });
         };
 
+        /**
+         * 判断鼠标是否在canvas上
+         * @param  {Event} e    鼠标事件
+         * @param  {String} type mark的类型
+         * @return {Boolean}      鼠标是否在canvas上
+         */
         DrawingCanvas.prototype.checkMouseOn = function(e, type) {
             var mouseX = e.offsetX || (e.clientX - $(e.target).offset().left),
                 mouseY = e.offsetY || (e.clientY - $(e.target).offset().top),
@@ -898,7 +908,7 @@
                         title: title,
                         description: description,
                         type: markType,
-                        color: $.markTools.options.color,
+                        color: $.markTools.cache.color,
                         mouseX: parseInt($markObject.css('left')),
                         mouseY: parseInt($markObject.css('top')),
                         width: markType === 'pin' ? 0 : $markObject.width(),
@@ -1007,6 +1017,7 @@
         },
         cache: {
             userStartDraw: false,
+            color: '#ff0000',
             openedMarkBox: null
         },
 
