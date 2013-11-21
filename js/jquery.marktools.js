@@ -319,11 +319,12 @@
                         _this.startDrag = false;
 
                         _this.repositionMarkDialog(e, drawData);
+                        _this.checkMarkDialogNearBottom(drawData.selection, canvas.next('.mark-dialog'));
+                        _this.repositionMarkDialog(e, drawData);
 
                         if (_this.onFinishDraw) {
                             _this.onFinishDraw(_this, e, drawData);
                         }
-                        _this.checkMarkBoxNearBottom(drawData.selection, canvas.next('.mark-dialog'));
                     }
                     //对pin做特殊处理
                     if (_this.type === 'pin') {
@@ -477,15 +478,14 @@
                         };
                         _this.startDrag = false;
 
+                        _this.checkMarkDialogNearBottom(drawData.selection, canvas.next('.mark-dialog'));
                         _this.repositionMarkDialog(e, drawData);
                         //结束拖动后显示对话框
                         canvas.next('.mark-dialog').show();
                         if (_this.onFinishDraw) {
                             _this.onFinishDraw(_this, e, drawData);
                         }
-                        _this.checkMarkBoxNearBottom(drawData.selection, canvas.next('.mark-dialog'));
                     }
-
                     e.preventDefault();
                 });
 
@@ -526,41 +526,48 @@
         };
 
         DrawingCanvas.prototype.repositionMarkDialog = function(e, drawData) {
-            var $callObject = this.$callObject;
+            var $callObject = this.$callObject
+                $markDialog = this.$dom.next('.mark-dialog');
             //获取鼠标偏移量，显示并定位对话框
             var offset = getMouseOffset($callObject, e),
                 sel = drawData.selection;
 
             //对于pin，直接略过mark-dialog偏移计算
-            if (drawData.type !== 'pin') {
+            // if (drawData.type !== 'pin') {
                 offset.left = sel.x2 - (sel.x2 - sel.x1) / 2;
                 offset.top = sel.y2 + (sel.y2 > sel.y1 ? 0 : sel.y1 - sel.y2);
+            // }
+            if($markDialog.hasClass('mark-dialog-reverse')) {
+                offset.top = sel.y1 + (sel.y2 > sel.y1 ? 0 : sel.y2 - sel.y1);
             }
 
             $.markTools.cache.drawData = drawData;
             $.markTools.cache.offset = offset;
             this.activeEdit(this.type);
-            if (!this.$dom.next('.mark-dialog').exists()) {
+            if (!$markDialog.exists()) {
                 $.markTools.$callObject.append($.markTools.showMarkDialog(offset));
             } else {
-                setOffset(this.$dom.next('.mark-dialog'), offset);
+                setOffset($markDialog, offset);
             }
         };
 
         /**
          * 检测所画的mark是否位于调用主体偏下的位置，以次决定是否将mark-box翻转至上面
          * @param  {Object} selection mark的绘画位置
-         * @param  {jQuery} $markBox  markbox的jQuery对象
+         * @param  {jQuery} $markDialog  markDialog的jQuery对象
          */
-        DrawingCanvas.prototype.checkMarkBoxNearBottom = function(selection, $markBox) {
+        DrawingCanvas.prototype.checkMarkDialogNearBottom = function(selection, $markDialog) {
             var $callObject = this.$callObject,
-                markBoxHeight = $markBox.outerHeight(),
+                markDialogHeight = $markDialog.outerHeight(),
                 bottomY = selection.y1 > selection.y2 ? selection.y1 : selection.y2,
-                offset = 10;
+                offset = 10,
+                markDialogClass;
 
-            if (bottomY + markBoxHeight + offset > $callObject.height()) {
+            if (bottomY + markDialogHeight + offset > $callObject.height()) {
                 console.log('need reverse');
-                //TODO: reverse the markbox
+                $markDialog.addClass('mark-dialog-reverse');
+            } else {
+                $markDialog.removeClass('mark-dialog-reverse');
             }
         };
 
