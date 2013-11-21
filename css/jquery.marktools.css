@@ -158,7 +158,7 @@
 .mark-dialog, .mark-box {
     width: 200px;
     position: absolute;
-    z-index: 25;
+    z-index: 33;
     padding: 10px;
     background-color: #EBEBEB;
     margin-left: -71px;
@@ -172,6 +172,93 @@
     -webkit-background-clip: padding-box;
     -moz-background-clip: padding;
     background-clip: padding-box;
+}
+
+.mark-dialog:before, .mark-box:before {
+    position: absolute;
+    top: -10px;
+    left: 60px;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid #EBEBEB;
+    border-left: 10px solid transparent;
+    border-bottom-color: rgba(0, 0, 0, 0.2);
+    content: '';
+}
+
+.mark-dialog:after, .mark-box:after {
+    position: absolute;
+    top: -9px;
+    left: 61px;
+    border-right: 9px solid transparent;
+    border-bottom: 9px solid #EBEBEB;
+    border-left: 9px solid transparent;
+    content: '';
+}
+
+.mark-dialog-reverse {
+    background-color: #EBEBEB;
+    margin-left: -71px;
+    margin-top: -205px;
+}
+
+.mark-dialog-reverse:before {
+    position: absolute;
+    top: 193px;
+    left: 60px;
+    border-right: 10px solid transparent;
+    border-top: 10px solid #EBEBEB;
+    border-left: 10px solid transparent;
+    border-top-color: rgba(0, 0, 0, 0.2);
+    border-bottom: none;
+    content: '';
+}
+
+.mark-dialog-reverse:after {
+    position: absolute;
+    top: 192px;
+    left: 61px;
+    border-right: 9px solid transparent;
+    border-top: 9px solid #EBEBEB;
+    border-left: 9px solid transparent;
+    border-bottom: none;
+    content: '';
+}
+
+.mark-dialog-control {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.mark-dialog-control label {
+    display: block;
+}
+
+.mark-dialog-control input[type='text'],
+.mark-dialog-control textarea {
+    width: 96%;
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+.mark-dialog-button, .style-picker-button {
+    display: inline-block;
+    padding: 4px 8px;
+    line-height: 20px;
+    font-size: 14px;
+    color: #FFF;
+    background-color: rgb(192, 192, 192);
+    cursor: pointer;
+    text-align: center;
+    vertical-align: middle;
+    border: none;
+    margin: 0 5px;
+    width: 50px;
+    text-decoration: none;
+    float: right;
+}
+
+.mark-dialog-button:hover {
+    background-color: rgb(146, 146, 146);
+    text-decoration: none;
 }
 
 .style-picker {
@@ -214,64 +301,6 @@
 
 .color-block-green {
     background-color: #00E800;
-}
-
-.mark-dialog:before, .mark-box:before {
-    position: absolute;
-    top: -10px;
-    left: 60px;
-    border-right: 10px solid transparent;
-    border-bottom: 10px solid #EBEBEB;
-    border-left: 10px solid transparent;
-    border-bottom-color: rgba(0, 0, 0, 0.2);
-    content: '';
-}
-
-.mark-dialog:after, .mark-box:after {
-    position: absolute;
-    top: -9px;
-    left: 61px;
-    border-right: 9px solid transparent;
-    border-bottom: 9px solid #EBEBEB;
-    border-left: 9px solid transparent;
-    content: '';
-}
-
-.mark-dialog-control {
-    display: block;
-    margin-bottom: 10px;
-}
-
-.mark-dialog-control label {
-    display: block;
-}
-
-.mark-dialog-control input[type='text'],
-.mark-dialog-control textarea {
-    width: 96%;
-    font-family: Helvetica, Arial, sans-serif;
-}
-
-.mark-dialog-button, .style-picker-button {
-    display: inline-block;
-    padding: 4px 8px;
-    line-height: 20px;
-    font-size: 14px;
-    color: #FFF;
-    background-color: rgb(192, 192, 192);
-    cursor: pointer;
-    text-align: center;
-    vertical-align: middle;
-    border: none;
-    margin: 0 5px;
-    width: 50px;
-    text-decoration: none;
-    float: right;
-}
-
-.mark-dialog-button:hover {
-    background-color: rgb(146, 146, 146);
-    text-decoration: none;
 }
 
 .clearfix {
