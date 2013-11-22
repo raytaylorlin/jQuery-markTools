@@ -532,11 +532,9 @@
             var offset = getMouseOffset($callObject, e),
                 sel = drawData.selection;
 
-            //对于pin，直接略过mark-dialog偏移计算
-            // if (drawData.type !== 'pin') {
-                offset.left = sel.x2 - (sel.x2 - sel.x1) / 2;
-                offset.top = sel.y2 + (sel.y2 > sel.y1 ? 0 : sel.y1 - sel.y2);
-            // }
+            offset.left = sel.x2 - (sel.x2 - sel.x1) / 2;
+            offset.top = sel.y2 + (sel.y2 > sel.y1 ? 0 : sel.y1 - sel.y2);
+
             if($markDialog.hasClass('mark-dialog-reverse')) {
                 offset.top = sel.y1 + (sel.y2 > sel.y1 ? 0 : sel.y2 - sel.y1);
             }
@@ -897,6 +895,9 @@
                     sel = drawData.selection;
                     changeSelection = $.markTools.cache.changeSelection;
                     $markObject = $markDialog.prev();
+
+                    //offset可能在mark-dialog翻转的时候被修改过，这时候应该重新设置成以canvas中下点为基点
+                    offset.top = sel.y2 + (sel.y2 > sel.y1 ? 0 : sel.y1 - sel.y2);
 
                     if (drawData !== undefined) {
                         $markObject = $.markTools.createCanvas($markObject, offset, drawData, changeSelection);
