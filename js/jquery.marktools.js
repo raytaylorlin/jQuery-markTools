@@ -152,6 +152,16 @@
             //初始化标记工具栏容器
             this.$dom = divWithClass('marktools-wrapper');
 
+            this.initPosition();
+            //在调用插件的容器里面添加
+            this.$callObject.append(this.$dom);
+            this.$dom.append(divWithClass('marktools-container'));
+        }
+
+        /**
+         * 初始化工具栏的位置
+         */
+        ToolButtonContainer.prototype.initPosition = function() {
             //调整位置
             $callObject.css({
                 'position': 'relative'
@@ -160,17 +170,13 @@
             var adjust = function() {
                 var offset = $callObject.offset();
 
-                _this.$dom.css({
-                    left: offset.left,
-                    top: offset.top + 40
-                });
+                // _this.$dom.css({
+                //     left: offset.left,
+                //     top: offset.top + 40
+                // });
             };
             adjust();
             $(window).resize(adjust);
-
-            //在调用插件的容器里面添加
-            $callObject.append(this.$dom);
-            this.$dom.append(divWithClass('marktools-container'));
         }
 
         /**
