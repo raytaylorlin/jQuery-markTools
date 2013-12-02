@@ -150,12 +150,16 @@
             this.buttonList = {};
             this.$callObject = $callObject;
             //初始化标记工具栏容器
-            this.$dom = divWithClass('marktools-wrapper');
+            this.$wrapper = divWithClass('marktools-wrapper');
+            this.$dom = divWithClass('marktools-container');
 
             this.initPosition();
             //在调用插件的容器里面添加
-            this.$callObject.append(this.$dom);
-            this.$dom.append(divWithClass('marktools-container'));
+            //（层级关系：$callObject->floater, $wrapper->$dom）
+            var temp = divWithClass('marktools-container-floater')
+            this.$callObject.append(this.$wrapper);
+            this.$wrapper.append(this.$dom);
+            this.$dom.before(temp);
         }
 
         /**
