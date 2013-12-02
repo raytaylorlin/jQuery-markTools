@@ -1,0 +1,345 @@
+/* 按钮容器 */
+.marktools-wrapper {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background-color: #000;
+}
+
+.marktools-container-floater {
+    float: left;
+    height: 50%;
+    margin-bottom: -200px;
+}
+
+.marktools-container {
+    height: 400px;
+    clear: both;
+    position: relative;
+    /*border: 4px solid #DDD;*/
+    /*left: 0;*/
+    /*top: 0;*/
+    z-index: 30;
+}
+
+/* 按钮基本样式 */
+
+.btn-marktools {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 0px;
+}
+
+/* pin图标 */
+.btn-marktools-pin {
+    background-image: url('../images/icons.png') ;
+    background-position: 0px 0px;
+}
+
+.btn-marktools-pin:hover {
+    background-image: url('../images/icons.png');
+    background-position: -50px 0px;
+}
+
+.btn-marktools-pin-active {
+    background-image: url('../images/icons.png') ;
+    background-position: -100px 0px;
+}
+
+/* rect图标 */
+.btn-marktools-rect {
+    background-image: url('../images/icons.png');
+    background-position: 0px -50px;
+}
+
+.btn-marktools-rect:hover {
+    background-image: url('../images/icons.png');
+    background-position: -50px -50px;
+}
+
+.btn-marktools-rect-active{
+    background-image: url('../images/icons.png');
+    background-position: -100px -50px;
+}
+
+/* ellipse图标 */
+.btn-marktools-ellipse {
+    background-image: url('../images/icons.png');
+    background-position: 0px -100px;
+}
+
+.btn-marktools-ellipse:hover {
+    background-image: url('../images/icons.png');
+    background-position: -50px -100px;
+}
+
+.btn-marktools-ellipse-active{
+    background-image: url('../images/icons.png');
+    background-position: -100px -100px;
+}
+
+/* line图标 */
+.btn-marktools-line {
+    background-image: url('../images/icons.png');
+    background-position: 0px -150px;
+}
+
+.btn-marktools-line:hover {
+    background-image: url('../images/icons.png');
+    background-position: -50px -150px;
+}
+
+.btn-marktools-line-active {
+    background-image: url('../images/icons.png');
+    background-position: -100px -150px;
+}
+
+/* 选择颜色图标 */
+.btn-marktools-color {
+    text-align: center;    
+    background-color: #FFFFFF;
+}
+
+.color-show-block {
+    display: inline-block;
+    margin-top: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 30px;
+    height: 30px;
+    border: solid 2px #FFF;
+    background-color: #FF0000;
+}
+
+.color-show-block:hover {
+    border: solid 2px #000;
+}
+
+/* 鼠标光标 */
+
+/* pin鼠标光标 */
+.cursor-pin {
+    z-index: 55;
+    position: absolute;
+    width: 24px;
+    height: 38px;
+    margin-left: -12px;
+    margin-top: -39px;
+    background-image: url('../images/icon_action.png');
+    background-position: 0px -497px;
+    background-repeat: no-repeat;
+}
+
+.cursor-region {
+    cursor: wait;
+}
+
+/* mark容器，改容器包括静态mark和mark对话框 */
+
+.mark-container {
+    position: absolute;
+}
+
+.draw-canvas {
+    z-index: 20;
+    position: absolute;
+}
+
+/* 已打在容器上的静态mark样式 */
+
+.static-pin {
+    z-index: 12;
+    position: absolute;
+    width: 24px;
+    height: 38px;
+    background-image: url('../images/icon_action.png');
+    background-position: 0px -497px;
+    background-repeat: no-repeat;
+}
+
+.static-pin:hover {
+    background-image: url('../images/icon_action.png');
+    background-position: -36px -497px;
+    width: 24px;
+    height: 38px;
+}
+
+.static-canvas {
+    z-index: 11;
+    position: absolute;
+}
+
+/* 标记对话框 */
+.mark-dialog, .mark-box {
+    width: 200px;
+    position: absolute;
+    z-index: 33;
+    padding: 10px;
+    background-color: #EBEBEB;
+    margin-left: -71px;
+    margin-top: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    *border-right-width: 2px;
+    *border-bottom-width: 2px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    -webkit-background-clip: padding-box;
+    -moz-background-clip: padding;
+    background-clip: padding-box;
+}
+
+.mark-dialog:before, .mark-box:before {
+    position: absolute;
+    top: -10px;
+    left: 60px;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid #EBEBEB;
+    border-left: 10px solid transparent;
+    border-bottom-color: rgba(0, 0, 0, 0.2);
+    content: '';
+}
+
+.mark-dialog:after, .mark-box:after {
+    position: absolute;
+    top: -9px;
+    left: 61px;
+    border-right: 9px solid transparent;
+    border-bottom: 9px solid #EBEBEB;
+    border-left: 9px solid transparent;
+    content: '';
+}
+
+.mark-dialog-reverse {
+    background-color: #EBEBEB;
+    margin-left: -71px;
+    margin-top: -205px;
+}
+
+.mark-dialog-reverse:before {
+    position: absolute;
+    top: 193px;
+    left: 60px;
+    border-right: 10px solid transparent;
+    border-top: 10px solid #EBEBEB;
+    border-left: 10px solid transparent;
+    border-top-color: rgba(0, 0, 0, 0.2);
+    border-bottom: none;
+    content: '';
+}
+
+.mark-dialog-reverse:after {
+    position: absolute;
+    top: 192px;
+    left: 61px;
+    border-right: 9px solid transparent;
+    border-top: 9px solid #EBEBEB;
+    border-left: 9px solid transparent;
+    border-bottom: none;
+    content: '';
+}
+
+.mark-dialog-control {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.mark-dialog-control label {
+    display: block;
+}
+
+.mark-dialog-control input[type='text'],
+.mark-dialog-control textarea {
+    width: 96%;
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+.mark-dialog-button, .style-picker-button {
+    display: inline-block;
+    padding: 4px 8px;
+    line-height: 20px;
+    font-size: 14px;
+    color: #FFF;
+    background-color: rgb(192, 192, 192);
+    cursor: pointer;
+    text-align: center;
+    vertical-align: middle;
+    border: none;
+    margin: 0 5px;
+    width: 50px;
+    text-decoration: none;
+    float: right;
+}
+
+.mark-dialog-button:hover {
+    background-color: rgb(146, 146, 146);
+    text-decoration: none;
+}
+
+.style-picker {
+    margin-top: 10px;
+    width: 200px;
+    position: absolute;
+    z-index: 15;
+    padding: 10px;
+    background-color: #EBEBEB;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    *border-right-width: 2px;
+    *border-bottom-width: 2px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    -webkit-background-clip: padding-box;
+    -moz-background-clip: padding;
+    background-clip: padding-box;
+}
+
+.color-block {
+    display: inline-block;
+    margin: 5px;
+    width: 30px;
+    height: 30px;
+    border: solid 2px #000;
+}
+
+.color-block-red {
+    background-color: #FF0000;
+}
+
+.color-block-yellow {
+    background-color: #FFF700;
+}
+
+.color-block-blue {
+    background-color: #1977FF;
+}
+
+.color-block-green {
+    background-color: #00E800;
+}
+
+.clearfix {
+    clear: both;
+}
+
+.style-picker {
+    z-index: 25;
+}
+
+.highlight-canvas {
+    animation: highlight-animation 2s;
+    -webkit-animation: highlight-animation 2s;
+}
+
+@keyframes highlight-animation
+{
+    from {background: blue;}
+    to {background: none;}
+}
+
+@-webkit-keyframes highlight-animation
+{
+    from {background: blue;}
+    to {background: none;}
+}
