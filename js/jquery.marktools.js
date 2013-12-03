@@ -26,8 +26,11 @@
             //调用插件的jquery对象
             this.$callObject = $callObject;
             //按钮对应的jquery对象
-            this.$dom = divWithClass(attr.classRest);
-            this.$dom.addClass('btn-marktools');
+            // this.$dom = divWithClass(attr.classRest);
+            // this.$dom.addClass('btn-marktools');
+            this.$dom = divWithClass('btn-marktools');
+            this.$dom.append(divWithClass(attr.classRest)
+                .addClass('btn-marktools-content'));
             this.$dom.click(function() {
                 _this.toggle();
             });
