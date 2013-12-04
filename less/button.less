@@ -45,6 +45,15 @@
     .border-radius(40px);
 }
 
+.btn-marktools-line {
+    @length: @button-content-size * sqrt(2);
+    height: @length;
+    border-left: @border-width solid @color-button-rest;
+    @offsetX: @button-content-size / 2 - 4;
+    @offsetY: @button-content-size / 2 - 7;
+    .translate-rotate(@offsetX, @offsetY, 45deg);
+}
+
 .btn-marktools-pin:hover {
     // background-image: url('../images/icons.png');
     // background-position: -50px 0px;

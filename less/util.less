@@ -1,5 +1,27 @@
 .border-radius (@radius) {
-    border-radius: @radius;
-    -moz-border-radius: @radius;
     -webkit-border-radius: @radius;
+    -moz-border-radius: @radius;
+    -o-border-radius: @radius;
+    border-radius: @radius;
+}
+
+.translate-rotate (@x; @y; @degree) {
+    -webkit-transform: translate(@x, @y) rotate(@degree);
+    -moz-transform: translate(@x, @y) rotate(@degree);
+    -o-transform: translate(@x, @y) rotate(@degree);
+    transform: translate(@x, @y) rotate(@degree);
+}
+
+.translate (@x; @y) {
+    -webkit-transform: translate(@x, @y);
+    -moz-transform: translate(@x, @y);  
+    -o-transform: translate(@x, @y);
+    transform: translate(@x, @y);
+}
+
+.rotate (@degree) {
+    -webkit-transform: rotate(@degree);
+    -moz-transform: rotate(@degree);
+    -o-transform: rotate(@degree);
+    transform: rotate(@degree);
 }
