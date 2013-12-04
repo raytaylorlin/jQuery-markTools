@@ -23,13 +23,24 @@
     position: absolute;
     width: @button-content-size;
     height: @button-content-size;
+
     @ratio: (@button-size - @button-content-size - @border-width * 2) / @button-size / 2;
     top: percentage(@ratio);
     left: percentage(@ratio);
 }
 
 /* pin图标 */
-.btn-marktools-pin {
+.btn-marktools-rect {
+    border: @border-width solid @color-button-rest;
+
+    @offset: 4px;
+    @ratio: (@button-size - (@button-content-size - @offset) - 
+        @border-width * 2) / @button-size / 2;
+    height: @button-content-size - @offset;
+    top: percentage(@ratio);
+}
+
+.btn-marktools-ellipse {
     border: @border-width solid @color-button-rest;
     .border-radius(40px);
 }
