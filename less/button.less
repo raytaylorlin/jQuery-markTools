@@ -16,6 +16,11 @@
         .btn-marktools-content {
             border-color: @color-button-hover; 
         }
+
+        .btn-marktools-pin:after {
+            border-color: transparent;
+            border-top-color: @color-button-hover;
+        }
     }
 }
 
@@ -30,6 +35,31 @@
 }
 
 /* pin图标 */
+.btn-marktools-pin {
+    border: @border-width solid @color-button-rest;
+    width: @button-pin-size;
+    height: @button-pin-size;
+    .border-radius(@button-pin-size);
+    @ratio: (@button-size - @button-pin-size - @border-width * 2) / @button-size / 2;
+    top: percentage(@ratio - 0.05);
+    left: percentage(@ratio);
+
+    &:after {
+        border: 6px solid transparent;
+        border-top: 14px solid @color-button-rest;
+        position: absolute;
+        content: ""; 
+        width: 0;
+        height: 0;
+        top: 100%;
+        left: 28%;
+
+        &:hover {
+            border-top-color: @color-button-hover;
+        }
+    }
+}
+
 .btn-marktools-rect {
     border: @border-width solid @color-button-rest;
 
