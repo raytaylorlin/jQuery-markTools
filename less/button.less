@@ -24,23 +24,53 @@
     }
 }
 
+.btn-marktools-active {
+    .btn-marktools-content {
+        border-color: @color-button-hover;
+    }
+
+    .btn-marktools-pin:after {
+        border-color: transparent;
+        border-top-color: @color-button-hover;
+    }
+}
+
+.btn-marktools-active-border {
+    width: @button-size - @active-button-border-width * 2;
+    height: @button-size - @active-button-border-width * 2;
+    border: @active-button-border-width solid @color-button-hover;
+    background-color: @color-button-hover-bg;
+
+    &:after {
+        border: 7px solid transparent;
+        border-left: 7px solid @color-button-hover;
+        position: absolute;
+        width: 0;
+        height: 0;
+        content: "";
+        left: 100%;
+        top: 40%;
+        margin-left: -1px;
+    }
+}
+
 .btn-marktools-content {
     position: absolute;
     width: @button-content-size;
     height: @button-content-size;
 
-    @ratio: (@button-size - @button-content-size - @border-width * 2) / @button-size / 2;
+    @ratio: (@button-size - @button-content-size - @button-shade-width * 2) / @button-size / 2;
     top: percentage(@ratio);
     left: percentage(@ratio);
 }
 
-/* pin图标 */
+/* 四种图标 */
 .btn-marktools-pin {
-    border: @border-width solid @color-button-rest;
+    border: @button-shade-width solid @color-button-rest;
     width: @button-pin-size;
     height: @button-pin-size;
     .border-radius(@button-pin-size);
-    @ratio: (@button-size - @button-pin-size - @border-width * 2) / @button-size / 2;
+    @ratio: (@button-size - @button-pin-size - @button-shade-width * 2) / @button-size / 2;
     top: percentage(@ratio - 0.05);
     left: percentage(@ratio);
 
@@ -61,83 +91,25 @@
 }
 
 .btn-marktools-rect {
-    border: @border-width solid @color-button-rest;
+    border: @button-shade-width solid @color-button-rest;
 
     @offset: 4px;
     @ratio: (@button-size - (@button-content-size - @offset) - 
-        @border-width * 2) / @button-size / 2;
+        @button-shade-width * 2) / @button-size / 2;
     height: @button-content-size - @offset;
     top: percentage(@ratio);
 }
 
 .btn-marktools-ellipse {
-    border: @border-width solid @color-button-rest;
+    border: @button-shade-width solid @color-button-rest;
     .border-radius(40px);
 }
 
 .btn-marktools-line {
     @length: @button-content-size * sqrt(2);
     height: @length;
-    border-left: @border-width solid @color-button-rest;
+    border-left: @button-shade-width solid @color-button-rest;
     @offsetX: @button-content-size / 2 - 4;
     @offsetY: @button-content-size / 2 - 7;
     .translate-rotate(@offsetX, @offsetY, 45deg);
 }
-
-.btn-marktools-pin:hover {
-    // background-image: url('../images/icons.png');
-    // background-position: -50px 0px;
-}
-
-.btn-marktools-pin-active {
-    background-image: url('../images/icons.png') ;
-    background-position: -100px 0px;
-}
-
-/* rect图标 */
-// .btn-marktools-rect {
-//     background-image: url('../images/icons.png');
-//     background-position: 0px -50px;
-// }
-
-// .btn-marktools-rect:hover {
-//     background-image: url('../images/icons.png');
-//     background-position: -50px -50px;
-// }
-
-// .btn-marktools-rect-active{
-//     background-image: url('../images/icons.png');
-//     background-position: -100px -50px;
-// }
-
-// /* ellipse图标 */
-// .btn-marktools-ellipse {
-//     background-image: url('../images/icons.png');
-//     background-position: 0px -100px;
-// }
-
-// .btn-marktools-ellipse:hover {
-//     background-image: url('../images/icons.png');
-//     background-position: -50px -100px;
-// }
-
-// .btn-marktools-ellipse-active{
-//     background-image: url('../images/icons.png');
-//     background-position: -100px -100px;
-// }
-
-// /* line图标 */
-// .btn-marktools-line {
-//     background-image: url('../images/icons.png');
-//     background-position: 0px -150px;
-// }
-
-// .btn-marktools-line:hover {
-//     background-image: url('../images/icons.png');
-//     background-position: -50px -150px;
-// }
-
-// .btn-marktools-line-active {
-//     background-image: url('../images/icons.png');
-//     background-position: -100px -150px;
-// }

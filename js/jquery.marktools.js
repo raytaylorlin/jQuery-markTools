@@ -57,8 +57,8 @@
          */
         ToolButton.prototype.press = function() {
             this.isPressed = true;
-            this.$dom.removeClass(this.attr.classRest);
-            this.$dom.addClass(this.attr.classActive);
+            this.$dom.addClass('btn-marktools-active');
+            this.$dom.append(divWithClass('btn-marktools-active-border'));
 
             //若样式选择器存在则显示
             if (this.stylePicker) {
@@ -102,8 +102,8 @@
          */
         ToolButton.prototype.popup = function() {
             this.isPressed = false;
-            this.$dom.removeClass(this.attr.classActive);
-            this.$dom.addClass(this.attr.classRest);
+            this.$dom.removeClass('btn-marktools-active');
+            this.$dom.find('.btn-marktools-active-border').remove();
 
             if (this.stylePicker) {
                 this.stylePicker.$dom.hide();
