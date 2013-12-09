@@ -113,3 +113,53 @@
     @offsetY: @button-content-size / 2 - 7;
     .translate-rotate(@offsetX, @offsetY, 45deg);
 }
+
+.btn-marktools-color {
+    width: @button-color-size;
+    height: @button-color-size;
+    @ratio: (@button-size - @button-color-size) / @button-size / 2;
+    top: percentage(@ratio);
+    left: percentage(@ratio);
+    background-color: @color-style-yellow;
+
+    &:before {
+        @border-width: 10px;
+        border: @border-width solid transparent;
+        border-right: @border-width solid @color-style-black;
+        border-bottom: @border-width solid @color-style-black;
+        position: absolute;
+        content: ""; 
+        width: 0;
+        height: 0;
+        top: 55%;
+        left: 55%;
+    }
+
+    &:after {
+        @border-width: 7px;
+        border: @border-width solid transparent;
+        border-right: @border-width solid @color-style-yellow;
+        border-bottom: @border-width solid @color-style-yellow;
+        position: absolute;
+        content: ""; 
+        width: 0;
+        height: 0;
+        top: 68.5%;
+        left: 68.5%;
+    }
+}
+
+// .color-show-block {
+//     display: inline-block;
+//     margin-top: 10px;
+//     margin-left: auto;
+//     margin-right: auto;
+//     width: 30px;
+//     height: 30px;
+//     border: solid 2px #FFF;
+//     background-color: #FF0000;
+// }
+
+// .color-show-block:hover {
+//     border: solid 2px #000;
+// }
