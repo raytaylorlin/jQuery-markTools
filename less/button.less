@@ -42,12 +42,8 @@
     background-color: @color-button-hover-bg;
 
     &:after {
-        border: 7px solid transparent;
+        .triangle-border-base(7px);
         border-left: 7px solid @color-button-hover;
-        position: absolute;
-        width: 0;
-        height: 0;
-        content: "";
         left: 100%;
         top: 40%;
         margin-left: -1px;
@@ -75,12 +71,8 @@
     left: percentage(@ratio);
 
     &:after {
-        border: 6px solid transparent;
+        .triangle-border-base(6px);
         border-top: 14px solid @color-button-rest;
-        position: absolute;
-        content: ""; 
-        width: 0;
-        height: 0;
         top: 100%;
         left: 28%;
 
@@ -117,35 +109,36 @@
 .btn-marktools-color {
     width: @button-color-size;
     height: @button-color-size;
-    @ratio: (@button-size - @button-color-size) / @button-size / 2;
+    @inside-padding: (@button-size - @button-color-size) / 2;
+    @ratio: (@button-size - @button-color-size - @inside-padding) / @button-size;
     top: percentage(@ratio);
     left: percentage(@ratio);
     background-color: @color-style-yellow;
 
+    //黑色右下三角
     &:before {
-        @border-width: 10px;
-        border: @border-width solid transparent;
+        @border-width: 5px;
+        .triangle-border-base(@border-width);
         border-right: @border-width solid @color-style-black;
         border-bottom: @border-width solid @color-style-black;
-        position: absolute;
-        content: ""; 
-        width: 0;
-        height: 0;
-        top: 55%;
-        left: 55%;
+
+        @pos: @button-color-size - @border-width * 2;
+        top: @pos;
+        left: @pos;
     }
 
+    //黄色右下三角
     &:after {
-        @border-width: 7px;
-        border: @border-width solid transparent;
+        @border-width: 3px;
+        .triangle-border-base(@border-width);
         border-right: @border-width solid @color-style-yellow;
         border-bottom: @border-width solid @color-style-yellow;
-        position: absolute;
-        content: ""; 
-        width: 0;
-        height: 0;
-        top: 68.5%;
-        left: 68.5%;
+
+        @pos: @button-color-size - @border-width * 2;
+        top: @pos;
+        left: @pos;
+        // top: 68.5%;
+        // left: 68.5%;
     }
 }
 
