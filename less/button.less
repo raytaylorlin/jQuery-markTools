@@ -6,7 +6,7 @@
     width: @button-size;
     height: @button-size;
     margin-bottom: 0px;
-    position: relative;
+    position: absolute;
 
     .btn-marktools-content {
         border-color: @color-button-rest;
@@ -149,6 +149,21 @@
     }
 }
 
+.style-picker {
+    position: relative;
+    height: @style-picker-height;
+    // margin-top: -@style-picker-height;
+    background-image: url('../images/style_picker_bg.png');
+    background-repeat: no-repeat;
+}
+
+.color-block {
+    display: inline-block;
+    margin: 5px;
+    width: 30px;
+    height: 30px;
+    border: solid 2px #000;
+}
 // .color-show-block {
 //     display: inline-block;
 //     margin-top: 10px;

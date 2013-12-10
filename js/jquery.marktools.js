@@ -61,9 +61,9 @@
             this.$dom.append(divWithClass('btn-marktools-active-border'));
 
             //若样式选择器存在则显示
-            if (this.stylePicker) {
-                this.stylePicker.$dom.show();
-            }
+            // if (this.stylePicker) {
+            //     this.stylePicker.$dom.show();
+            // }
 
             //设置按钮组的状态
             this.container.changeType(this.type);
@@ -105,9 +105,9 @@
             this.$dom.removeClass('btn-marktools-active');
             this.$dom.find('.btn-marktools-active-border').remove();
 
-            if (this.stylePicker) {
-                this.stylePicker.$dom.hide();
-            }
+            // if (this.stylePicker) {
+            //     this.stylePicker.$dom.hide();
+            // }
 
             //隐藏光标
             this.$cursor.hide();
@@ -120,17 +120,87 @@
             this.container.activeType = 'none';
         }
 
+        return ToolButton;
+    })();
+
+    var StyleToolButton = (function() {
+        var StyleToolButton = function(attr, $callObject) {
+            ToolButton.apply(this, arguments);
+
+            this.stylePicker = new StylePicker();
+            this.stylePicker.$dom.css('top', '320px');
+        };
+
+        StyleToolButton.prototype = new ToolButton();
+
+        StyleToolButton.prototype.press = function() {
+            var $stylePicker = this.stylePicker.$dom,
+                height = $stylePicker.height();
+
+            this.isPressed = true;
+            this.$dom.addClass('btn-marktools-active');
+
+            if(!this.$dom.prev('.style-picker').length) {
+                this.$dom.before(this.stylePicker.$dom);                
+            }
+            // this.$dom.append(divWithClass('btn-marktools-active-border'));
+
+            // btnColorPicker.addStylePicker(stylePicker);
+            $stylePicker.height(0).animate({
+                height: '+=445',
+                'top': '-=445'
+            }, 1000, function() {
+                /* stuff to do after animation is complete */
+            });
+
+            $stylePicker.prevAll('.btn-marktools').animate({
+                'top': '-=445'
+            }, 1000, function() {
+                /* stuff to do after animation is complete */
+            });
+
+
+
+            //判断当前是否有画布存在，不允许存在多个画布
+            // if (!this.$callObject.find('.draw-canvas').exists()) {
+            //     //清空缓存
+            //     $.markTools.cache.userStartDraw = false;
+            //     //触发按钮按下的事件
+            //     this.onPress();
+            //     $.markTools.options.onToolButtonActivated();
+            // } else {
+            //     //若按下的按钮是颜色选取，也触发按钮按下事件
+            //     if (this.type === 'color-picker') {
+            //         this.onPress();
+            //     } else {
+            //         //画布存在则直接弹起按钮
+            //         this.popup();
+            //     }
+            // }
+        };
+
+        StyleToolButton.prototype.popup = function() {
+            this.isPressed = false;
+            this.$dom.removeClass('btn-marktools-active');
+        };
+
         /**
          * 添加（绑定）样式选取器
          * @param {StylePicker} stylePicker 样式选取器对象
          */
-        ToolButton.prototype.addStylePicker = function(stylePicker) {
+        StyleToolButton.prototype.addStylePicker = function(stylePicker) {
             var _this = this;
             //若没有绑定则绑定
             if (this.stylePicker === null) {
                 this.stylePicker = stylePicker;
-                //添加在按钮之后
-                this.$dom.after(stylePicker.$dom);
+                // btnColorPicker.$dom.append('<div class="color-show-block"></div>');
+
+                //添加在按钮之前
+                this.$dom.before(stylePicker.$dom);
+
+                // this.$dom.on('click', function(e) {
+                //     console.log(e);
+                // });
                 //颜色选取器的色块点击事件
                 $('.color-block').on('click', function() {
                     var color = $(this).css('background-color');
@@ -144,7 +214,7 @@
             }
         }
 
-        return ToolButton;
+        return StyleToolButton;
     })();
 
     var ToolButtonContainer = (function() {
@@ -191,6 +261,9 @@
          * @param {ToolButton} button 要添加的按钮
          */
         ToolButtonContainer.prototype.add = function(button) {
+            var $conatiner = this.$dom,
+                $button = button.$dom;
+
             if (!(button instanceof ToolButton)) {
                 console.error('Button type error');
                 return;
@@ -198,6 +271,8 @@
             this.buttonList[button.type] = button;
             button.container = this;
             //添加jquery对象
+            $button.css('top', 
+                $conatiner.children('.btn-marktools').length * 80);
             this.$dom.append(button.$dom);
         }
 
@@ -234,10 +309,10 @@
             this.$callObject = callObject;
             this.$dom = $(
                 '<div class="style-picker">' +
-                '<div class="color-block color-block-red"></div>' +
-                '<div class="color-block color-block-yellow"></div>' +
-                '<div class="color-block color-block-blue"></div>' +
-                '<div class="color-block color-block-green"></div>' +
+                // '<div class="color-block color-block-red"></div>' +
+                // '<div class="color-block color-block-yellow"></div>' +
+                // '<div class="color-block color-block-blue"></div>' +
+                // '<div class="color-block color-block-green"></div>' +
                 '<div class="clearfix"></div>' +
                 '</div>');
         };
@@ -413,7 +488,7 @@
                         //记录拖动的起点
                         startDragPoint.x1 = e.offsetX || (e.clientX - $(e.target).offset().left);
                         startDragPoint.y1 = e.offsetY || (e.clientY - $(e.target).offset().top);
-                        if(_this.type === 'pin') {
+                        if (_this.type === 'pin') {
                             startDragPoint.x1 = originSelection.x1;
                             startDragPoint.y1 = originSelection.y1;
                         }
@@ -531,8 +606,8 @@
                 margin = $.markTools.options.canvasMargin;
                 x1 = this.selection.x2 - margin;
                 y1 = this.selection.y2 - margin;
-                w =  margin * 2;
-                h =  margin * 2;
+                w = margin * 2;
+                h = margin * 2;
             } else {
                 x1 = this.selection.x1 < this.selection.x2 ? this.selection.x1 : this.selection.x2,
                 y1 = this.selection.y1 < this.selection.y2 ? this.selection.y1 : this.selection.y2,
@@ -545,7 +620,7 @@
 
         DrawingCanvas.prototype.repositionMarkDialog = function(e, drawData) {
             var $callObject = this.$callObject
-                $markDialog = this.$dom.next('.mark-dialog');
+            $markDialog = this.$dom.next('.mark-dialog');
             //获取鼠标偏移量，显示并定位对话框
             var offset = getMouseOffset($callObject, e),
                 sel = drawData.selection;
@@ -553,7 +628,7 @@
             offset.left = sel.x2 - (sel.x2 - sel.x1) / 2;
             offset.top = sel.y2 + (sel.y2 > sel.y1 ? 0 : sel.y1 - sel.y2);
 
-            if($markDialog.hasClass('mark-dialog-reverse')) {
+            if ($markDialog.hasClass('mark-dialog-reverse')) {
                 offset.top = sel.y1 + (sel.y2 > sel.y1 ? 0 : sel.y2 - sel.y1);
             }
 
@@ -563,7 +638,7 @@
             if (!$markDialog.exists()) {
                 $markDialog = $.markTools.showMarkDialog(offset);
                 $.markTools.$callObject.append($markDialog);
-                if($.markTools.options.onMarkDialogShow) {
+                if ($.markTools.options.onMarkDialogShow) {
                     $.markTools.options.onMarkDialogShow($markDialog);
                 }
             } else {
@@ -796,41 +871,23 @@
             }
 
             if (true) {
-                var btnColorPicker = new ToolButton(toolsMap['color-picker'], $this),
-                    stylePicker = new StylePicker($this);
-                btnColorPicker.$dom.append('<div class="color-show-block"></div>');
+                var btnColorPicker = new StyleToolButton(toolsMap['color-picker'], $this);
+                // stylePicker = new StylePicker($this);
+                // btnColorPicker.$dom.append('<div class="color-show-block"></div>');
 
                 btnColorPicker.onPress = function() {
-                    btnColorPicker.addStylePicker(stylePicker);
+                    // var $stylePicker = stylePicker.$dom,
+                    //     height = $stylePicker.height();
+                    // // btnColorPicker.addStylePicker(stylePicker);
+                    // $stylePicker.height(0).animate({
+                    //     height: '+=445',
+                    //     'margin-top': '-=445'
+                    // }, 1000, function() {
+                    //     /* stuff to do after animation is complete */
+                    // });
                 };
                 toolButtonContainer.add(btnColorPicker);
             }
-
-            //点击绑定插件的主体，隐藏掉mark-box，相当于blur
-            // $callObject.on({
-            // 'click': function(e) {
-            //     $openedMarkBox = $.markTools.cache.openedMarkBox;
-            //     if ($openedMarkBox) {
-            //         $openedMarkBox.fadeOut();
-            //         $.markTools.cache.openedMarkBox = null;
-            //     }
-            // }
-            // 'mousedown.callObject_blur': function(e) {
-            //     if (e.button === 0) {
-            //         mouseDownPos = {
-            //             x: e.pageX,
-            //             y: e.pageY
-            //         }
-            //     }
-            // },
-            // 'mouseup.callObject_blue': function(e) {
-            //     var $openedMarkBox;
-            //     //这是一个真左键点击（非鼠标拖拽）
-            //     if (e.button === 0 && mouseDownPos.x === e.pageX && mouseDownPos.y === e.pageY) {
-            //         $callObject.click();
-            //     }
-            // }
-            // });
 
             var $marktoolsTemplate = $('#marktools-template').hide(),
                 markDialogTemplateHtml =
@@ -907,9 +964,9 @@
                         $markBox,
                         $markObject,
                         offset, drawData, changeSelection, sel;
-                    
-                    if(options.validateHandler) {
-                        if(!options.validateHandler()) {
+
+                    if (options.validateHandler) {
+                        if (!options.validateHandler()) {
                             return;
                         }
                     }
