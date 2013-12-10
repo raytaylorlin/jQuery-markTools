@@ -1,3 +1,11 @@
+.triangle-border-base (@border-width) {
+    position: absolute;
+    content: ""; 
+    width: 0;
+    height: 0;
+    border: @border-width solid transparent;
+}
+
 .border-radius (@radius) {
     -webkit-border-radius: @radius;
     -moz-border-radius: @radius;
