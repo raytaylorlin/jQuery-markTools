@@ -106,6 +106,7 @@
     .translate-rotate(@offsetX, @offsetY, 45deg);
 }
 
+//颜色选择按钮
 .btn-marktools-color {
     width: @button-color-size;
     height: @button-color-size;
@@ -137,8 +138,6 @@
         @pos: @button-color-size - @border-width * 2;
         top: @pos;
         left: @pos;
-        // top: 68.5%;
-        // left: 68.5%;
     }
 }
 
@@ -148,6 +147,11 @@
     // margin-top: -@style-picker-height;
     background-image: url('../images/style_picker_bg.png');
     background-repeat: no-repeat;
+}
+
+.style-picker-container {
+    .div-center(@style-picker-container-width);
+    padding-top: 38px;
 }
 
 .color-block {
