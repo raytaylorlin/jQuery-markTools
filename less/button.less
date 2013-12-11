@@ -141,26 +141,58 @@
     }
 }
 
+//颜色选择大容器
 .style-picker {
     position: relative;
     height: @style-picker-height;
-    // margin-top: -@style-picker-height;
     background-image: url('../images/style_picker_bg.png');
     background-repeat: no-repeat;
 }
 
+//颜色选择色块容器
 .style-picker-container {
     .div-center(@style-picker-container-width);
-    padding-top: 38px;
+    padding-top: 15px;
+
+    //色块
+    .color-block {
+        display: inline-block;
+        margin: 8px 0;
+        width: @color-block-size;
+        height: @color-block-size;
+        .border-radius(@color-block-size);
+    }
+
+    //色块颜色
+    .color-block-yellow {
+        background-color: @color-style-yellow;
+    }
+
+    .color-block-green {
+        background-color: @color-style-green;
+    }
+
+    .color-block-red {
+        background-color: @color-style-red;
+    }
+
+    .color-block-black {
+        background-color: @color-style-black;
+    }
+
+    .color-block-blue {
+        background-color: @color-style-blue;
+    }
+
+    .color-block-pink {
+        background-color: @color-style-pink;
+    }
+
+    .color-block-white {
+        background-color: @color-style-white;
+    }
 }
 
-.color-block {
-    display: inline-block;
-    margin: 5px;
-    width: 30px;
-    height: 30px;
-    border: solid 2px #000;
-}
 // .color-show-block {
 //     display: inline-block;
 //     margin-top: 10px;
