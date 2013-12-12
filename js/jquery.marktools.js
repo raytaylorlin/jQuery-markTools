@@ -44,6 +44,8 @@
             // this.onPress = attr.onPress;
         };
 
+        ToolButton.prototype.HEIGHT = 80;
+
         /**
          * 切换按钮状态
          */
@@ -124,6 +126,31 @@
     })();
 
     var StyleToolButton = (function() {
+        function toggleAnimation(stylePicker, isOpen) {
+            var $stylePicker = stylePicker.$dom,
+                height = stylePicker.HEIGHT;
+
+            if (isOpen) {
+                $stylePicker.show().height(0).animate({
+                    height: '+=' + height,
+                    top: '-=' + height
+                }, 1000);
+                $stylePicker.prevAll('.btn-marktools').animate({
+                    top: '-=' + height
+                }, 1000);
+            } else {
+                $stylePicker.height(height).animate({
+                    height: '-=' + height,
+                    top: '+=' + height
+                }, 1000, function() {
+                    $(this).hide();
+                });
+                $stylePicker.prevAll('.btn-marktools').animate({
+                    top: '+=' + height
+                }, 1000);
+            }
+        }
+
         var StyleToolButton = function(attr, $callObject) {
             ToolButton.apply(this, arguments);
 
@@ -134,31 +161,15 @@
         StyleToolButton.prototype = new ToolButton();
 
         StyleToolButton.prototype.press = function() {
-            var $stylePicker = this.stylePicker.$dom,
-                height = $stylePicker.height();
+            var $stylePicker = this.stylePicker.$dom;
 
             this.isPressed = true;
             this.$dom.addClass('btn-marktools-active');
 
-            if(!this.$dom.prev('.style-picker').length) {
-                this.$dom.before(this.stylePicker.$dom);                
+            if (!this.$dom.prev('.style-picker').length) {
+                this.$dom.before(this.stylePicker.$dom);
             }
-            // this.$dom.append(divWithClass('btn-marktools-active-border'));
-
-            // btnColorPicker.addStylePicker(stylePicker);
-            $stylePicker.height(0).animate({
-                height: '+=445',
-                'top': '-=445'
-            }, 1000, function() {
-                /* stuff to do after animation is complete */
-            });
-
-            $stylePicker.prevAll('.btn-marktools').animate({
-                'top': '-=445'
-            }, 1000, function() {
-                /* stuff to do after animation is complete */
-            });
-
+            toggleAnimation(this.stylePicker, true);
 
 
             //判断当前是否有画布存在，不允许存在多个画布
@@ -182,6 +193,7 @@
         StyleToolButton.prototype.popup = function() {
             this.isPressed = false;
             this.$dom.removeClass('btn-marktools-active');
+            toggleAnimation(this.stylePicker, false);
         };
 
         /**
@@ -212,7 +224,7 @@
                     _this.popup();
                 });
             }
-        }
+        };
 
         return StyleToolButton;
     })();
@@ -233,7 +245,7 @@
             this.$callObject.append(this.$wrapper);
             this.$wrapper.append(this.$dom);
             this.$dom.before(temp);
-        }
+        };
 
         /**
          * 初始化工具栏的位置
@@ -254,7 +266,7 @@
             };
             adjust();
             $(window).resize(adjust);
-        }
+        };
 
         /**
          * 添加按钮
@@ -271,10 +283,10 @@
             this.buttonList[button.type] = button;
             button.container = this;
             //添加jquery对象
-            $button.css('top', 
-                $conatiner.children('.btn-marktools').length * 80);
+            $button.css('top',
+                $conatiner.children('.btn-marktools').length * button.HEIGHT);
             this.$dom.append(button.$dom);
-        }
+        };
 
         /**
          * 改变按钮组中激活的按钮
@@ -290,7 +302,7 @@
 
                     break;
             }
-        }
+        };
 
         ToolButtonContainer.prototype.popupAll = function() {
             this.buttonList[this.activeType].popup();
@@ -309,13 +321,19 @@
             this.$callObject = callObject;
             this.$dom = $(
                 '<div class="style-picker">' +
-                // '<div class="color-block color-block-red"></div>' +
-                // '<div class="color-block color-block-yellow"></div>' +
-                // '<div class="color-block color-block-blue"></div>' +
-                // '<div class="color-block color-block-green"></div>' +
-                '<div class="clearfix"></div>' +
+                '<div class="style-picker-container">' +
+                '<div class="color-block color-block-yellow"></div>' +
+                '<div class="color-block color-block-green"></div>' +
+                '<div class="color-block color-block-red"></div>' +
+                '<div class="color-block color-block-black"></div>' +
+                '<div class="color-block color-block-blue"></div>' +
+                '<div class="color-block color-block-pink"></div>' +
+                '<div class="color-block color-block-white"></div>' +
+                '</div>' +
                 '</div>');
         };
+
+        StylePicker.prototype.HEIGHT = 445;
 
         // StylePicker.prototype.bind = function(onDraw, onFinishDraw) {
         //     var _this = this;
