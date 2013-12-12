@@ -46,3 +46,10 @@
     -o-transform: rotate(@degree);
     transform: rotate(@degree);
 }
+
+.transition-all (@duration; @timing-func: ease) {
+    -webkit-transition: all @duration @timing-func;
+    -moz-transition: all @duration @timing-func;
+    -o-transition: all @duration @timing-func;
+    transition: all @duration @timing-func;
+}

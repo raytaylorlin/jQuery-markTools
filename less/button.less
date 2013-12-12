@@ -162,6 +162,7 @@
         width: @color-block-size;
         height: @color-block-size;
         .border-radius(@color-block-size);
+        text-align: center;
     }
 
     .color-block {
@@ -171,6 +172,14 @@
         top: (@color-block-size - @color-block-inside-size) / 2;
         left: (@color-block-size - @color-block-inside-size) / 2;
         .border-radius(@color-block-inside-size);
+        .transition-all(0.25s);
+
+        &:hover {
+            width: @color-block-size;
+            height: @color-block-size;
+            top: 0;
+            left: 0;
+        }
     }
 
     //色块颜色
