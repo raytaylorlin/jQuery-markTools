@@ -128,26 +128,27 @@
     var StyleToolButton = (function() {
         function toggleAnimation(stylePicker, isOpen) {
             var $stylePicker = stylePicker.$dom,
-                height = stylePicker.HEIGHT;
+                height = stylePicker.HEIGHT,
+                duration = 500;
 
             if (isOpen) {
                 $stylePicker.show().height(0).animate({
                     height: '+=' + height,
                     top: '-=' + height
-                }, 1000);
+                }, duration);
                 $stylePicker.prevAll('.btn-marktools').animate({
                     top: '-=' + height
-                }, 1000);
+                }, duration);
             } else {
                 $stylePicker.height(height).animate({
                     height: '-=' + height,
                     top: '+=' + height
-                }, 1000, function() {
+                }, duration, function() {
                     $(this).hide();
                 });
                 $stylePicker.prevAll('.btn-marktools').animate({
                     top: '+=' + height
-                }, 1000);
+                }, duration);
             }
         }
 
@@ -319,22 +320,35 @@
             //笔宽
             this.width = 1;
             this.$callObject = callObject;
+            this.colorList = ['yellow', 'green', 'red', 'black', 'blue', 'pink', 'white'];
             this.$dom = $(
                 '<div class="style-picker">' +
                 '<div class="style-picker-container">' +
-                '<div class="color-block color-block-yellow"></div>' +
-                '<div class="color-block color-block-green"></div>' +
-                '<div class="color-block color-block-red"></div>' +
-                '<div class="color-block color-block-black"></div>' +
-                '<div class="color-block color-block-blue"></div>' +
-                '<div class="color-block color-block-pink"></div>' +
-                '<div class="color-block color-block-white"></div>' +
+                // '<div class="color-block-bg color-block-yellow"><div class="color-block"/></div>' +
+                // '<div class="color-block-bg color-block-green"><div class="color-block"/></div>' +
+                // '<div class="color-block-bg color-block-red"><div class="color-block"/></div>' +
+                // '<div class="color-block-bg color-block-black"><div class="color-block"/></div>' +
+                // '<div class="color-block-bg color-block-blue"><div class="color-block"/></div>' +
+                // '<div class="color-block-bg color-block-pink"><div class="color-block"/></div>' +
+                // '<div class="color-block-bg color-block-white"><div class="color-block"/></div>' +
                 '</div>' +
                 '</div>');
+            this.addColorBlock();
         };
 
         StylePicker.prototype.HEIGHT = 445;
 
+
+        StylePicker.prototype.addColorBlock = function($container) {
+            var i, $block;
+            for (i = 0; i < this.colorList.length; i++) {
+                $block = divWithClass('color-block-bg')
+                    .addClass('color-block-transparent-' + this.colorList[i]);
+                $block.append(aWithClass('color-block')
+                    .addClass('color-block-' + this.colorList[i]));
+                this.$dom.find('.style-picker-container').append($block);
+            }
+        };
         // StylePicker.prototype.bind = function(onDraw, onFinishDraw) {
         //     var _this = this;
         //     this.$dom.one('click', '.style-picker-button', function() {
@@ -1285,7 +1299,6 @@
         }
     };
 
-
     function divWithClass(className, content) {
         var key,
             newDiv = $('<div></div>');
@@ -1294,6 +1307,16 @@
             newDiv = newDiv.html(content);
         }
         return newDiv;
+    }
+
+    function aWithClass(className, content) {
+        var key,
+            newA = $('<a href="javascript:void(0);"></a>');
+        newA.addClass(className);
+        if (typeof content !== undefined) {
+            newA = newA.html(content);
+        }
+        return newA;
     }
 
     function setOffset(obj, offset) {
