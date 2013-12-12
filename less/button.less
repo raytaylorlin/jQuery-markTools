@@ -10,6 +10,7 @@
 
     .btn-marktools-content {
         border-color: @color-button-rest;
+        .transition-all(0.5s);
     }
 
     &:hover {
@@ -21,6 +22,21 @@
             border-color: transparent;
             border-top-color: @color-button-hover;
         }
+    }
+
+    //给所有按钮加上通用的上半长边框
+    &:after {
+        .before-after-shade-base();
+        left: 25%;
+        width: 50%; 
+        height: 2px;
+        background-color: @color-button-border;
+    }
+
+    //两个特殊情况，上全长边框
+    &:first-child:after, &:last-child:after {
+        left: 0;
+        width: 100%;
     }
 }
 
@@ -75,6 +91,7 @@
         border-top: 14px solid @color-button-rest;
         top: 100%;
         left: 28%;
+        .transition-all(0.5s);
 
         &:hover {
             border-top-color: @color-button-hover;
@@ -154,7 +171,7 @@
     .div-center(@picker-container-width);
     padding-top: 15px;
 
-    //色块
+    //色块背景（半透明）
     .color-block-bg {
         display: inline-block;
         position: relative;
@@ -165,6 +182,7 @@
         text-align: center;
     }
 
+    //色块背景
     .color-block {
         position: absolute;
         width: @color-block-inside-size;
