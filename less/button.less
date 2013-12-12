@@ -114,14 +114,14 @@
     @ratio: (@button-size - @button-color-size - @inside-padding) / @button-size;
     top: percentage(@ratio);
     left: percentage(@ratio);
-    background-color: @color-style-yellow;
+    background-color: @color-yellow;
 
     //黑色右下三角
     &:before {
         @border-width: 5px;
         .triangle-border-base(@border-width);
-        border-right: @border-width solid @color-style-black;
-        border-bottom: @border-width solid @color-style-black;
+        border-right: @border-width solid @color-black;
+        border-bottom: @border-width solid @color-black;
 
         @pos: @button-color-size - @border-width * 2;
         top: @pos;
@@ -132,8 +132,8 @@
     &:after {
         @border-width: 3px;
         .triangle-border-base(@border-width);
-        border-right: @border-width solid @color-style-yellow;
-        border-bottom: @border-width solid @color-style-yellow;
+        border-right: @border-width solid @color-yellow;
+        border-bottom: @border-width solid @color-yellow;
 
         @pos: @button-color-size - @border-width * 2;
         top: @pos;
@@ -144,66 +144,89 @@
 //颜色选择大容器
 .style-picker {
     position: relative;
-    height: @style-picker-height;
+    height: @picker-height;
     background-image: url('../images/style_picker_bg.png');
     background-repeat: no-repeat;
 }
 
 //颜色选择色块容器
 .style-picker-container {
-    .div-center(@style-picker-container-width);
+    .div-center(@picker-container-width);
     padding-top: 15px;
 
     //色块
-    .color-block {
+    .color-block-bg {
         display: inline-block;
+        position: relative;
         margin: 8px 0;
         width: @color-block-size;
         height: @color-block-size;
         .border-radius(@color-block-size);
     }
 
+    .color-block {
+        position: absolute;
+        width: @color-block-inside-size;
+        height: @color-block-inside-size;
+        top: (@color-block-size - @color-block-inside-size) / 2;
+        left: (@color-block-size - @color-block-inside-size) / 2;
+        .border-radius(@color-block-inside-size);
+    }
+
     //色块颜色
     .color-block-yellow {
-        background-color: @color-style-yellow;
+        background-color: @color-yellow;
     }
 
     .color-block-green {
-        background-color: @color-style-green;
+        background-color: @color-green;
     }
 
     .color-block-red {
-        background-color: @color-style-red;
+        background-color: @color-red;
     }
 
     .color-block-black {
-        background-color: @color-style-black;
+        background-color: @color-black;
     }
 
     .color-block-blue {
-        background-color: @color-style-blue;
+        background-color: @color-blue;
     }
 
     .color-block-pink {
-        background-color: @color-style-pink;
+        background-color: @color-pink;
     }
 
     .color-block-white {
-        background-color: @color-style-white;
+        background-color: @color-white;
+    }
+
+    .color-block-transparent-yellow {
+        background-color: @color-transparent-yellow;
+    }
+
+    .color-block-transparent-green {
+        background-color: @color-transparent-green;
+    }
+
+    .color-block-transparent-red {
+        background-color: @color-transparent-red;
+    }
+
+    .color-block-transparent-black {
+        background-color: @color-transparent-black;
+    }
+
+    .color-block-transparent-blue {
+        background-color: @color-transparent-blue;
+    }
+
+    .color-block-transparent-pink {
+        background-color: @color-transparent-pink;
+    }
+
+    .color-block-transparent-white {
+        background-color: @color-transparent-white;
     }
 }
-
-// .color-show-block {
-//     display: inline-block;
-//     margin-top: 10px;
-//     margin-left: auto;
-//     margin-right: auto;
-//     width: 30px;
-//     height: 30px;
-//     border: solid 2px #FFF;
-//     background-color: #FF0000;
-// }
-
-// .color-show-block:hover {
-//     border: solid 2px #000;
-// }

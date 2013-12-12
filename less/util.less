@@ -1,13 +1,21 @@
+/**
+ * div居中
+ * @param {@width} div宽度
+ */
 .div-center (@width) {
     width: @width;
     margin: 0 auto;
 }
 
-.triangle-border-base (@border-width) {
+.before-after-shade-base () {
     position: absolute;
     content: ""; 
     width: 0;
     height: 0;
+}
+
+.triangle-border-base (@border-width) {
+    .before-after-shade-base();
     border: @border-width solid transparent;
 }
 
