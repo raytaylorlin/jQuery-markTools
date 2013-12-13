@@ -69,7 +69,7 @@
 
             this.container.$dom.find('.btn-marktools-active-border').hide().css({
                 top: index * this.HEIGHT
-            }).fadeIn();
+            }).show();
 
             //显示光标并绑定到鼠标移动事件
             var $cursor = this.$cursor;
@@ -107,7 +107,7 @@
             this.isPressed = false;
             this.$dom.removeClass('btn-marktools-active');
             // this.$dom.find('.btn-marktools-active-border').remove();
-            // this.container.$dom.find('.btn-marktools-active-border').fadeOut();
+            this.container.$dom.find('.btn-marktools-active-border').hide();
 
             //隐藏光标
             this.$cursor.hide();
@@ -163,7 +163,7 @@
             var $stylePicker = this.stylePicker.$dom;
 
             this.isPressed = true;
-            this.$dom.addClass('btn-marktools-active');
+            this.$dom.children().addClass('btn-marktools-color-active');
 
             if (!this.$dom.prev('.style-picker').length) {
                 this.$dom.before(this.stylePicker.$dom);
@@ -173,7 +173,7 @@
 
         StyleToolButton.prototype.popup = function() {
             this.isPressed = false;
-            this.$dom.removeClass('btn-marktools-active');
+            this.$dom.children().removeClass('btn-marktools-color-active');
             toggleAnimation(this.stylePicker, false);
         };
 

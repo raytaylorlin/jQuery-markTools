@@ -11,6 +11,7 @@
     .btn-marktools-content {
         border-color: @color-button-rest;
         .transition-all(0.5s);
+        z-index: @z-index-button-content;
     }
 
     &:hover {
@@ -41,6 +42,8 @@
 }
 
 .btn-marktools-active {
+    background-color: @color-button-hover-bg;
+
     .btn-marktools-content {
         border-color: @color-button-hover;
     }
@@ -52,17 +55,20 @@
 }
 
 .btn-marktools-active-border {
+    position: absolute;
     width: @button-size - @active-button-border-width * 2;
     height: @button-size - @active-button-border-width * 2;
     border: @active-button-border-width solid @color-button-hover;
     background-color: @color-button-hover-bg;
+    z-index: @z-index-active-button-border;
 
     &:after {
-        .triangle-border-base(7px);
-        border-left: 7px solid @color-button-hover;
-        left: 100%;
+        @border-width: 7px;
+        .triangle-border-base(@border-width);
+        border-left: @border-width solid @color-button-hover;
+        left: @button-size - @border-width;
         top: 40%;
-        margin-left: -1px;
+        // margin-left: -1px;
     }
 }
 
@@ -155,6 +161,20 @@
         @pos: @button-color-size - @border-width * 2;
         top: @pos;
         left: @pos;
+        .transition-all(0.5s);
+    }
+}
+
+.btn-marktools-color-active {
+    &:after {
+        @border-width: 3px;
+        .triangle-border-base(@border-width);
+        border-right: @border-width solid @color-yellow;
+        border-bottom: @border-width solid @color-yellow;
+
+        @pos: @button-color-size - @border-width * 2;
+        top: @pos + 3;
+        left: @pos + 3;
     }
 }
 
