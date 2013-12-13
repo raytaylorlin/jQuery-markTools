@@ -28,7 +28,7 @@
             //按钮对应的jquery对象
             // this.$dom = divWithClass(attr.classRest);
             // this.$dom.addClass('btn-marktools');
-            this.$dom = divWithClass('btn-marktools');
+            this.$dom = aWithClass('btn-marktools');
             this.$dom.append(divWithClass('btn-marktools-content')
                 .addClass(attr.classRest));
             this.$dom.click(function() {
@@ -58,17 +58,18 @@
          * 按下按钮
          */
         ToolButton.prototype.press = function() {
+            var index = this.container.getIndexByType(this.type);
             this.isPressed = true;
             this.$dom.addClass('btn-marktools-active');
-            this.$dom.append(divWithClass('btn-marktools-active-border'));
-
-            //若样式选择器存在则显示
-            // if (this.stylePicker) {
-            //     this.stylePicker.$dom.show();
-            // }
+            
+            // this.container.$dom.append(divWithClass('btn-marktools-active-border'));
 
             //设置按钮组的状态
             this.container.changeType(this.type);
+
+            this.container.$dom.find('.btn-marktools-active-border').hide().css({
+                top: index * this.HEIGHT
+            }).fadeIn();
 
             //显示光标并绑定到鼠标移动事件
             var $cursor = this.$cursor;
@@ -105,11 +106,8 @@
         ToolButton.prototype.popup = function() {
             this.isPressed = false;
             this.$dom.removeClass('btn-marktools-active');
-            this.$dom.find('.btn-marktools-active-border').remove();
-
-            // if (this.stylePicker) {
-            //     this.stylePicker.$dom.hide();
-            // }
+            // this.$dom.find('.btn-marktools-active-border').remove();
+            // this.container.$dom.find('.btn-marktools-active-border').fadeOut();
 
             //隐藏光标
             this.$cursor.hide();
@@ -171,24 +169,6 @@
                 this.$dom.before(this.stylePicker.$dom);
             }
             toggleAnimation(this.stylePicker, true);
-
-
-            //判断当前是否有画布存在，不允许存在多个画布
-            // if (!this.$callObject.find('.draw-canvas').exists()) {
-            //     //清空缓存
-            //     $.markTools.cache.userStartDraw = false;
-            //     //触发按钮按下的事件
-            //     this.onPress();
-            //     $.markTools.options.onToolButtonActivated();
-            // } else {
-            //     //若按下的按钮是颜色选取，也触发按钮按下事件
-            //     if (this.type === 'color-picker') {
-            //         this.onPress();
-            //     } else {
-            //         //画布存在则直接弹起按钮
-            //         this.popup();
-            //     }
-            // }
         };
 
         StyleToolButton.prototype.popup = function() {
@@ -211,9 +191,6 @@
                 //添加在按钮之前
                 this.$dom.before(stylePicker.$dom);
 
-                // this.$dom.on('click', function(e) {
-                //     console.log(e);
-                // });
                 //颜色选取器的色块点击事件
                 $('.color-block').on('click', function() {
                     var color = $(this).css('background-color');
@@ -233,11 +210,13 @@
     var ToolButtonContainer = (function() {
         var ToolButtonContainer = function($callObject) {
             this.activeType = 'none';
-            this.buttonList = {};
+            this.buttonMap = {};
+            this.buttonList = [];
             this.$callObject = $callObject;
             //初始化标记工具栏容器
             this.$wrapper = divWithClass('marktools-wrapper');
             this.$dom = divWithClass('marktools-container');
+            this.$dom.append(divWithClass('btn-marktools-active-border').hide());
 
             this.initPosition();
             //在调用插件的容器里面添加
@@ -281,7 +260,8 @@
                 console.error('Button type error');
                 return;
             }
-            this.buttonList[button.type] = button;
+            this.buttonMap[button.type] = button;
+            this.buttonList.push(button.type);
             button.container = this;
             //添加jquery对象
             $button.css('top',
@@ -294,19 +274,32 @@
          * @param  {String} type 按钮名称
          */
         ToolButtonContainer.prototype.changeType = function(type) {
+            var changeIndex = 0;
             if (this.activeType !== type && this.activeType !== 'none') {
-                this.buttonList[this.activeType].popup();
+                this.buttonMap[this.activeType].popup();
             }
-            this.activeType = type;
-            switch (this.activeType) {
-                case 'none':
+            //激活框移动动画
+            // changeIndex = this.buttonList.indexOf(type) -
+            //     this.buttonList.indexOf(this.activeType);
+            // if (this.activeType === 'none' || changeIndex === 0) {
+            //     this.$dom.find('.btn-marktools-active-border').css({
+            //         top: this.buttonList.indexOf(type) * 80
+            //     }).fadeToggle();
+            // } else {
+            //     this.$dom.find('.btn-marktools-active-border').animate({
+            //         top: '+=' + changeIndex * 80
+            //     }, 1000);
+            // }
 
-                    break;
-            }
+            this.activeType = type;
         };
 
+        ToolButtonContainer.prototype.getIndexByType = function(type) {
+            return this.buttonList.indexOf(type);
+        }
+
         ToolButtonContainer.prototype.popupAll = function() {
-            this.buttonList[this.activeType].popup();
+            this.buttonMap[this.activeType].popup();
             this.activeType = 'none';
         };
 
@@ -324,20 +317,12 @@
             this.$dom = $(
                 '<div class="style-picker">' +
                 '<div class="style-picker-container">' +
-                // '<div class="color-block-bg color-block-yellow"><div class="color-block"/></div>' +
-                // '<div class="color-block-bg color-block-green"><div class="color-block"/></div>' +
-                // '<div class="color-block-bg color-block-red"><div class="color-block"/></div>' +
-                // '<div class="color-block-bg color-block-black"><div class="color-block"/></div>' +
-                // '<div class="color-block-bg color-block-blue"><div class="color-block"/></div>' +
-                // '<div class="color-block-bg color-block-pink"><div class="color-block"/></div>' +
-                // '<div class="color-block-bg color-block-white"><div class="color-block"/></div>' +
                 '</div>' +
                 '</div>');
             this.addColorBlock();
         };
 
         StylePicker.prototype.HEIGHT = 445;
-
 
         StylePicker.prototype.addColorBlock = function($container) {
             var i, $block;
