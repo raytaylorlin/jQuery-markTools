@@ -140,7 +140,7 @@
     background-color: @color-yellow;
 
     //黑色右下三角
-    &:before {
+    .btn-marktools-color-triangle1 {
         @border-width: 5px;
         .triangle-border-base(@border-width);
         border-right: @border-width solid @color-black;
@@ -152,7 +152,7 @@
     }
 
     //黄色右下三角
-    &:after {
+    .btn-marktools-color-triangle2 {
         @border-width: 3px;
         .triangle-border-base(@border-width);
         border-right: @border-width solid @color-yellow;
@@ -165,13 +165,10 @@
     }
 }
 
+//颜色选择按钮激活状态（黄色右下三角位移）
 .btn-marktools-color-active {
-    &:after {
+    .btn-marktools-color-triangle2 {
         @border-width: 3px;
-        .triangle-border-base(@border-width);
-        border-right: @border-width solid @color-yellow;
-        border-bottom: @border-width solid @color-yellow;
-
         @pos: @button-color-size - @border-width * 2;
         top: @pos + 3;
         left: @pos + 3;

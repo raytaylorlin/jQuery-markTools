@@ -61,7 +61,7 @@
             var index = this.container.getIndexByType(this.type);
             this.isPressed = true;
             this.$dom.addClass('btn-marktools-active');
-            
+
             // this.container.$dom.append(divWithClass('btn-marktools-active-border'));
 
             //设置按钮组的状态
@@ -153,8 +153,26 @@
         var StyleToolButton = function(attr, $callObject) {
             ToolButton.apply(this, arguments);
 
+            this.$dom.find('.btn-marktools-color')
+                .append(divWithClass('btn-marktools-color-triangle1'));
+            this.$dom.find('.btn-marktools-color')
+                .append(divWithClass('btn-marktools-color-triangle2'));
             this.stylePicker = new StylePicker();
             this.stylePicker.$dom.css('top', '320px');
+
+            var _this = this;
+            //颜色选取器的色块点击事件
+            this.stylePicker.$dom.on('click', '.color-block', function() {
+                var color = $(this).css('background-color');
+                $.markTools.cache.color = color;
+                //改变显示色块的颜色
+                $('.btn-marktools-color').css('background-color', color);
+                $('.btn-marktools-color-triangle2').css('border-right-color', color);
+                $('.btn-marktools-color-triangle2').css('border-bottom-color', color);
+                // _this.$callObject.parent().trigger('STYLE_PICKER_COLOR_CHANGE', color);
+                $('.draw-canvas').trigger('STYLE_PICKER_COLOR_CHANGE', color);
+                _this.popup();
+            });
         };
 
         StyleToolButton.prototype = new ToolButton();
