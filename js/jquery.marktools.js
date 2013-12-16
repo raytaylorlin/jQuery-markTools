@@ -386,7 +386,6 @@
             this.onFinishDraw = onFinishDraw;
             this.type = type;
 
-
             //初始化完成后，将DOM添加进调用主体中
             this.$callObject.append(this.$dom);
 
@@ -395,8 +394,10 @@
                 .attr('class', 'draw-canvas')
                 .attr('width', this.width)
                 .attr('height', this.height);
+            //给非pin画布添加十字鼠标光标
+            this.$dom.css('cursor', this.type === 'pin' ? 'none' : 'crosshair');
+            
             $callObject.append(this.$dom);
-
             this.context = canvas.get(0).getContext("2d");
 
             this.selection = {
