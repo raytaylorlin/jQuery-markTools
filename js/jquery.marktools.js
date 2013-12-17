@@ -36,8 +36,7 @@
             });
 
             //创建光标cursor的div并隐藏
-            this.$cursor = divWithClass(attr.classCursor);
-            this.$cursor.hide();
+            this.$cursor = divWithClass(attr.classCursor).hide();
             $('body').append(this.$cursor);
 
             //按下按钮触发的方法
@@ -71,16 +70,7 @@
                 top: index * this.HEIGHT
             }).show();
 
-            //显示光标并绑定到鼠标移动事件
-            var $cursor = this.$cursor;
-            $cursor.show();
-            this.$callObject.on('mousemove', function(e) {
-                var offset = {
-                    left: e.clientX,
-                    top: e.clientY
-                };
-                $cursor.css(offset);
-            });
+            bindCursor(this.$cursor, this.$callObject);
 
             //判断当前是否有画布存在，不允许存在多个画布
             if (!this.$callObject.find('.draw-canvas').exists()) {
@@ -110,14 +100,29 @@
             this.container.$dom.find('.btn-marktools-active-border').hide();
 
             //隐藏光标
-            this.$cursor.hide();
+            unbindCursor(this.$cursor, this.$callObject);
 
             //若用户没有开始绘画，则在切换按钮的时候删除所有现存canvas
             if (!$.markTools.cache.userStartDraw) {
                 $('.draw-canvas').remove();
             }
-
             this.container.activeType = 'none';
+        }
+
+        //显示光标并绑定到鼠标移动事件
+        function bindCursor($cursor, $callObject) {
+            $cursor.show();
+            $callObject.on('mousemove', function(e) {
+                $cursor.css({
+                    left: e.clientX,
+                    top: e.clientY
+                });
+            });
+        }
+
+        function unbindCursor($cursor, $callObject) {
+            $cursor.hide();
+            $callObject.off('mousemove');
         }
 
         return ToolButton;
