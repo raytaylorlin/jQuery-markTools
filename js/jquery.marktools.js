@@ -1072,7 +1072,7 @@
             showRecluster: true,
             showFilter: true,
 
-            color: '#FF0000',
+            color: '#FFD125',
             penWidth: 4,
             canvasMargin: 10,
 
@@ -1142,7 +1142,7 @@
         },
         cache: {
             userStartDraw: false,
-            color: '#ff0000',
+            color: '#FFD125',
             openedMarkBox: null
         },
 
