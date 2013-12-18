@@ -6,6 +6,16 @@
 
 (function($) {
     var ToolButton = (function() {
+        var cursorColorMap = {
+            '#FFD125': 'yellow',
+            '#3FC835': 'green',
+            '#FF4C00': 'red',
+            '#111111': 'black',
+            '#00B3F0': 'blue',
+            '#FF296A': 'pink',
+            '#FFFFFF': 'white'
+        };
+
         var ToolButton = function(attr, $callObject) {
             var _this = this;
             attr = attr || {};
@@ -111,7 +121,10 @@
 
         //显示光标并绑定到鼠标移动事件
         function bindCursor($cursor, $callObject) {
-            $cursor.show();
+            var colorName = $.markTools.cache.colorName;
+            $cursor.show().attr('color', colorName)
+                .addClass('cursor-color-' + colorName);
+
             $callObject.on('mousemove', function(e) {
                 $cursor.css({
                     left: e.clientX,
@@ -120,8 +133,9 @@
             });
         }
 
+        //隐藏光标并解绑鼠标移动事件
         function unbindCursor($cursor, $callObject) {
-            $cursor.hide();
+            $cursor.hide().removeClass('cursor-color-' + $cursor.attr('color'));
             $callObject.off('mousemove');
         }
 
@@ -170,6 +184,7 @@
             this.stylePicker.$dom.on('click', '.color-block', function() {
                 var color = $(this).css('background-color');
                 $.markTools.cache.color = color;
+                $.markTools.cache.colorName = $(this).attr('color-name');
                 //改变显示色块的颜色
                 $('.btn-marktools-color').css('background-color', color);
                 $('.btn-marktools-color-triangle2').css('border-right-color', color);
@@ -353,7 +368,8 @@
                 $block = divWithClass('color-block-bg')
                     .addClass('color-block-transparent-' + this.colorList[i]);
                 $block.append(aWithClass('color-block')
-                    .addClass('color-block-' + this.colorList[i]));
+                    .addClass('color-block-' + this.colorList[i])
+                    .attr('color-name', this.colorList[i]));
                 this.$dom.find('.style-picker-container').append($block);
             }
         };
@@ -400,7 +416,7 @@
                 .attr('width', this.width)
                 .attr('height', this.height);
             //给非pin画布添加十字鼠标光标
-            this.$dom.css('cursor', this.type === 'pin' ? 'none' : 'crosshair');
+            this.$dom.css('cursor', this.type === 'pin' ? 'crosshair' : 'crosshair');
             
             $callObject.append(this.$dom);
             this.context = canvas.get(0).getContext("2d");
@@ -804,7 +820,7 @@
                     type: 'pin',
                     classRest: 'btn-marktools-pin',
                     classActive: 'btn-marktools-pin-active',
-                    classCursor: 'cursor-pin1'
+                    classCursor: 'cursor-pin'
                 },
                 rect: {
                     type: 'rect',
