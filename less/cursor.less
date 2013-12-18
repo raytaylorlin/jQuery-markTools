@@ -1,0 +1,17 @@
+@import 'button';
+
+.cursor-pin {
+    //MIXIN: 混入button图标的样式
+    .btn-marktools-pin;
+
+    position: absolute;
+    width: @cursor-pin-size;
+    height: @cursor-pin-size;
+    .border-radius(@cursor-pin-size);
+
+    &:after {
+        .triangle-border-base(5px);
+        border-top: 12px solid @color-yellow;
+        left: 26%;
+    }
+}
