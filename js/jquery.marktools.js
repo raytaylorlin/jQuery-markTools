@@ -121,18 +121,25 @@
 
         //显示光标并绑定到鼠标移动事件
         function bindCursor($cursor, $callObject, hasCrosshair) {
-            var colorName = $.markTools.cache.colorName;
+            var colorName = $.markTools.cache.colorName,
+                $crosshair = $('.cursor-crosshair');
             $cursor.show().attr('color', colorName)
                 .addClass('cursor-color-' + colorName);
-            if(hasCrosshair && !$cursor.children().length) {
-                $cursor.append(divWithClass('cursor-crosshair-vertical'));
-                $cursor.append(divWithClass('cursor-crosshair-horizontal'));
+            if(hasCrosshair && !$crosshair.length) {
+                $crosshair = divWithClass('cursor-crosshair');
+                $crosshair.append(divWithClass('cursor-crosshair-vertical'));
+                $crosshair.append(divWithClass('cursor-crosshair-horizontal'));
+                $cursor.after($crosshair);
             }
 
             $callObject.on('mousemove', function(e) {
                 $cursor.css({
-                    left: e.clientX,
-                    top: e.clientY
+                    left: e.pageX,
+                    top: e.pageY
+                });
+                $crosshair.show().css({
+                    left: e.pageX,
+                    top: e.pageY
                 });
             });
         }
@@ -140,6 +147,7 @@
         //隐藏光标并解绑鼠标移动事件
         function unbindCursor($cursor, $callObject) {
             $cursor.hide().removeClass('cursor-color-' + $cursor.attr('color'));
+            $('.cursor-crosshair').remove();
             $callObject.off('mousemove');
         }
 
@@ -420,7 +428,8 @@
                 .attr('width', this.width)
                 .attr('height', this.height);
             //给非pin画布添加十字鼠标光标
-            this.$dom.css('cursor', this.type === 'pin' ? 'default' : 'crosshair');
+            // this.$dom.css('cursor', this.type === 'pin' ? 'default' : 'crosshair');
+            this.$dom.css('cursor', this.type === 'pin' ? 'default' : 'default');
             
             $callObject.append(this.$dom);
             this.context = canvas.get(0).getContext("2d");
@@ -830,7 +839,7 @@
                     type: 'rect',
                     classRest: 'btn-marktools-rect',
                     classActive: 'btn-marktools-rect-active',
-                    classCursor: 'cursor-region'
+                    classCursor: 'cursor-rect'
                 },
                 ellipse: {
                     type: 'ellipse',

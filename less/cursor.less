@@ -3,27 +3,27 @@
 
 .cursor-crosshair-common() {
     position: absolute;
-    top: 100%;
+    z-index: 2;
+}
+
+.cursor-crosshair {
+    position: absolute;
 }
 
 .cursor-crosshair-vertical {
-    position: absolute;
+    .cursor-crosshair-common;
     width: 0;
-    height: 12px;
-    top: 100%;
-    left: 50%;
+    height: @cursor-crosshair-size;
+    margin-top: -6px;
     border-left: 1px solid black;
-    z-index: 2;
 }
 
 .cursor-crosshair-horizontal {
-    position: absolute;
-    width: 12px;
+    .cursor-crosshair-common;
+    width: @cursor-crosshair-size;
     height: 0;
-    top: 100%;
-    left: 50%;
+    margin-left: -6px;
     border-top: 1px solid black;
-    z-index: 2;
 }
 
 .cursor-pin {
@@ -42,6 +42,17 @@
         border-top: 12px solid @color-yellow;
         left: 26%;
     }
+}
+
+.cursor-rect {
+    .btn-marktools-rect;
+
+    position: absolute;
+    width: 18px;
+    height: 16px;
+    margin-left: 9px;
+    margin-top: -26px;
+    border-width: @cursor-border-width;
 }
 
 .cursor-color-yellow {
