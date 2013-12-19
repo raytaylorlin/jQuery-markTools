@@ -1,6 +1,31 @@
 @import 'constants';
 @import 'button';
 
+.cursor-crosshair-common() {
+    position: absolute;
+    top: 100%;
+}
+
+.cursor-crosshair-vertical {
+    position: absolute;
+    width: 0;
+    height: 12px;
+    top: 100%;
+    left: 50%;
+    border-left: 1px solid black;
+    z-index: 2;
+}
+
+.cursor-crosshair-horizontal {
+    position: absolute;
+    width: 12px;
+    height: 0;
+    top: 100%;
+    left: 50%;
+    border-top: 1px solid black;
+    z-index: 2;
+}
+
 .cursor-pin {
     //MIXIN: 混入button图标的样式
     .btn-marktools-pin;
@@ -9,6 +34,8 @@
     width: @cursor-pin-size;
     height: @cursor-pin-size;
     .border-radius(@cursor-pin-size);
+    margin-left: -13px;
+    margin-top: 10px;
 
     &:after {
         .triangle-border-base(5px);

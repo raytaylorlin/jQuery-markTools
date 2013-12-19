@@ -71,7 +71,7 @@
             this.isPressed = true;
             this.$dom.addClass('btn-marktools-active');
 
-            // this.container.$dom.append(divWithClass('btn-marktools-active-border'));
+            this.container.$dom.append(divWithClass('btn-marktools-active-border'));
 
             //设置按钮组的状态
             this.container.changeType(this.type);
@@ -80,7 +80,7 @@
                 top: index * this.HEIGHT
             }).show();
 
-            bindCursor(this.$cursor, this.$callObject);
+            bindCursor(this.$cursor, this.$callObject, this.type !== 'pin');
 
             //判断当前是否有画布存在，不允许存在多个画布
             if (!this.$callObject.find('.draw-canvas').exists()) {
@@ -106,8 +106,8 @@
         ToolButton.prototype.popup = function() {
             this.isPressed = false;
             this.$dom.removeClass('btn-marktools-active');
-            // this.$dom.find('.btn-marktools-active-border').remove();
-            this.container.$dom.find('.btn-marktools-active-border').hide();
+            this.container.$dom.find('.btn-marktools-active-border').remove();
+            // this.container.$dom.find('.btn-marktools-active-border').hide();
 
             //隐藏光标
             unbindCursor(this.$cursor, this.$callObject);
@@ -120,10 +120,14 @@
         }
 
         //显示光标并绑定到鼠标移动事件
-        function bindCursor($cursor, $callObject) {
+        function bindCursor($cursor, $callObject, hasCrosshair) {
             var colorName = $.markTools.cache.colorName;
             $cursor.show().attr('color', colorName)
                 .addClass('cursor-color-' + colorName);
+            if(hasCrosshair && !$cursor.children().length) {
+                $cursor.append(divWithClass('cursor-crosshair-vertical'));
+                $cursor.append(divWithClass('cursor-crosshair-horizontal'));
+            }
 
             $callObject.on('mousemove', function(e) {
                 $cursor.css({
@@ -254,7 +258,7 @@
             //初始化标记工具栏容器
             this.$wrapper = divWithClass('marktools-wrapper');
             this.$dom = divWithClass('marktools-container');
-            this.$dom.append(divWithClass('btn-marktools-active-border').hide());
+            // this.$dom.append(divWithClass('btn-marktools-active-border').hide());
 
             this.initPosition();
             //在调用插件的容器里面添加
@@ -416,7 +420,7 @@
                 .attr('width', this.width)
                 .attr('height', this.height);
             //给非pin画布添加十字鼠标光标
-            this.$dom.css('cursor', this.type === 'pin' ? 'crosshair' : 'crosshair');
+            this.$dom.css('cursor', this.type === 'pin' ? 'default' : 'crosshair');
             
             $callObject.append(this.$dom);
             this.context = canvas.get(0).getContext("2d");
@@ -1164,6 +1168,7 @@
         cache: {
             userStartDraw: false,
             color: '#FFD125',
+            colorName: 'yellow',
             openedMarkBox: null
         },
 
