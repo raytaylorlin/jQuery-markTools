@@ -8,22 +8,22 @@
 
 .cursor-crosshair {
     position: absolute;
-}
 
-.cursor-crosshair-vertical {
-    .cursor-crosshair-common;
-    width: 0;
-    height: @cursor-crosshair-size;
-    margin-top: -6px;
-    border-left: 1px solid black;
-}
+    .cursor-crosshair-vertical {
+        .cursor-crosshair-common;
+        width: 0;
+        height: @cursor-crosshair-size;
+        margin-top: -6px;
+        border-left: 1px solid black;
+    }
 
-.cursor-crosshair-horizontal {
-    .cursor-crosshair-common;
-    width: @cursor-crosshair-size;
-    height: 0;
-    margin-left: -6px;
-    border-top: 1px solid black;
+    .cursor-crosshair-horizontal {
+        .cursor-crosshair-common;
+        width: @cursor-crosshair-size;
+        height: 0;
+        margin-left: -6px;
+        border-top: 1px solid black;
+    }
 }
 
 .cursor-pin {
@@ -69,6 +69,19 @@
     border-width: @cursor-border-width;
 }
 
+.cursor-line {
+    @line-width: 16px * sqrt(2);
+    .btn-marktools-line;
+
+    position: absolute;
+    width: @line-width;
+    height: @line-width;
+    margin-left: 0;
+    margin-top: -(@line-width + @cursor-crosshair-size / 2);
+    border-width: @cursor-border-width;
+}
+
+/* 光标颜色 */
 .cursor-color-yellow {
     border-color: @color-yellow;
     &:after { border-top-color: @color-yellow; }
