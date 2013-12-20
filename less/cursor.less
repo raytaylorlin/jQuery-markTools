@@ -45,10 +45,23 @@
 }
 
 .cursor-rect {
+    @rect-width: 16px;
+    @rect-height: 14px;
     .btn-marktools-rect;
 
     position: absolute;
-    width: 18px;
+    width: @rect-width;
+    height: @rect-height;
+    margin-left: @rect-width / 2;
+    margin-top: -(@rect-height + @cursor-crosshair-size);
+    border-width: @cursor-border-width;
+}
+
+.cursor-ellipse {
+    .btn-marktools-ellipse;
+
+    position: absolute;
+    width: 16px;
     height: 16px;
     margin-left: 9px;
     margin-top: -26px;
