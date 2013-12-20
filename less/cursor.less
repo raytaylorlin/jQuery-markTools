@@ -58,13 +58,14 @@
 }
 
 .cursor-ellipse {
+    @ellipse-width: 16px;
     .btn-marktools-ellipse;
 
     position: absolute;
-    width: 16px;
-    height: 16px;
-    margin-left: 9px;
-    margin-top: -26px;
+    width: @ellipse-width;
+    height: @ellipse-width;
+    margin-left: @ellipse-width / 2;
+    margin-top: -(@ellipse-width + @cursor-crosshair-size);
     border-width: @cursor-border-width;
 }
 
