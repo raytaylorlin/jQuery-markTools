@@ -543,7 +543,11 @@
             $.markTools.cache.offset = offset;
             this.activeEdit(this.type);
             if (!$markDialog.exists()) {
-                $.markTools.$callObject.append($.markTools.showMarkDialog(offset));
+                $markDialog = $.markTools.showMarkDialog(offset);
+                $.markTools.$callObject.append($markDialog);
+                if($.markTools.options.onMarkDialogShow) {
+                    $.markTools.options.onMarkDialogShow($markDialog);
+                }
             } else {
                 setOffset($markDialog, offset);
             }
@@ -812,7 +816,7 @@
 
             var $marktoolsTemplate = $('#marktools-template').hide(),
                 markDialogTemplateHtml =
-                    '<div class="' + options.markDialogClass + '">' +
+                    '<form class="' + options.markDialogClass + '">' +
                     '<div class="mark-dialog-control">' +
                     '<label for="title">Title</label>' +
                     '<input type="text" name="title"/>' +
@@ -824,7 +828,7 @@
                     '<a class="mark-dialog-button mark-dialog-button-cancel" href="javascript:void(0)">Cancel</a>' +
                     '<a class="mark-dialog-button mark-dialog-button-save" href="javascript:void(0)">Save</a>' +
                     '<div class="clearfix"></div>' +
-                    '</div>',
+                    '</form>',
                 markBoxTemplateHtml =
                     '<div class="mark-box">' +
                     '<p class="mark-box-title">${title}</p>' +
@@ -885,9 +889,11 @@
                         $markBox,
                         $markObject,
                         offset, drawData, changeSelection, sel;
-                    if (title.trim() == '' || description.trim() == '') {
-                        // alert('Title and description cannot be empty.');
-                        // return;
+                    
+                    if(options.validateHandler) {
+                        if(!options.validateHandler()) {
+                            return;
+                        }
                     }
 
                     offset = $.markTools.cache.offset;
@@ -905,10 +911,6 @@
                         $markObject.removeClass('draw-canvas').addClass('static-canvas');
                         $markObject.off();
                     }
-
-                    $markDialog.remove();
-                    $title.val('');
-                    $description.val('');
 
                     var markType = $markObject.attr('mark-type');
 
@@ -929,7 +931,9 @@
 
                     //触发保存mark时的自定义方法
                     if (options.onSaveMark) {
-                        options.onSaveMark($markObject, $markBox, markData);
+                        options.onSaveMark($markObject, $markDialog, markData);
+                        $markDialog.remove();
+                        $markObject.remove();
                     } else {
                         //创建新的markBox
                         $markBox = $.markTools.createMarkBox(markData, $markBoxTemplate);
@@ -967,6 +971,8 @@
             onSaveMark: null,
             onCancelMark: null,
             onClickMark: null,
+            onMarkDialogShow: null,
+            validateHandler: null,
             onToolButtonActivated: function() {},
 
             onDrawFuncMap: {
