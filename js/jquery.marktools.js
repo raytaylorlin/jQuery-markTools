@@ -428,8 +428,8 @@
                 .attr('width', this.width)
                 .attr('height', this.height);
             //给非pin画布添加十字鼠标光标
-            // this.$dom.css('cursor', this.type === 'pin' ? 'default' : 'crosshair');
-            this.$dom.css('cursor', this.type === 'pin' ? 'default' : 'default');
+            // this.$dom.css('cursor', this.type === 'pin' ? 'default' : 'none');
+            this.$dom.css('cursor', 'none');
             
             $callObject.append(this.$dom);
             this.context = canvas.get(0).getContext("2d");

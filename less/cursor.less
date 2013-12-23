@@ -27,6 +27,7 @@
 }
 
 .cursor-pin {
+    @after-border-size: 12px;
     //MIXIN: 混入button图标的样式
     .btn-marktools-pin;
 
@@ -35,7 +36,7 @@
     height: @cursor-pin-size;
     .border-radius(@cursor-pin-size);
     margin-left: -13px;
-    margin-top: 10px;
+    margin-top: -(@cursor-pin-size + @after-border-size);
 
     &:after {
         .triangle-border-base(5px);
