@@ -3,7 +3,7 @@
 
 .cursor-crosshair-common() {
     position: absolute;
-    z-index: 2;
+    z-index: 39;
 }
 
 .cursor-crosshair {
@@ -37,6 +37,7 @@
     .border-radius(@cursor-pin-size);
     margin-left: -13px;
     margin-top: -(@cursor-pin-size + @after-border-size);
+    z-index: 39;    
 
     &:after {
         .triangle-border-base(5px);
@@ -56,6 +57,7 @@
     margin-left: @rect-width / 2;
     margin-top: -(@rect-height + @cursor-crosshair-size);
     border-width: @cursor-border-width;
+    z-index: 39;
 }
 
 .cursor-ellipse {
@@ -68,6 +70,7 @@
     margin-left: @ellipse-width / 2;
     margin-top: -(@ellipse-width + @cursor-crosshair-size);
     border-width: @cursor-border-width;
+    z-index: 39;
 }
 
 .cursor-line {
@@ -80,6 +83,7 @@
     margin-left: 0;
     margin-top: -(@line-width + @cursor-crosshair-size / 2);
     border-width: @cursor-border-width;
+    z-index: 39;
 }
 
 /* 光标颜色 */
