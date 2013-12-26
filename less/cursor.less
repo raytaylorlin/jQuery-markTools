@@ -3,7 +3,7 @@
 
 .cursor-crosshair-common() {
     position: absolute;
-    z-index: 39;
+    z-index: @cursor-z-index;
 }
 
 .cursor-crosshair {
@@ -30,6 +30,7 @@
     @after-border-size: 12px;
     //MIXIN: 混入button图标的样式
     .btn-marktools-pin;
+    .box-sizing-content-box;
 
     position: absolute;
     width: @cursor-pin-size;
@@ -37,7 +38,8 @@
     .border-radius(@cursor-pin-size);
     margin-left: -13px;
     margin-top: -(@cursor-pin-size + @after-border-size);
-    z-index: 39;    
+    // border-width: @cursor-border-width;
+    z-index: @cursor-z-index;
 
     &:after {
         .triangle-border-base(5px);
@@ -57,7 +59,7 @@
     margin-left: @rect-width / 2;
     margin-top: -(@rect-height + @cursor-crosshair-size);
     border-width: @cursor-border-width;
-    z-index: 39;
+    z-index: @cursor-z-index;
 }
 
 .cursor-ellipse {
@@ -70,7 +72,7 @@
     margin-left: @ellipse-width / 2;
     margin-top: -(@ellipse-width + @cursor-crosshair-size);
     border-width: @cursor-border-width;
-    z-index: 39;
+    z-index: @cursor-z-index;
 }
 
 .cursor-line {
@@ -83,7 +85,7 @@
     margin-left: 0;
     margin-top: -(@line-width + @cursor-crosshair-size / 2);
     border-width: @cursor-border-width;
-    z-index: 39;
+    z-index: @cursor-z-index;
 }
 
 /* 光标颜色 */
