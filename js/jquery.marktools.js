@@ -46,7 +46,7 @@
             });
 
             //创建光标cursor的div并隐藏
-            this.$cursor = divWithClass(attr.classCursor).hide();
+            this.$cursor = divWithClass(attr.classCursor).addClass('marktools-cursor').hide();
             $('body').append(this.$cursor);
 
             //按下按钮触发的方法
@@ -275,6 +275,12 @@
             this.$callObject.append(this.$wrapper);
             this.$wrapper.append(this.$dom);
             this.$dom.before(temp);
+
+            // this.$wrapper.hover(function() {
+                // $('.marktools-cursor').hide();
+            // }, function() {
+
+            // });
         };
 
         /**
@@ -425,8 +431,9 @@
             //初始化canvas并添加到调用插件的主容器
             this.$dom = canvas = $('<canvas></canvas>')
                 .attr('class', 'draw-canvas')
-                .attr('width', this.width)
-                .attr('height', this.height);
+                .attr('width', this.width - this.OFFSET_X)
+                .attr('height', this.height)
+                .css('left', this.OFFSET_X); 
             //给非pin画布添加十字鼠标光标
             // this.$dom.css('cursor', this.type === 'pin' ? 'default' : 'none');
             this.$dom.css('cursor', 'none');
@@ -499,6 +506,8 @@
                     e.preventDefault();
                 });
         };
+
+        DrawingCanvas.prototype.OFFSET_X = 80;
 
         DrawingCanvas.prototype.refreshStyle = function() {
             this.context.strokeStyle = $.markTools.cache.color;
