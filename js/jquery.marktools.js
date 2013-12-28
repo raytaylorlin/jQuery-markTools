@@ -71,11 +71,9 @@
             this.isPressed = true;
             this.$dom.addClass('btn-marktools-active');
 
-            this.container.$dom.append(divWithClass('btn-marktools-active-border'));
-
             //设置按钮组的状态
             this.container.changeType(this.type);
-
+            this.$dom.after(divWithClass('btn-marktools-active-border'));
             this.container.$dom.find('.btn-marktools-active-border').hide().css({
                 top: index * this.HEIGHT
             }).show();
