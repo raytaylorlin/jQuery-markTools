@@ -1368,7 +1368,7 @@
     function setOffset(obj, offset) {
         if (offset) {
             obj.css({
-                left: offset.left,
+                left: offset.left + 80,
                 top: offset.top
             });
         }

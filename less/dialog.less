@@ -1,11 +1,13 @@
+@import 'constants';
+
 /* 标记对话框 */
 .mark-dialog, .mark-box {
-    width: 300px;
+    width: @dialog-width;
     position: absolute;
     z-index: 33;
-    padding: 10px;
+    padding: @dialog-padding;
     background-color: #EBEBEB;
-    margin-left: -71px;
+    margin-left: -(@dialog-width + @dialog-padding * 2) / 2;
     margin-top: 10px;
     border: 1px solid rgba(0, 0, 0, 0.2);
     *border-right-width: 2px;
@@ -18,55 +20,55 @@
     background-clip: padding-box;
 }
 
-.mark-dialog:before, .mark-box:before {
-    position: absolute;
-    top: -10px;
-    left: 60px;
-    border-right: 10px solid transparent;
-    border-bottom: 10px solid #EBEBEB;
-    border-left: 10px solid transparent;
-    border-bottom-color: rgba(0, 0, 0, 0.2);
-    content: '';
-}
+// .mark-dialog:before, .mark-box:before {
+//     position: absolute;
+//     top: -10px;
+//     left: 60px;
+//     border-right: 10px solid transparent;
+//     border-bottom: 10px solid #EBEBEB;
+//     border-left: 10px solid transparent;
+//     border-bottom-color: rgba(0, 0, 0, 0.2);
+//     content: '';
+// }
 
-.mark-dialog:after, .mark-box:after {
-    position: absolute;
-    top: -9px;
-    left: 61px;
-    border-right: 9px solid transparent;
-    border-bottom: 9px solid #EBEBEB;
-    border-left: 9px solid transparent;
-    content: '';
-}
+// .mark-dialog:after, .mark-box:after {
+//     position: absolute;
+//     top: -9px;
+//     left: 61px;
+//     border-right: 9px solid transparent;
+//     border-bottom: 9px solid #EBEBEB;
+//     border-left: 9px solid transparent;
+//     content: '';
+// }
 
 .mark-dialog-reverse {
     background-color: #EBEBEB;
-    margin-left: -71px;
+    margin-left: -(@dialog-width + @dialog-padding * 2) / 2;
     margin-top: -205px;
 }
 
-.mark-dialog-reverse:before {
-    position: absolute;
-    top: 193px;
-    left: 60px;
-    border-right: 10px solid transparent;
-    border-top: 10px solid #EBEBEB;
-    border-left: 10px solid transparent;
-    border-top-color: rgba(0, 0, 0, 0.2);
-    border-bottom: none;
-    content: '';
-}
+// .mark-dialog-reverse:before {
+//     position: absolute;
+//     top: 193px;
+//     left: 60px;
+//     border-right: 10px solid transparent;
+//     border-top: 10px solid #EBEBEB;
+//     border-left: 10px solid transparent;
+//     border-top-color: rgba(0, 0, 0, 0.2);
+//     border-bottom: none;
+//     content: '';
+// }
 
-.mark-dialog-reverse:after {
-    position: absolute;
-    top: 192px;
-    left: 61px;
-    border-right: 9px solid transparent;
-    border-top: 9px solid #EBEBEB;
-    border-left: 9px solid transparent;
-    border-bottom: none;
-    content: '';
-}
+// .mark-dialog-reverse:after {
+//     position: absolute;
+//     top: 192px;
+//     left: 61px;
+//     border-right: 9px solid transparent;
+//     border-top: 9px solid #EBEBEB;
+//     border-left: 9px solid transparent;
+//     border-bottom: none;
+//     content: '';
+// }
 
 .mark-dialog-control {
     display: block;
