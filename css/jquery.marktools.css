@@ -1,345 +1,540 @@
-/* 按钮容器 */
-.marktools-wrapper {
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    background-color: #000;
-}
-
-.marktools-container-floater {
-    float: left;
-    height: 50%;
-    margin-bottom: -200px;
-}
-
-.marktools-container {
-    height: 400px;
-    clear: both;
-    position: relative;
-    /*border: 4px solid #DDD;*/
-    /*left: 0;*/
-    /*top: 0;*/
-    z-index: 30;
-}
-
 /* 按钮基本样式 */
-
+/**
+ * div居中
+ * @param {@width} div宽度
+ */
 .btn-marktools {
-    width: 50px;
-    height: 50px;
-    margin-bottom: 0px;
+  width: 80px;
+  height: 80px;
+  margin-bottom: 0px;
+  position: absolute;
 }
-
-/* pin图标 */
+.btn-marktools .btn-marktools-content {
+  border-color: #cecec4;
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  transition: all 0.5s ease;
+  z-index: 6;
+}
+.btn-marktools:hover .btn-marktools-content {
+  border-color: #ffffff;
+}
+.btn-marktools:hover .btn-marktools-pin:after {
+  border-color: transparent;
+  border-top-color: #ffffff;
+}
+.btn-marktools:after {
+  position: absolute;
+  content: "";
+  width: 0;
+  height: 0;
+  left: 25%;
+  width: 50%;
+  height: 2px;
+  background-color: #262626;
+}
+.btn-marktools:first-child:after,
+.btn-marktools:last-child:after {
+  left: 0;
+  width: 100%;
+}
+.btn-marktools-active {
+  background-color: #212121;
+}
+.btn-marktools-active .btn-marktools-content {
+  border-color: #ffffff;
+}
+.btn-marktools-active .btn-marktools-pin:after {
+  border-color: transparent;
+  border-top-color: #ffffff;
+}
+.btn-marktools-active-border {
+  position: absolute;
+  width: 70px;
+  height: 70px;
+  border: 5px solid #ffd500;
+  background-color: #212121;
+  z-index: 5;
+}
+.btn-marktools-active-border:after {
+  position: absolute;
+  content: "";
+  width: 0;
+  height: 0;
+  border: 7px solid transparent;
+  border-left: 7px solid #ffd500;
+  left: 73px;
+  top: 40%;
+}
+.btn-marktools-content {
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  top: 23.75%;
+  left: 23.75%;
+}
+/* 四种图标 */
 .btn-marktools-pin {
-    background-image: url('../images/icons.png') ;
-    background-position: 0px 0px;
+  border: 4px solid #cecec4;
+  width: 25px;
+  height: 25px;
+  -webkit-border-radius: 25px;
+  -moz-border-radius: 25px;
+  -o-border-radius: 25px;
+  border-radius: 25px;
+  top: 24.375000000000004%;
+  left: 29.375%;
 }
-
-.btn-marktools-pin:hover {
-    background-image: url('../images/icons.png');
-    background-position: -50px 0px;
+.btn-marktools-pin:after {
+  position: absolute;
+  content: "";
+  width: 0;
+  height: 0;
+  border: 6px solid transparent;
+  border-top: 14px solid #cecec4;
+  top: 100%;
+  left: 28%;
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  transition: all 0.5s ease;
 }
-
-.btn-marktools-pin-active {
-    background-image: url('../images/icons.png') ;
-    background-position: -100px 0px;
+.btn-marktools-pin:after:hover {
+  border-top-color: #ffd500;
 }
-
-/* rect图标 */
 .btn-marktools-rect {
-    background-image: url('../images/icons.png');
-    background-position: 0px -50px;
+  border: 4px solid #cecec4;
+  height: 30px;
+  top: 26.25%;
 }
-
-.btn-marktools-rect:hover {
-    background-image: url('../images/icons.png');
-    background-position: -50px -50px;
-}
-
-.btn-marktools-rect-active{
-    background-image: url('../images/icons.png');
-    background-position: -100px -50px;
-}
-
-/* ellipse图标 */
 .btn-marktools-ellipse {
-    background-image: url('../images/icons.png');
-    background-position: 0px -100px;
+  border: 4px solid #cecec4;
+  -webkit-border-radius: 40px;
+  -moz-border-radius: 40px;
+  -o-border-radius: 40px;
+  border-radius: 40px;
 }
-
-.btn-marktools-ellipse:hover {
-    background-image: url('../images/icons.png');
-    background-position: -50px -100px;
-}
-
-.btn-marktools-ellipse-active{
-    background-image: url('../images/icons.png');
-    background-position: -100px -100px;
-}
-
-/* line图标 */
 .btn-marktools-line {
-    background-image: url('../images/icons.png');
-    background-position: 0px -150px;
+  height: 48.083261120685236px;
+  border-left: 4px solid #cecec4;
+  -webkit-transform: translate(13px, 10px) rotate(45deg);
+  -moz-transform: translate(13px, 10px) rotate(45deg);
+  -o-transform: translate(13px, 10px) rotate(45deg);
+  transform: translate(13px, 10px) rotate(45deg);
 }
-
-.btn-marktools-line:hover {
-    background-image: url('../images/icons.png');
-    background-position: -50px -150px;
-}
-
-.btn-marktools-line-active {
-    background-image: url('../images/icons.png');
-    background-position: -100px -150px;
-}
-
-/* 选择颜色图标 */
 .btn-marktools-color {
-    text-align: center;    
-    background-color: #FFFFFF;
+  width: 42px;
+  height: 42px;
+  top: 23.75%;
+  left: 23.75%;
+  background-color: #ffd125;
 }
-
-.color-show-block {
-    display: inline-block;
-    margin-top: 10px;
-    margin-left: auto;
-    margin-right: auto;
-    width: 30px;
-    height: 30px;
-    border: solid 2px #FFF;
-    background-color: #FF0000;
+.btn-marktools-color .btn-marktools-color-triangle1 {
+  position: absolute;
+  content: "";
+  width: 0;
+  height: 0;
+  border: 5px solid transparent;
+  border-right: 5px solid #111111;
+  border-bottom: 5px solid #111111;
+  top: 32px;
+  left: 32px;
 }
-
-.color-show-block:hover {
-    border: solid 2px #000;
+.btn-marktools-color .btn-marktools-color-triangle2 {
+  position: absolute;
+  content: "";
+  width: 0;
+  height: 0;
+  border: 3px solid transparent;
+  border-right: 3px solid #ffd125;
+  border-bottom: 3px solid #ffd125;
+  top: 36px;
+  left: 36px;
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  transition: all 0.5s ease;
 }
-
-/* 鼠标光标 */
-
-/* pin鼠标光标 */
+.btn-marktools-color-active .btn-marktools-color-triangle2 {
+  top: 39px;
+  left: 39px;
+}
+.style-picker {
+  position: relative;
+  height: 445px;
+  background-image: url('../images/style_picker_bg.png');
+  background-repeat: no-repeat;
+}
+.style-picker-container {
+  width: 40px;
+  margin: 0 auto;
+  padding-top: 15px;
+}
+.style-picker-container .color-block-bg {
+  display: inline-block;
+  position: relative;
+  margin: 8px 0;
+  width: 40px;
+  height: 40px;
+  -webkit-border-radius: 40px;
+  -moz-border-radius: 40px;
+  -o-border-radius: 40px;
+  border-radius: 40px;
+  text-align: center;
+}
+.style-picker-container .color-block {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  top: 4px;
+  left: 4px;
+  -webkit-border-radius: 32px;
+  -moz-border-radius: 32px;
+  -o-border-radius: 32px;
+  border-radius: 32px;
+  -webkit-transition: all 0.25s ease;
+  -moz-transition: all 0.25s ease;
+  -o-transition: all 0.25s ease;
+  transition: all 0.25s ease;
+}
+.style-picker-container .color-block:hover {
+  width: 40px;
+  height: 40px;
+  top: 0;
+  left: 0;
+}
+.style-picker-container .color-block-yellow {
+  background-color: #ffd125;
+}
+.style-picker-container .color-block-green {
+  background-color: #3fc835;
+}
+.style-picker-container .color-block-red {
+  background-color: #ff4c00;
+}
+.style-picker-container .color-block-black {
+  background-color: #111111;
+}
+.style-picker-container .color-block-blue {
+  background-color: #00b3f0;
+}
+.style-picker-container .color-block-pink {
+  background-color: #ff296a;
+}
+.style-picker-container .color-block-white {
+  background-color: #ffffff;
+}
+.style-picker-container .color-block-transparent-yellow {
+  background-color: rgba(255, 179, 0, 0.4);
+}
+.style-picker-container .color-block-transparent-green {
+  background-color: rgba(67, 199, 62, 0.4);
+}
+.style-picker-container .color-block-transparent-red {
+  background-color: rgba(255, 76, 0, 0.4);
+}
+.style-picker-container .color-block-transparent-black {
+  background-color: rgba(17, 17, 17, 0.4);
+}
+.style-picker-container .color-block-transparent-blue {
+  background-color: rgba(22, 180, 237, 0.4);
+}
+.style-picker-container .color-block-transparent-pink {
+  background-color: rgba(255, 41, 106, 0.4);
+}
+.style-picker-container .color-block-transparent-white {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+/* 尺寸常量 */
+/* 颜色常量 */
+.cursor-crosshair {
+  position: absolute;
+}
+.cursor-crosshair .cursor-crosshair-vertical {
+  position: absolute;
+  z-index: 19;
+  width: 0;
+  height: 13px;
+  margin-top: -6px;
+  border-left: 1px solid black;
+}
+.cursor-crosshair .cursor-crosshair-horizontal {
+  position: absolute;
+  z-index: 19;
+  width: 13px;
+  height: 0;
+  margin-left: -6px;
+  border-top: 1px solid black;
+}
 .cursor-pin {
-    z-index: 55;
-    position: absolute;
-    width: 24px;
-    height: 38px;
-    margin-left: -12px;
-    margin-top: -39px;
-    background-image: url('../images/icon_action.png');
-    background-position: 0px -497px;
-    background-repeat: no-repeat;
+  border: 4px solid #cecec4;
+  width: 25px;
+  height: 25px;
+  -webkit-border-radius: 25px;
+  -moz-border-radius: 25px;
+  -o-border-radius: 25px;
+  border-radius: 25px;
+  top: 24.375000000000004%;
+  left: 29.375%;
+  box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  -webkit-box-sizing: content-box;
+  position: absolute;
+  width: 17px;
+  height: 17px;
+  -webkit-border-radius: 17px;
+  -moz-border-radius: 17px;
+  -o-border-radius: 17px;
+  border-radius: 17px;
+  margin-left: -13px;
+  margin-top: -29px;
+  z-index: 19;
 }
-
-.cursor-region {
-    cursor: wait;
+.cursor-pin:after {
+  position: absolute;
+  content: "";
+  width: 0;
+  height: 0;
+  border: 6px solid transparent;
+  border-top: 14px solid #cecec4;
+  top: 100%;
+  left: 28%;
+  -webkit-transition: all 0.5s ease;
+  -moz-transition: all 0.5s ease;
+  -o-transition: all 0.5s ease;
+  transition: all 0.5s ease;
 }
-
-/* mark容器，改容器包括静态mark和mark对话框 */
-
-.mark-container {
-    position: absolute;
+.cursor-pin:after:hover {
+  border-top-color: #ffd500;
 }
-
-.draw-canvas {
-    z-index: 20;
-    position: absolute;
+.cursor-pin:after {
+  position: absolute;
+  content: "";
+  width: 0;
+  height: 0;
+  border: 5px solid transparent;
+  border-top: 12px solid #ffd125;
+  left: 26%;
 }
-
-/* 已打在容器上的静态mark样式 */
-
-.static-pin {
-    z-index: 12;
-    position: absolute;
-    width: 24px;
-    height: 38px;
-    background-image: url('../images/icon_action.png');
-    background-position: 0px -497px;
-    background-repeat: no-repeat;
+.cursor-rect {
+  border: 4px solid #cecec4;
+  height: 30px;
+  top: 26.25%;
+  position: absolute;
+  width: 16px;
+  height: 14px;
+  margin-left: 8px;
+  margin-top: -27px;
+  border-width: 2px;
+  z-index: 19;
 }
-
-.static-pin:hover {
-    background-image: url('../images/icon_action.png');
-    background-position: -36px -497px;
-    width: 24px;
-    height: 38px;
+.cursor-ellipse {
+  border: 4px solid #cecec4;
+  -webkit-border-radius: 40px;
+  -moz-border-radius: 40px;
+  -o-border-radius: 40px;
+  border-radius: 40px;
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  margin-left: 8px;
+  margin-top: -29px;
+  border-width: 2px;
+  z-index: 19;
 }
-
-.static-canvas {
-    z-index: 11;
-    position: absolute;
+.cursor-line {
+  height: 48.083261120685236px;
+  border-left: 4px solid #cecec4;
+  -webkit-transform: translate(13px, 10px) rotate(45deg);
+  -moz-transform: translate(13px, 10px) rotate(45deg);
+  -o-transform: translate(13px, 10px) rotate(45deg);
+  transform: translate(13px, 10px) rotate(45deg);
+  position: absolute;
+  width: 22.627416997969522px;
+  height: 22.627416997969522px;
+  margin-left: 0;
+  margin-top: -29.127416997969522px;
+  border-width: 2px;
+  z-index: 19;
 }
-
+/* 光标颜色 */
+.cursor-color-yellow {
+  border-color: #ffd125;
+}
+.cursor-color-yellow:after {
+  border-top-color: #ffd125;
+}
+.cursor-color-green {
+  border-color: #3fc835;
+}
+.cursor-color-green:after {
+  border-top-color: #3fc835;
+}
+.cursor-color-red {
+  border-color: #ff4c00;
+}
+.cursor-color-red:after {
+  border-top-color: #ff4c00;
+}
+.cursor-color-black {
+  border-color: #111111;
+}
+.cursor-color-black:after {
+  border-top-color: #111111;
+}
+.cursor-color-blue {
+  border-color: #00b3f0;
+}
+.cursor-color-blue:after {
+  border-top-color: #00b3f0;
+}
+.cursor-color-pink {
+  border-color: #ff296a;
+}
+.cursor-color-pink:after {
+  border-top-color: #ff296a;
+}
+.cursor-color-white {
+  border-color: #ffffff;
+}
+.cursor-color-white:after {
+  border-top-color: #ffffff;
+}
 /* 标记对话框 */
-.mark-dialog, .mark-box {
-    width: 200px;
-    position: absolute;
-    z-index: 33;
-    padding: 10px;
-    background-color: #EBEBEB;
-    margin-left: -71px;
-    margin-top: 10px;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    *border-right-width: 2px;
-    *border-bottom-width: 2px;
-    -webkit-border-radius: 4px;
-    -moz-border-radius: 4px;
-    border-radius: 4px;
-    -webkit-background-clip: padding-box;
-    -moz-background-clip: padding;
-    background-clip: padding-box;
+.mark-dialog,
+.mark-box {
+  width: 300px;
+  position: absolute;
+  z-index: 33;
+  padding: 10px;
+  background-color: #EBEBEB;
+  margin-left: -160px;
+  margin-top: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  *border-right-width: 2px;
+  *border-bottom-width: 2px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  -webkit-background-clip: padding-box;
+  -moz-background-clip: padding;
+  background-clip: padding-box;
 }
-
-.mark-dialog:before, .mark-box:before {
-    position: absolute;
-    top: -10px;
-    left: 60px;
-    border-right: 10px solid transparent;
-    border-bottom: 10px solid #EBEBEB;
-    border-left: 10px solid transparent;
-    border-bottom-color: rgba(0, 0, 0, 0.2);
-    content: '';
-}
-
-.mark-dialog:after, .mark-box:after {
-    position: absolute;
-    top: -9px;
-    left: 61px;
-    border-right: 9px solid transparent;
-    border-bottom: 9px solid #EBEBEB;
-    border-left: 9px solid transparent;
-    content: '';
-}
-
 .mark-dialog-reverse {
-    background-color: #EBEBEB;
-    margin-left: -71px;
-    margin-top: -205px;
+  background-color: #EBEBEB;
+  margin-left: -160px;
+  margin-top: -205px;
 }
-
-.mark-dialog-reverse:before {
-    position: absolute;
-    top: 193px;
-    left: 60px;
-    border-right: 10px solid transparent;
-    border-top: 10px solid #EBEBEB;
-    border-left: 10px solid transparent;
-    border-top-color: rgba(0, 0, 0, 0.2);
-    border-bottom: none;
-    content: '';
-}
-
-.mark-dialog-reverse:after {
-    position: absolute;
-    top: 192px;
-    left: 61px;
-    border-right: 9px solid transparent;
-    border-top: 9px solid #EBEBEB;
-    border-left: 9px solid transparent;
-    border-bottom: none;
-    content: '';
-}
-
 .mark-dialog-control {
-    display: block;
-    margin-bottom: 10px;
+  display: block;
+  margin-bottom: 10px;
 }
-
 .mark-dialog-control label {
-    display: block;
+  display: block;
 }
-
 .mark-dialog-control input[type='text'],
 .mark-dialog-control textarea {
-    width: 96%;
-    font-family: Helvetica, Arial, sans-serif;
+  width: 96%;
+  font-family: Helvetica, Arial, sans-serif;
 }
-
-.mark-dialog-button, .style-picker-button {
-    display: inline-block;
-    padding: 4px 8px;
-    line-height: 20px;
-    font-size: 14px;
-    color: #FFF;
-    background-color: rgb(192, 192, 192);
-    cursor: pointer;
-    text-align: center;
-    vertical-align: middle;
-    border: none;
-    margin: 0 5px;
-    width: 50px;
-    text-decoration: none;
-    float: right;
+.mark-dialog-button,
+.style-picker-button {
+  display: inline-block;
+  padding: 4px 8px;
+  line-height: 20px;
+  font-size: 14px;
+  color: #FFF;
+  background-color: #c0c0c0;
+  cursor: pointer;
+  text-align: center;
+  vertical-align: middle;
+  border: none;
+  margin: 0 5px;
+  width: 50px;
+  text-decoration: none;
+  float: right;
 }
-
 .mark-dialog-button:hover {
-    background-color: rgb(146, 146, 146);
-    text-decoration: none;
+  background-color: #929292;
+  text-decoration: none;
 }
-
-.style-picker {
-    margin-top: 10px;
-    width: 200px;
-    position: absolute;
-    z-index: 15;
-    padding: 10px;
-    background-color: #EBEBEB;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    *border-right-width: 2px;
-    *border-bottom-width: 2px;
-    -webkit-border-radius: 4px;
-    -moz-border-radius: 4px;
-    border-radius: 4px;
-    -webkit-background-clip: padding-box;
-    -moz-background-clip: padding;
-    background-clip: padding-box;
+/* 按钮容器 */
+.marktools-wrapper {
+  position: absolute;
+  z-index: 20;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background-color: #000000;
 }
-
-.color-block {
-    display: inline-block;
-    margin: 5px;
-    width: 30px;
-    height: 30px;
-    border: solid 2px #000;
+.marktools-container-floater {
+  float: left;
+  height: 50%;
+  margin-bottom: -200px;
 }
-
-.color-block-red {
-    background-color: #FF0000;
+.marktools-container {
+  width: 80px;
+  height: 400px;
+  clear: both;
+  position: relative;
+  z-index: 30;
 }
-
-.color-block-yellow {
-    background-color: #FFF700;
+.marktools-container *,
+.marktools-container *:after,
+.marktools-container *:before {
+  box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  -webkit-box-sizing: content-box;
 }
-
-.color-block-blue {
-    background-color: #1977FF;
+/* mark容器，改容器包括静态mark和mark对话框 */
+.mark-container {
+  position: absolute;
 }
-
-.color-block-green {
-    background-color: #00E800;
+.draw-canvas {
+  z-index: 20;
+  position: absolute;
 }
-
+/* 已打在容器上的静态mark样式 */
+.static-pin {
+  z-index: 12;
+  position: absolute;
+  width: 24px;
+  height: 38px;
+  background-image: url('../images/icon_action.png');
+  background-position: 0px -497px;
+  background-repeat: no-repeat;
+}
+.static-pin:hover {
+  background-image: url('../images/icon_action.png');
+  background-position: -36px -497px;
+  width: 24px;
+  height: 38px;
+}
+.static-canvas {
+  z-index: 11;
+  position: absolute;
+}
 .clearfix {
-    clear: both;
+  clear: both;
 }
-
-.style-picker {
-    z-index: 25;
-}
-
 .highlight-canvas {
-    animation: highlight-animation 2s;
-    -webkit-animation: highlight-animation 2s;
+  animation: highlight-animation 2s;
+  -webkit-animation: highlight-animation 2s;
 }
-
-@keyframes highlight-animation
-{
-    from {background: blue;}
-    to {background: none;}
+@keyframes highlight-animation {
+  from {
+    background: blue;
+  }
+  to {
+    background: none;
+  }
 }
-
-@-webkit-keyframes highlight-animation
-{
-    from {background: blue;}
-    to {background: none;}
+@-webkit-keyframes highlight-animation {
+  from {
+    background: blue;
+  }
+  to {
+    background: none;
+  }
 }
