@@ -719,7 +719,7 @@
                     $.markTools.options.onMarkDialogShow($markDialog);
                 }
             } else {
-                setOffset($markDialog, offset);
+                setOffset($markDialog, offset, true);
             }
         };
 
@@ -1084,14 +1084,14 @@
                     //触发保存mark时的自定义方法
                     if (options.onSaveMark) {
                         options.onSaveMark($markObject, $markDialog, markData);
-                        $markDialog.remove();
                         $markObject.remove();
                     } else {
                         //创建新的markBox
                         $markBox = $.markTools.createMarkBox(markData, $markBoxTemplate);
                         $.markTools.bindMarkAndBox($markObject, $markBox);
-                    }
 
+                    }
+                    $markDialog.remove();
                     $.markTools.cache.drawData = undefined;
                     $.markTools.cache.offset = undefined;
                 });
@@ -1194,7 +1194,7 @@
         showMarkDialog: function(mousePos) {
             var $markDialogTemplate = $('#marktools-template').find('.' + $.markTools.options.markDialogClass),
                 $markDialog = $markDialogTemplate.clone(true).show();
-            setOffset($markDialog, mousePos);
+            setOffset($markDialog, mousePos, true);
             return $markDialog;
         },
         createMarkBox: function(data, template) {
@@ -1299,7 +1299,7 @@
                 setOffset($canvas, {
                     left: offset.left,
                     top: offset.top + options.canvasMargin
-                });
+                }, true);
             }
             $canvas.css({
                 'margin-left': -$canvas.width() / 2 + 'px',
@@ -1315,7 +1315,7 @@
          * @param  {jQuery} $markBox mark-box的jQuery对象
          */
         bindMarkAndBox: function($markObj, $markBox) {
-            setOffset($markBox, getOffset($markObj));
+            setOffset($markBox, getOffset($markObj), false);
             $markObj.after($markBox);
             $markBox.hide();
 
@@ -1365,10 +1365,12 @@
         return newA;
     }
 
-    function setOffset(obj, offset) {
+    function setOffset(obj, offset, isRelativeToolbar) {
         if (offset) {
+            // offset.left = offset.left.replace('px', '');
+            // offset.top = offset.top.replace('px', '');
             obj.css({
-                left: offset.left + 80,
+                left: offset.left + (isRelativeToolbar ? 80 : 0),
                 top: offset.top
             });
         }
@@ -1376,8 +1378,8 @@
 
     function getOffset(obj) {
         return {
-            left: obj.css('left'),
-            top: obj.css('top')
+            left: parseInt(obj.css('left').replace('px', '')),
+            top: parseInt(obj.css('top').replace('px', ''))
         };
     }
 
